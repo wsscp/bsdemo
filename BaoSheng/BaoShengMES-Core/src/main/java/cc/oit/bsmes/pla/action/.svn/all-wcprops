@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/12123/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action
+END
+OrderOAController.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/7810/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/OrderOAController.java
+END
+ToolsRequirementPlanController.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/ToolsRequirementPlanController.java
+END
+MaterialCheckController.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/8122/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/MaterialCheckController.java
+END
+MaterialMngReportController.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/8939/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/MaterialMngReportController.java
+END
+InventoryController.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/InventoryController.java
+END
+OrderTaskController.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/3927/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/OrderTaskController.java
+END
+MaterialMngController.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/8262/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/MaterialMngController.java
+END
+ProductSOPController.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/ProductSOPController.java
+END
+OrderOAMrpController.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/7464/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/OrderOAMrpController.java
+END
+CustomerOrderItemController.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/7257/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/CustomerOrderItemController.java
+END
+DataEditController.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/6202/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/DataEditController.java
+END
+ProductController.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/6288/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/ProductController.java
+END
+ManualManageController.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/9948/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/ManualManageController.java
+END
+OrderStatisticsController.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/11693/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/OrderStatisticsController.java
+END
+HandScheduleController.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/12123/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/HandScheduleController.java
+END
+ProductManageController.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/9648/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/ProductManageController.java
+END
+MaterialRequirementPlanController.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/10985/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/action/MaterialRequirementPlanController.java
+END

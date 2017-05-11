@@ -1,0 +1,134 @@
+/**
+ * 工序选择生成生产单
+ */
+Ext.define('bsmes.view.MatOAGrid', {
+			extend : 'Oit.app.view.Grid',
+			alias : 'widget.matOAGrid',
+			hasPaging : false,
+			columnLines : true,
+			defaultEditingPlugin : false,
+			width : Math.floor((document.body.scrollWidth - 72) / 2 - 10),
+			minHeight : 100,
+			selModel : {
+				mode : "SINGLE" // "SINGLE"/"SIMPLE"/"MULTI"
+			},
+			store : Ext.create('Ext.data.Store', {
+						fields : ['matName', 'color', 'unit', {
+									name : 'quantity',
+									type : 'double'
+								}, {
+									name : 'unFinishedLength',
+									type : 'double'
+								}, 'disk', 'kuandu', 'houdu', 'caizhi', 'chicun', 'guige', 'dansizhijing', 'wireCoil']
+					}),
+			columns : [{
+						text : '物料名称',
+						dataIndex : 'matName',
+						flex : 1.8,
+						minWidth : 90,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							return value;
+						}
+					}, {
+						text : '物料信息描述',
+						dataIndex : 'color',
+						flex : 2.7,
+						minWidth : 135,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							var matDesc = '';
+							if (value != '') {
+								matDesc += '<font color="red">颜色:' + value + '</font><br/>'
+							}
+							if (record.get('kuandu')) { // 宽度
+								matDesc += '宽度:' + record.get('kuandu') + '<br/>'
+							}
+							if (record.get('houdu')) { // 厚度
+								matDesc += '厚度:' + record.get('houdu') + '<br/>'
+							}
+							if (record.get('caizhi')) { // 材质
+								matDesc += '材质:' + record.get('caizhi') + '<br/>'
+							}
+							if (record.get('chicun')) { // 尺寸
+								matDesc += '尺寸:' + record.get('chicun') + '<br/>'
+							}
+							if (record.get('guige')) { // 规格
+								matDesc += '规格:' + record.get('guige') + '<br/>'
+							}
+							if (record.get('dansizhijing')) { // 单丝直径
+								matDesc += '单丝直径:' + record.get('dansizhijing') + '<br/>'
+							}
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							return matDesc;
+						}
+					}, {
+						text : '单位<br/>用量',
+						dataIndex : 'quantity',
+						flex : 1.4,
+						minWidth : 70,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							value = value.toFixed(3) + ' ' + record.get('unit');
+							metaData.tdAttr = 'data-qtip="' + value + '"';
+							return value;
+						}
+					}, {
+						text : '定额<br/>总量',
+						dataIndex : 'unFinishedLength',
+						flex : 1.5,
+						minWidth : 75,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							value = (value * record.get('quantity') / 1000).toFixed(3) + ' ' + record.get('unit');
+							metaData.tdAttr = 'data-qtip="' + value + '"';
+							return value;
+						}
+					}, {
+						text : '盘具要求/<br/>库位:库存',
+						dataIndex : 'disk',
+						flex : 4,
+						minWidth : 200,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							var disk = value == '' ? [] : value.split(",");
+							var res = (record.get('wireCoil') == '' ? '' : ('<font color="red">盘具：</font>' + record
+									.get('wireCoil')))
+									+ '<br/>';
+							if (disk.length > 0) {
+								res = res + '<font color="red">库存：</font>';
+							}
+							for (var i = 0; i < disk.length; i++) {
+								if (disk.length > 1) {
+									res = res + (i + 1) + '、' + disk[i].split(';')[0] + "<br/>";
+								} else {
+									res = res + disk[i].split(';')[0];
+								}
+							}
+							// metaData.tdAttr = 'data-qtip="' + res + '"';
+							return res;
+						}
+						// }, {
+						// text : '',
+						// dataIndex : 'wireCoil',
+						// flex : 1.3,
+						// minWidth : 65,
+						// sortable : false,
+						// menuDisabled : true,
+						// renderer : function(value, metaData, record) {
+						// metaData.style = "white-space:normal;padding:5px 5px
+						// 5px 5px;";
+						// metaData.tdAttr = 'data-qtip="' + value + '"';
+						// return value;
+						// }
+					}]
+		});

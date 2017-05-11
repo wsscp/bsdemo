@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.eve.dao.EventProcessDAO">
+	<resultMap type="EventProcess" id="getMap">
+		<result property="id" column="ID" />
+	</resultMap>  
+	<select id="getByEventTypeId" parameterType="string" resultMap="getMap">
+		SELECT ID,EVENT_TYPE_ID,PROCESS_SEQ,PROCESS_TYPE,STEP_INTERVAL
+		FROM T_EVE_EVENT_PROCESS
+		WHERE EVENT_TYPE_ID=#{eventTypeId,jdbcType=VARCHAR} AND STATUS='1'
+		ORDER BY PROCESS_SEQ ASC 
+	</select>	 
+	<delete id="deleteEventProcessById" statementType="CALLABLE" >
+		CALL DELETE_EVENT_PROCESS(#{param1},#{param2})
+	</delete>
+	
+   <select id="getProcesSeqByEventTypeId" parameterType="string" resultType="int">
+		SELECT  MAX(PROCESS_SEQ)  FROM T_EVE_EVENT_PROCESS WHERE EVENT_TYPE_ID=#{eventTypeId,jdbcType=VARCHAR} 
+				AND STATUS='1'
+	</select>
+	
+	<select id="getProcessSeqById" parameterType="string" resultType="int">
+		SELECT  PROCESS_SEQ  FROM T_EVE_EVENT_PROCESS WHERE ID=#{id,jdbcType=VARCHAR} 
+				AND STATUS='1'
+	</select>
+</mapper>
+
+

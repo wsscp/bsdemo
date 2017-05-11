@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.BorrowMatDAO">
+	<resultMap type="cc.oit.bsmes.pla.model.BorrowMat" id="getMap">
+	</resultMap>
+	
+	<update id="updateBorrowMat" parameterType="cc.oit.bsmes.pla.model.BorrowMat">
+		UPDATE T_INV_EQUIP_MAT
+		<set>
+			STATUS = #{status,jdbcType=VARCHAR}
+			MAT_QUANTITY = #{matQuantity,jdbcType=VARCHAR}
+			USER_CODE = #{userCode,jdbcType=VARCHAR}
+		</set>
+		WHERE WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR} AND MAT_CODE = #{matCode,jdbcType=VARCHAR}
+	</update>
+	<select id="getByCode" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_INV_EQUIP_MAT MAT WHERE MAT.EQUIP_CODE = #{param1,jdbcType=VARCHAR}
+		AND MAT.MAT_CODE = #{param2,jdbcType=VARCHAR}
+	</select>
+</mapper>

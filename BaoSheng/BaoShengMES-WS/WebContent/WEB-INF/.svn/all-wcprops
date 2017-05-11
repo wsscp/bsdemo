@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/BSMES/!svn/ver/7895/trunk/BaoSheng/BaoShengMES-WS/WebContent/WEB-INF
+END
+spring-ws-servlet.xml
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/WebContent/WEB-INF/spring-ws-servlet.xml
+END
+web.xml
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/BSMES/!svn/ver/5858/trunk/BaoSheng/BaoShengMES-WS/WebContent/WEB-INF/web.xml
+END

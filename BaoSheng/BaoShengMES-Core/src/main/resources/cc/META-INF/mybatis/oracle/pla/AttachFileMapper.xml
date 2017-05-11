@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.AttachFileDAO">
+
+	<resultMap type="AttachFile" id="getMap">
+	</resultMap>
+
+	<!-- 根据订单ID[T_PLA_CUSTOMER_ORDER_ITEM]获取附件信息 -->
+	<select id="getByOrderItemId" resultMap="getMap">
+		SELECT AA.*, DD.CONTRACT_NO
+		  FROM T_ORD_ATTACH_FILE AA
+		  LEFT JOIN T_PLA_CUSTOMER_ORDER BB
+		    ON AA.SALES_ORDER_ID = BB.SALES_ORDER_ID
+		  LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM CC
+		    ON BB.ID = CC.CUSTOMER_ORDER_ID
+		  LEFT JOIN T_ORD_SALES_ORDER DD
+		    ON DD.ID = BB.SALES_ORDER_ID
+		 WHERE CC.ID = #{orderItemId, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 根据合同号[T_ORD_SALES_ORDER.CONTRACT_NO]获取附件信息 -->
+	<select id="getByContractNo" resultMap="getMap">
+		SELECT AA.*, DD.CONTRACT_NO
+		  FROM T_ORD_ATTACH_FILE AA
+		  LEFT JOIN T_ORD_SALES_ORDER DD
+		    ON DD.ID = AA.SALES_ORDER_ID
+		 WHERE DD.CONTRACT_NO IN
+		 <foreach collection="contractNoList" item="contractNo" open="(" separator="," close=")">
+            #{contractNo, jdbcType=VARCHAR}
+		</foreach>
+	</select>
+	
+	<!-- 根据生产单号[WORK_ORDER_NO]获取附件信息 -->
+	<select id="getByWorkOrderNo" resultMap="getMap">
+		SELECT AA.*, DD.CONTRACT_NO
+		  FROM T_ORD_ATTACH_FILE AA
+		  LEFT JOIN T_PLA_CUSTOMER_ORDER BB
+		    ON AA.SALES_ORDER_ID = BB.SALES_ORDER_ID
+		  LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM CC
+		    ON BB.ID = CC.CUSTOMER_ORDER_ID
+		  LEFT JOIN T_ORD_SALES_ORDER DD
+		    ON DD.ID = BB.SALES_ORDER_ID
+		  LEFT JOIN T_WIP_WO_CUSORDER_RELATION EE
+		    ON EE.CUS_ORDER_ITEM_ID = CC.ID
+		 WHERE EE.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+	</select>
+
+	<select id="getBySalesOrderId" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_ORD_ATTACH_FILE F WHERE F.SALES_ORDER_ID = #{param1}
+	</select>
+	
+	<select id="getTechnique" parameterType="string" resultMap="getMap">
+		SELECT A.FILE_NAME AS REALFILENAME, A.ID, C.CONTRACT_NO,A.CREATE_TIME AS CREATETIME,D.NAME AS USERNAME
+  			FROM T_BAS_ATTACHMENT A, T_ORD_SALES_ORDER C,T_BAS_EMPLOYEE D
+ 		WHERE A.SUB_TYPE = '合同'
+   		  	AND C.CONTRACT_NO = A.REF_ID
+   			AND D.USER_CODE = A.CREATE_USER_CODE
+   			AND A.REF_ID = #{param1}
+	</select>
+	
+	
+</mapper>

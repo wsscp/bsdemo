@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.WeekCalendarShiftDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.WeekCalendarShift" id="getMap">
+			
+	</resultMap>
+	<select id="getByWeekCalendarId" resultMap="getMap" parameterType="string" >
+		SELECT s.SHIFT_NAME,s.SHIFT_START_TIME  SHIFT_START_TIME,s.SHIFT_END_TIME SHIFT_END_TIME
+		FROM T_BAS_WEEK_CALENDAR_SHIFT r left join T_BAS_WORK_SHIFT s
+		on r.WORK_SHIFT_ID=s.ID where r.WEEK_CALENDAR_ID=#{weekCalendarId,jdbcType=VARCHAR} AND r.STATUS='1'
+		order by SHIFT_START_TIME asc
+	</select>
+	
+	<select id="findByRequestMap" parameterType="map" resultType="cc.oit.bsmes.bas.model.WeekCalendarShift">
+		SELECT ID,(CASE WHEN WEEK_CALENDAR_ID='1'THEN '周一' 
+                		WHEN WEEK_CALENDAR_ID='2'THEN '周二' 
+                  		WHEN WEEK_CALENDAR_ID='3'THEN '周三' 
+                    	WHEN WEEK_CALENDAR_ID='4'THEN '周四' 
+                      	WHEN WEEK_CALENDAR_ID='5'THEN '周五' 
+                        WHEN WEEK_CALENDAR_ID='6'THEN '周六' 
+                        WHEN WEEK_CALENDAR_ID='7'THEN '周日' 
+						ELSE NULL END) AS WEEK_CALENDAR_ID,
+						WORK_SHIFT_ID,
+						SUBSTR(SHIFT_START_TIME,1,LENGTH(SHIFT_START_TIME)-2)||':'||SUBSTR(SHIFT_START_TIME,LENGTH(SHIFT_START_TIME)-1, 2) AS SHIFT_START_TIME,
+						SUBSTR(SHIFT_END_TIME,1,LENGTH(SHIFT_END_TIME)-2)||':'||SUBSTR(SHIFT_END_TIME,LENGTH(SHIFT_END_TIME)-1, 2) AS SHIFT_END_TIME,
+						ORG_CODE,STATUS 
+		FROM
+			(SELECT CR.ID,WC.WEEK_NO AS WEEK_CALENDAR_ID,WK.SHIFT_NAME AS WORK_SHIFT_ID,WK.SHIFT_START_TIME,WK.SHIFT_END_TIME,CR.ORG_CODE,CR.STATUS
+				FROM T_BAS_WEEK_CALENDAR_SHIFT CR 
+				LEFT JOIN T_BAS_WORK_SHIFT WK 
+				ON CR.WORK_SHIFT_ID=WK.ID
+				LEFT JOIN T_BAS_WEEK_CALENDAR WC ON CR.WEEK_CALENDAR_ID = WC.ID
+    			<where>
+    				CR.STATUS='1' AND CR.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	 					<if test="workShiftId != null and workShiftId != ''">
+						AND WK.SHIFT_NAME LIKE #{workShiftId,jdbcType=VARCHAR}
+	 					</if>
+				</where>
+				ORDER BY WC.WEEK_NO)
+	</select>
+	
+	<select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT COUNT(CR.ID)
+		FROM T_BAS_WEEK_CALENDAR_SHIFT CR 
+		LEFT JOIN T_BAS_WORK_SHIFT WK 
+		ON CR.WORK_SHIFT_ID=WK.ID
+		LEFT JOIN T_BAS_WEEK_CALENDAR WC ON CR.WEEK_CALENDAR_ID = WC.ID
+		<where>
+			CR.STATUS='1' AND CR.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		  	<if test="workShiftId != null and workShiftId != ''">
+				AND WK.SHIFT_NAME LIKE #{workShiftId,jdbcType=VARCHAR}
+	 		</if>
+		</where>
+		ORDER BY WC.WEEK_NO
+	</select>
+	
+	<insert id="insert" parameterType="cc.oit.bsmes.bas.model.WeekCalendarShift" >
+		INSERT INTO T_BAS_WEEK_CALENDAR_SHIFT(ID, ORG_CODE,WEEK_CALENDAR_ID,WORK_SHIFT_ID, STATUS,CREATE_USER_CODE, CREATE_TIME,MODIFY_USER_CODE,MODIFY_TIME)
+		VALUES(#{id,jdbcType=VARCHAR},#{orgCode,jdbcType=VARCHAR},#{weekCalendarId,jdbcType=VARCHAR},#{workShiftId,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},
+			   #{createUserCode,jdbcType=VARCHAR},SYSDATE,#{modifyUserCode,jdbcType=VARCHAR},SYSDATE)	
+	</insert>
+	
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.bas.model.WeekCalendarShift">
+		SELECT ID,(CASE WHEN WEEK_CALENDAR_ID='1'THEN '周一' 
+                		WHEN WEEK_CALENDAR_ID='2'THEN '周二' 
+                  		WHEN WEEK_CALENDAR_ID='3'THEN '周三' 
+                    	WHEN WEEK_CALENDAR_ID='4'THEN '周四' 
+                      	WHEN WEEK_CALENDAR_ID='5'THEN '周五' 
+                        WHEN WEEK_CALENDAR_ID='6'THEN '周六' 
+                        WHEN WEEK_CALENDAR_ID='7'THEN '周日' 
+						ELSE NULL END) AS WEEK_CALENDAR_ID,
+						WORK_SHIFT_ID,
+						SUBSTR(SHIFT_START_TIME,1,LENGTH(SHIFT_START_TIME)-2)||':'||SUBSTR(SHIFT_START_TIME,LENGTH(SHIFT_START_TIME)-1, 2) AS SHIFT_START_TIME,
+						SUBSTR(SHIFT_END_TIME,1,LENGTH(SHIFT_END_TIME)-2)||':'||SUBSTR(SHIFT_END_TIME,LENGTH(SHIFT_END_TIME)-1, 2) AS SHIFT_END_TIME,
+						ORG_CODE,STATUS 
+		FROM 
+		(SELECT CR.ID,WC.WEEK_NO AS WEEK_CALENDAR_ID,WK.SHIFT_NAME AS WORK_SHIFT_ID,WK.SHIFT_START_TIME,WK.SHIFT_END_TIME,CR.ORG_CODE,CR.STATUS
+		FROM T_BAS_WEEK_CALENDAR_SHIFT CR 
+		LEFT JOIN T_BAS_WORK_SHIFT WK 
+		ON CR.WORK_SHIFT_ID=WK.ID
+		LEFT JOIN T_BAS_WEEK_CALENDAR WC ON CR.WEEK_CALENDAR_ID = WC.ID
+		WHERE CR.STATUS='1' AND CR.ID=#{id,jdbcType=VARCHAR})
+	</select>
+	
+	<update id="update" parameterType="cc.oit.bsmes.bas.model.WeekCalendarShift" >
+		UPDATE T_BAS_WEEK_CALENDAR_SHIFT SET
+		WEEK_CALENDAR_ID = #{weekCalendarId,jdbcType=VARCHAR},
+		WORK_SHIFT_ID = #{workShiftId,jdbcType=VARCHAR},
+		MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR},
+		MODIFY_TIME = SYSDATE
+		WHERE ID=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="delete" parameterType="cc.oit.bsmes.bas.model.WeekCalendarShift" >
+		UPDATE T_BAS_WEEK_CALENDAR_SHIFT SET
+		STATUS = '0'
+		WHERE ID=#{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getByWeekCalendarIdAndWorkShiftId" parameterType="string" resultType="cc.oit.bsmes.bas.model.WeekCalendarShift">
+	  	SELECT ID FROM T_BAS_WEEK_CALENDAR_SHIFT 
+	  		<where>
+	  			STATUS = '1'
+		  		<if test="param1 != null and param1 != ''">
+					AND WEEK_CALENDAR_ID = #{param1,jdbcType=VARCHAR}
+	 			</if>
+	 			<if test="param2 != null and param2 != ''">
+					AND WORK_SHIFT_ID = #{param2,jdbcType=VARCHAR}
+	 			</if>
+	 			<if test="param3 != null and param3 != ''">
+					AND ORG_CODE = #{param3,jdbcType=VARCHAR}
+	 			</if>
+	  		</where>
+	</select>
+	
+</mapper>

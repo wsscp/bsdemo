@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.CanShuKuDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.CanShuKu" id="getMap">
+	</resultMap>
+
+	<select id="getAsyncDataList" parameterType="string" resultMap="getMap">
+	<![CDATA[
+		SELECT 
+		  CANSHUKU.*
+		FROM 
+		  CANSHUKU CANSHUKU
+		WHERE 
+		  CANSHUKU.DEL = '0'
+		  AND CANSHUKU.WKAID <> '3'
+		  AND CANSHUKU.NO=#{no, jdbcType=VARCHAR} 
+	]]>
+	</select>
+    
+	<!-- 获取工序的质量信息，sql解析工序质量参数变成列表 -->
+	<select id="getParamArrayByProcessId" parameterType="string" resultMap="getMap">
+	<![CDATA[
+		WITH TEMP1 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE1 AS CSVALUE1
+									FROM PROCESS
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3'),
+		TEMP2 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE2 AS CSVALUE1
+									FROM PROCESS
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3'),
+		TEMP3 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE3 AS CSVALUE1
+									FROM PROCESS
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3'),
+			 
+			 TEMP AS( 
+			 SELECT * FROM TEMP1 UNION
+			 SELECT * FROM TEMP2 UNION
+			 SELECT * FROM TEMP3)
+			 
+		 SELECT * FROM(	 
+		SELECT T.NO,
+			   T.NAME,
+			   T.VALUE,
+			   (SELECT VALUE
+				  FROM TEMP TT
+				 WHERE INSTR(TT.NAME, T.NAME || '单位') > 0
+				   AND ROWNUM = 1) AS UNIT
+		  FROM TEMP T
+		 WHERE INSTR(T.NAME, '单位') = 0)
+	]]>
+	</select>
+
+    
+	<select id="getRealCanShuKu" parameterType="map" resultType="cc.oit.bsmes.interfacePLM.model.CanShuKu">
+    	SELECT ID,NO,NAME,CTIME,MTIME,PTYPE,ZTYPE
+    	FROM CANSHUKU
+    	WHERE DEL='0' AND TNAME='MPART' AND ZTYPE IS NOT NULL
+	AND WKAID <![CDATA[ <>]]> '3'
+		<if test="lastDate != null">
+		AND <![CDATA[(CTIME > #{lastDate} OR MTIME > #{lastDate})]]>
+		</if>
+              ORDER BY ZTYPE
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 获取工序的质量信息，sql解析工序质量参数变成列表 -->
+	<select id="getParamArrayByProcessId2" parameterType="string" resultMap="getMap">
+	<![CDATA[
+		WITH TEMP2 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE2 AS CSVALUE1
+									FROM PROCESS
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3')
+		SELECT T.NO,
+			   T.NAME,
+			   T.VALUE,
+			   (SELECT VALUE
+				  FROM TEMP2 TT
+				 WHERE INSTR(TT.NAME, T.NAME || '单位') > 0
+				   AND ROWNUM = 1) AS UNIT
+		  FROM TEMP2 T
+		 WHERE INSTR(T.NAME, '单位') = 0
+	]]>
+	</select>
+	
+	<!-- 获取工序的质量信息，sql解析工序质量参数变成列表 -->
+	<select id="getParamArrayByProcessId3" parameterType="string" resultMap="getMap">
+	<![CDATA[
+		WITH TEMP3 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE3 AS CSVALUE1
+									FROM PROCESS
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3')
+		SELECT T.NO,
+			   T.NAME,
+			   T.VALUE,
+			   (SELECT VALUE
+				  FROM TEMP3 TT
+				 WHERE INSTR(TT.NAME, T.NAME || '单位') > 0
+				   AND ROWNUM = 1) AS UNIT
+		  FROM TEMP3 T
+		 WHERE INSTR(T.NAME, '单位') = 0
+
+	]]>
+	</select>
+	
+	<select id="getParamArrayByScxId" parameterType="string" resultMap="getMap">
+	<![CDATA[
+		WITH TEMP AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE1 AS CSVALUE1
+									FROM scx
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3'),
+		TEMP2 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE2 AS CSVALUE1
+									FROM scx
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3'),
+		TEMP3 AS
+		 (SELECT M.P AS NO, N.NAME AS NAME, M.Q AS VALUE
+			FROM (SELECT SUBSTR(MM, 0, INSTR(MM, '=') - 1) P,
+						 SUBSTR(MM, INSTR(MM, '=') + 1) Q
+					FROM (SELECT REGEXP_SUBSTR(CSVALUE1, '[^^]+=[^^]*', 1, LEVEL) MM
+							FROM (SELECT CSVALUE3 AS CSVALUE1
+									FROM scx
+								   WHERE ID = #{processId, jdbcType=VARCHAR} 
+									 AND CSVALUE1 IS NOT NULL)
+						  CONNECT BY LEVEL <= REGEXP_COUNT(CSVALUE1, '='))) M,
+				 CANSHUKU N
+		   WHERE M.P = N.NO
+			 AND N.DEL = '0'
+			 AND N.WKAID <> '3')
+		SELECT T.NO,
+			   T.NAME,
+			   T.VALUE,
+			   (SELECT VALUE
+				  FROM TEMP TT
+				 WHERE INSTR(TT.NAME, T.NAME || '单位') > 0
+				   AND ROWNUM = 1) AS UNIT
+		  FROM TEMP T
+		 WHERE INSTR(T.NAME, '单位') = 0 and t.value is not null
+		union
+		SELECT T.NO,
+			   T.NAME,
+			   T.VALUE,
+			   (SELECT VALUE
+				  FROM TEMP2 TT
+				 WHERE INSTR(TT.NAME, T.NAME || '单位') > 0
+				   AND ROWNUM = 1) AS UNIT
+		  FROM TEMP2 T
+		 WHERE INSTR(T.NAME, '单位') = 0 and t.value is not null
+		union
+		SELECT T.NO,
+			   T.NAME,
+			   T.VALUE,
+			   (SELECT VALUE
+				  FROM TEMP3 TT
+				 WHERE INSTR(TT.NAME, T.NAME || '单位') > 0
+				   AND ROWNUM = 1) AS UNIT
+		  FROM TEMP3 T
+		 WHERE INSTR(T.NAME, '单位') = 0 and t.value is not null
+
+	]]>
+	</select>
+	
+	
+</mapper>

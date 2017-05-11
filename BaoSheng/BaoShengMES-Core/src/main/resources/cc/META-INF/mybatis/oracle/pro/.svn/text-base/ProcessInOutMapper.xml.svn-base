@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessInOutDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessInOut" id="getMap">
+		<result property="matCode" column="MAT_CODE"/>
+<!--		<association property="mat" column="MAT_CODE"
+			select="cc.oit.bsmes.inv.dao.MatDAO.getByMatCode"></association>-->
+	</resultMap>
+		<!-- 根据工艺流程的id获取每个工序的投入和产出 -->
+	<select id="getByProductProcessId" parameterType="string" resultMap="getMap" >
+        SELECT O.ID,
+          O.MAT_CODE,
+          O.IN_OR_OUT,
+          O.QUANTITY,
+          O.QUANTITY_FORMULA,
+          O.UNIT,
+          O.USE_METHOD,
+          O.PRODUCT_PROCESS_ID,
+          M.MAT_NAME,
+          M.COLOR,
+          M.MAT_SPEC,
+          M.REMARK,
+          M.MAT_SECTION
+       FROM T_PRO_PROCESS_IN_OUT O
+       LEFT JOIN T_INV_MAT M
+       ON O.MAT_CODE = M.MAT_CODE
+       WHERE PRODUCT_PROCESS_ID = #{id}
+       ORDER BY IN_OR_OUT DESC
+	</select>
+
+    <select id="getOutByProductProcessId" parameterType="string" resultMap="getMap" >
+        SELECT O.ID,O.MAT_CODE,O.IN_OR_OUT,O.QUANTITY,O.QUANTITY_FORMULA,O.UNIT,O.USE_METHOD
+		FROM T_PRO_PROCESS_IN_OUT O
+		WHERE PRODUCT_PROCESS_ID=#{id} AND O.IN_OR_OUT='OUT'
+    </select>
+    
+    <select id="getAllByProductProcessId" parameterType="map" resultMap="getMap">
+	      SELECT * FROM T_PRO_PROCESS_IN_OUT WHERE PRODUCT_PROCESS_ID IN
+	      <foreach collection="processIds" item="item"  open="(" separator="," close=")">
+               #{item, jdbcType=VARCHAR}
+          </foreach>
+          AND MAT_CODE IS NOT NULL
+	</select>
+
+	<select id="countByProcessId" parameterType="string" resultType="int" >
+		SELECT COUNT(1)
+		FROM T_PRO_PROCESS_IN_OUT
+		WHERE PRODUCT_PROCESS_ID = #{processId}
+	</select>
+
+    <!-- 终端获取投入物料 -->
+    <select id="getInByWorkOrderNo" parameterType="string" resultMap="getMap">
+    	WITH MAT_INVENTORY_TEMP AS
+		 (SELECT SUM(I.QUANTITY) AS QUANTITY,
+		         SUM(I.LOCKED_QUANTITY) AS LOCKED_QUANTITY,
+		         MAX(I.UNIT) AS UNIT,
+		         I.MATERIAL_CODE AS MATERIAL_CODE,
+		         WMSYS.WM_CONCAT(W.WAREHOUSE_NAME || '-' || L.LOCATION_NAME || '-' ||
+		                         L.LOCATION_X || '-' || L.LOCATION_Y || '-' ||
+		                         L.LOCATION_Z || ':' || I.QUANTITY || ' ' || I.UNIT) AS DESCRIPTION
+		    FROM T_INV_INVENTORY I, T_INV_MAT_WIP M, T_INV_LOCATION L, T_INV_WAREHOUSE W
+		   WHERE I.MATERIAL_CODE = M.MAT_CODE
+		     AND I.LOCATION_ID = L.ID
+		     AND I.WAREHOUSE_ID = W.ID
+		     AND M.MAT_TYPE = 'MATERIALS'
+		     AND I.BAR_CODE IS NULL
+		   GROUP BY I.MATERIAL_CODE
+		  UNION ALL
+		  SELECT SUM(I.QUANTITY) AS QUANTITY,
+		         SUM(I.LOCKED_QUANTITY) AS LOCKED_QUANTITY,
+		         MAX(I.UNIT) AS UNIT,
+		         I.MATERIAL_CODE AS MATERIAL_CODE,
+		         WMSYS.WM_CONCAT(DISTINCT W.WAREHOUSE_NAME || '-' || L.LOCATION_NAME || '-' ||
+		                         L.LOCATION_X || '-' || L.LOCATION_Y || '-' ||
+		                         L.LOCATION_Z || ':' || I.QUANTITY || ' ' || I.UNIT) AS DESCRIPTION
+		    FROM T_INV_INVENTORY I,
+		         T_INV_MAT_WIP       M,
+		         T_INV_LOCATION  L,
+		         T_INV_WAREHOUSE W,
+		         T_WIP_REPORT    R,
+                 T_WIP_WORK_ORDER WO
+		   WHERE i.MATERIAL_CODE = m.MAT_CODE
+		     AND i.LOCATION_ID = l.ID
+		     AND i.WAREHOUSE_ID = w.ID
+		     AND R.SERIAL_NUM = I.BAR_CODE
+		     AND R.WORK_ORDER_NO = WO.PROCESS_GROUP_RESPOOL
+             AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		     AND m.MAT_TYPE = 'SEMI_FINISHED_PRODUCT'
+		     AND I.BAR_CODE IS NOT NULL
+		   GROUP BY I.MATERIAL_CODE)
+		SELECT M.id,T.*, TEMP.DESCRIPTION AS REMARK,M.MAT_TYPE, (CASE
+										         WHEN REGEXP_LIKE((SUBSTR(T.COLOR, 0, INSTR(T.COLOR, '#') - 1)),
+										                          '(^[+-]?\d{0,}\.?\d{0,}$)') THEN
+										          TO_NUMBER(SUBSTR(T.COLOR, 0, INSTR(T.COLOR, '#') - 1))
+										         ELSE
+										          0
+										       END) AS ORDERSEQ
+		  FROM (SELECT PM.MAT_NAME,
+		               PM.MAT_CODE,
+		               MAX(PM.IN_ATTR_DESC) AS IN_ATTR_DESC,
+		               MAX(PM.COLOR) AS COLOR,
+		               MAX(PM.QUANTITY) AS QUANTITY,
+		               MAX(PM.UNIT) AS UNIT,
+		               SUM(PM.UN_FINISHED_LENGTH) AS TASK_LENGTH
+		          FROM T_PLA_MRP PM, T_WIP_WORK_ORDER WO
+		         WHERE WO.ID = PM.WORK_ORDER_ID
+		           AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		         GROUP BY PM.MAT_CODE, PM.MAT_NAME) T
+		  LEFT JOIN MAT_INVENTORY_TEMP TEMP
+		    ON T.MAT_CODE = TEMP.MATERIAL_CODE
+		  LEFT JOIN  T_INV_MAT M
+		   ON T.MAT_CODE=M.MAT_CODE   
+		 ORDER BY ORDERSEQ
+     </select>
+     
+	 <insert id="insertBatch" parameterType="ArrayList">
+		  insert into T_PRO_PROCESS_IN_OUT ( ID, PRODUCT_PROCESS_ID, MAT_CODE, 
+		  IN_OR_OUT, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, 
+		  MODIFY_USER_CODE, QUANTITY, QUANTITY_FORMULA, UNIT, 
+		  USE_METHOD)  
+		  <foreach collection="processInOutList" item="item" index="index" separator="union all"> 
+			  select 
+			    #{item.id,jdbcType=VARCHAR},  #{item.productProcessId,jdbcType=VARCHAR}, 
+			  #{item.matCode,jdbcType=VARCHAR}, #{item.inOrOut,jdbcType=VARCHAR}, 
+			  sysdate, 'PLM', 
+			  sysdate, 'PLM', 
+			  #{item.quantity ,jdbcType=DECIMAL }, #{item.quantityFormula,jdbcType=VARCHAR}, #{item.unit,jdbcType=VARCHAR}, 
+			  #{item.useMethod,jdbcType=VARCHAR}  from dual
+		  </foreach>
+    </insert>
+			  
+	<select id="updateQcInOut" parameterType="string" statementType="CALLABLE">
+		CALL SP_UPDATE_PRO_OUT_IN_QC(#{craftsCode})
+	</select>
+	
+	<select id="findProcessMap" resultType="map">
+       select ename as mes_id, gno as plm_id from T_PROCESS_MAP
+	</select>
+			  
+</mapper>

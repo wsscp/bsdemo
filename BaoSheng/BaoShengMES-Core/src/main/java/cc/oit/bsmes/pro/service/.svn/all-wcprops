@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/11950/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service
+END
+ProductProcessService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductProcessService.java
+END
+EquipListService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/8005/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/EquipListService.java
+END
+ProductCraftsBzService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/5592/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductCraftsBzService.java
+END
+ProcessQCEqipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/6341/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessQCEqipService.java
+END
+ProcessQcWipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessQcWipService.java
+END
+ProductCraftsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/9597/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductCraftsService.java
+END
+ProcessInformationService.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessInformationService.java
+END
+EqipListBzService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/5593/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/EqipListBzService.java
+END
+ProductQCDetailService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/1454/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductQCDetailService.java
+END
+ProcessReceiptValueService.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/1000/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessReceiptValueService.java
+END
+ProcessInOutBzService.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/6484/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessInOutBzService.java
+END
+ProcessReceiptService.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/8341/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessReceiptService.java
+END
+ProcessInOutService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/8468/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessInOutService.java
+END
+ProcessQcBzService.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/6350/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessQcBzService.java
+END
+ProductProcessWipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/10448/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductProcessWipService.java
+END
+ProcessQcValueService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/11189/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessQcValueService.java
+END
+ProductQCTemplateService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/3134/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductQCTemplateService.java
+END
+ProcessQcService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessQcService.java
+END
+ProductCraftsWipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/10448/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductCraftsWipService.java
+END
+ProductQCResultService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/2716/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductQCResultService.java
+END
+ProductProcessBzService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProductProcessBzService.java
+END
+ProcessQcEqipBzService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/5551/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessQcEqipBzService.java
+END
+ProcessInOutWipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/9933/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/service/ProcessInOutWipService.java
+END

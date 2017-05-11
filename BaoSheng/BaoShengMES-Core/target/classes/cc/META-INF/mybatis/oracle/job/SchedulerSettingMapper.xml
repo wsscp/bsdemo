@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.job.base.dao.SchedulerSettingDAO">
+
+	<resultMap type="SchedulerSetting" id="getMap">
+	</resultMap>
+	
+	
+	<update id="updateSimpleTime">
+		update T_JOB_CONFIG set 
+		  SIMPLE_START_TIME = #{simpleStartTime, jdbcType=TIMESTAMP}, 
+		  SIMPLE_END_TIME = #{simpleEndTime, jdbcType=TIMESTAMP}
+		where 
+		  id =  #{id, jdbcType=VARCHAR}
+	</update>
+ 
+</mapper>

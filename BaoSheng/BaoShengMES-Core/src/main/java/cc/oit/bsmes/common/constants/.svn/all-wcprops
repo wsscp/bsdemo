@@ -1,0 +1,329 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/11682/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants
+END
+QuailityNameConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/3645/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/QuailityNameConstants.java
+END
+ReceiptStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/1645/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ReceiptStatus.java
+END
+WorkOrderOperateType.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/10452/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/WorkOrderOperateType.java
+END
+OperateType.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5751/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/OperateType.java
+END
+MaterialStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/8361/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MaterialStatus.java
+END
+UserRoleType.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/7393/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/UserRoleType.java
+END
+WarehouseType.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4299/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/WarehouseType.java
+END
+JobConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/2974/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/JobConstants.java
+END
+SalesOrderStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/9644/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/SalesOrderStatus.java
+END
+ProductQCStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/1397/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProductQCStatus.java
+END
+ProcessCode.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5462/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProcessCode.java
+END
+EventProcesserType.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/1017/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/EventProcesserType.java
+END
+FacSummaryType.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/6060/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/FacSummaryType.java
+END
+LocationType.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4282/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/LocationType.java
+END
+WebConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/WebConstants.java
+END
+StandardParamCode.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/3628/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/StandardParamCode.java
+END
+EventTypeContent.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/6389/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/EventTypeContent.java
+END
+LogConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/882/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/LogConstants.java
+END
+OrderPushStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/9642/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/OrderPushStatus.java
+END
+ProductOrderStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/9643/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProductOrderStatus.java
+END
+UnitType.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/7964/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/UnitType.java
+END
+WorkOrderStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/WorkOrderStatus.java
+END
+MaintainTriggerType.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/3743/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MaintainTriggerType.java
+END
+MesType.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4883/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MesType.java
+END
+WeekCalendarType.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2111/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/WeekCalendarType.java
+END
+TermsCodeType.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/10569/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/TermsCodeType.java
+END
+BusinessConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/9597/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/BusinessConstants.java
+END
+MesStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4883/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MesStatus.java
+END
+InterfaceDataType.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/11682/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/InterfaceDataType.java
+END
+ProcessInfoType.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/9996/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProcessInfoType.java
+END
+InOrOut.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/InOrOut.java
+END
+ProductCheckPhase.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/1112/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProductCheckPhase.java
+END
+QCDataType.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/3184/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/QCDataType.java
+END
+CustomerOrderStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/2073/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/CustomerOrderStatus.java
+END
+InventoryLogType.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/1153/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/InventoryLogType.java
+END
+ProcessSection.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProcessSection.java
+END
+MaintainStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/3964/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MaintainStatus.java
+END
+RecordOperType.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/882/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/RecordOperType.java
+END
+SectionType.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4364/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/SectionType.java
+END
+StockUseLogStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/StockUseLogStatus.java
+END
+UserOnOffType.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/3686/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/UserOnOffType.java
+END
+DataStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5471/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/DataStatus.java
+END
+ProcessType.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5094/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ProcessType.java
+END
+MatType.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/701/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MatType.java
+END
+InventoryDetailStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/InventoryDetailStatus.java
+END
+EquipType.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/3689/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/EquipType.java
+END
+EventStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/9437/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/EventStatus.java
+END
+PropKeyConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/PropKeyConstants.java
+END
+EquipStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/11492/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/EquipStatus.java
+END
+StatusDescription.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/2111/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/StatusDescription.java
+END
+DebugType.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/996/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/DebugType.java
+END
+QADetectType.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/7203/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/QADetectType.java
+END
+ReceiptType.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/1498/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/ReceiptType.java
+END
+MaintainTemplateType.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/3692/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/constants/MaintainTemplateType.java
+END

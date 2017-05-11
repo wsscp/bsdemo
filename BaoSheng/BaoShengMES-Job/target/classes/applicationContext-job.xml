@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+	
+     <bean name="quartzScheduler" lazy-init="false" autowire="no" class="cc.oit.bsmes.job.base.factory.InitSchedulerFactoryBean" destroy-method="destroy">
+     	<property name="dataSource" ref="dataSource"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+		<property name="configLocation" value="classpath:quartz.properties" />
+		<property name="group" value="mesJobGroup" />
+		<property name="applicationContextSchedulerContextKey" value="applicationContext" />
+		<property name="jobDetails">
+	        <list>
+	            <ref bean="planScheduleJob"/>            
+	            <ref bean="eventProcessJob"/>      
+	            <ref bean="alarmProcessJob"/>
+	            <ref bean="maintainScheduleJob"/>
+	            <ref bean="woExtensionAlarmJob"/>	            
+	            <ref bean="plmDataSyncJob"/>
+	            <ref bean="equipStatusProcessJob"/>  
+	            <ref bean="pushFinshOrderToERPJob"/>  
+	           	<ref bean="equipEnergyMonitorJob"/>
+	        </list>
+	    </property>
+	</bean>
+
+	<bean id="planScheduleJob" class="org.springframework.scheduling.quartz.JobDetailBean"> 
+		<property name="name">
+			<value>PlanScheduleJob</value>
+		</property>
+		<property name="jobClass">
+			<value>cc.oit.bsmes.job.jobs.PlanScheduleJob
+			</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName">
+					<value>PlanScheduleJob</value>
+				</entry>
+				<entry key="jobDesc">
+					<value>计划排程每日定时后台任务</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="maintainScheduleJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="name">
+			<value>MaintainScheduleJob</value>
+		</property>
+		<property name="jobClass">
+			<value>cc.oit.bsmes.job.jobs.MaintainScheduleJob
+			</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName">
+					<value>MaintainScheduleJob</value>
+				</entry>
+				<entry key="jobDesc">
+					<value>设备维护后台任务</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="eventProcessJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="name">
+			<value>EventProcessJob</value>
+		</property>
+		<property name="jobClass">
+			<value>cc.oit.bsmes.job.jobs.EventProcessJob
+			</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName">
+					<value>EventProcessJob</value>
+				</entry>
+				<entry key="jobDesc">
+					<value>事件处理后台任务</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+    <bean id="alarmProcessJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>AlarmProcessJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.AlarmProcessJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>AlarmProcessJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>警报处理后台任务</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="woExtensionAlarmJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>WOExtensionAlarmJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.WOExtensionAlarmJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>WOExtensionAlarmJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>生产单延期警报任务</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="plmDataSyncJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>PLMDataSyncJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.PLMDataSyncJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>PLMDataSyncJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>同步PLM数据</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+      <bean id="equipStatusProcessJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>EquipStatusProcessJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.EquipStatusProcessJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>EquipStatusProcessJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>设备状态修正接口</value>
+                </entry>
+            </map>
+        </property>
+    </bean> 
+    
+    <bean id="pushFinshOrderToERPJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="name">
+			<value>PushFinshOrderToERPJob</value>
+		</property>
+		<property name="jobClass">
+			<value>cc.oit.bsmes.job.jobs.PushFinshOrderToERPJob
+			</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName">
+					<value>PushFinshOrderToERPJob</value>
+				</entry>
+				<entry key="jobDesc">
+					<value>完成产品信息推送到ERP</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="equipEnergyMonitorJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="name">
+			<value>EquipEnergyMonitorJob</value>
+		</property>
+		<property name="jobClass">
+			<value>cc.oit.bsmes.job.jobs.EquipEnergyMonitorJob
+			</value>
+		</property>
+		<property name="jobDataAsMap">
+			<map>
+				<entry key="jobName">
+					<value>EquipEnergyMonitorJob</value>
+				</entry>
+				<entry key="jobDesc">
+					<value>设备能源监控接口</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>

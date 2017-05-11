@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.MesClientDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.MesClient" id="getMap">
+	</resultMap>
+	
+	<sql id="queryColumns">
+		   ID,CLIENT_IP,CLIENT_MAC,CLIENT_NAME,PRINT_NUM,ORG_CODE
+	</sql>
+	
+	<select id="getEquipInfo" resultType="cc.oit.bsmes.bas.model.MesClient">
+	   SELECT CLIENT_IP,CLIENT_MAC FROM T_BAS_MES_CLIENT WHERE ID IN
+       (SELECT MES_CLIENT_ID FROM T_BAS_MES_CLIENT_MAN_EQIP WHERE EQIP_ID IN
+       (SELECT ID FROM T_FAC_EQIP_INFO WHERE CODE = #{Equip, jdbcType=VARCHAR}))
+	</select>
+	
+	<select id="getProcessCode" resultType="cc.oit.bsmes.bas.model.MesClient">
+	   SELECT PROCESS_CODE FROM T_FAC_EQIP_INFO WHERE CODE = #{code, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getTaskStatueInEquip" resultType="cc.oit.bsmes.bas.model.MesClient">
+	   SELECT EQUIP_CODE FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR} AND EQUIP_CODE IS NOT NULL
+	</select>
+	
+	<select id="findByRequestMap" parameterType="map" resultType="cc.oit.bsmes.bas.model.MesClient">
+		SELECT <include refid="queryColumns"/> FROM T_BAS_MES_CLIENT
+       		<where>
+		  		<if test="clientMac != null and clientMac != ''">
+					CLIENT_MAC LIKE #{clientMac,jdbcType=VARCHAR}
+		  		</if>
+		  		<if test="clientName != null and clientName != ''">
+					AND CLIENT_NAME LIKE #{clientName,jdbcType=VARCHAR}
+		  		</if>
+		  		<if test="orgCode!=null and orgCode!=''">
+		  			AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		  		</if>
+			</where>
+			ORDER BY CLIENT_NAME
+	</select>
+	
+	<select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT COUNT(ID) FROM T_BAS_MES_CLIENT
+		<where>
+		  	<if test="clientMac != null and clientMac != ''">
+				CLIENT_MAC LIKE #{clientMac,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="clientName != null and clientName != ''">
+				AND CLIENT_NAME LIKE #{clientName,jdbcType=VARCHAR}
+		  	</if>
+		  	<if test="orgCode!=null and orgCode!=''">
+		  			AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		  	</if>
+		</where>
+	</select>
+	
+	<select id="getByClientIP" parameterType="string" resultMap="getMap">
+		SELECT <include refid="queryColumns"/> FROM T_BAS_MES_CLIENT WHERE CLIENT_IP = #{clientIP,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByClientName" parameterType="string" resultMap="getMap">
+		SELECT <include refid="queryColumns"/> FROM T_BAS_MES_CLIENT WHERE CLIENT_NAME = #{clientName,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getClientName" resultMap="getMap">
+		SELECT DISTINCT(CLIENT_NAME) FROM T_BAS_MES_CLIENT WHERE CLIENT_NAME IS NOT NULL
+	</select>
+	
+	<select id="getByClientMac" parameterType="string" resultType="cc.oit.bsmes.bas.model.MesClient">
+	  SELECT <include refid="queryColumns"/> FROM T_BAS_MES_CLIENT WHERE CLIENT_MAC = #{param1} AND ORG_CODE=#{param2}
+	</select>
+
+	<select id="checkUserLoginMesClient" parameterType="string" resultType="int">
+		SELECT
+			COUNT(T.ID)
+		FROM  T_BAS_ROLE_EQIP T,T_BAS_USER_ROLE T1, T_BAS_USER T2
+		WHERE T.ROLE_ID = T1.ROLE_ID
+		AND T1.USER_ID = T2.ID
+		AND T2.USER_CODE = #{param1}
+		AND T2.STATUS = '1'
+		AND EXISTS (
+				SELECT 1 FROM T_BAS_MES_CLIENT_MAN_EQIP T3,T_BAS_MES_CLIENT T4 WHERE T3.MES_CLIENT_ID = T4.ID AND T4.CLIENT_MAC = #{param2}
+				AND T.EQIP_INFO_ID = T3.EQIP_ID
+		)
+	</select>
+</mapper>

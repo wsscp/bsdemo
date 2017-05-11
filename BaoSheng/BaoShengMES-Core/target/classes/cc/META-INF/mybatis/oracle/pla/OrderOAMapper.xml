@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.OrderOADAO">
+    <!-- 
+    <result property="id" column="ID"/>
+	<result property="contractNo" column="CONTRACT_NO" />
+	<result property="productType" column="PRODUCT_TYPE" />
+	<result property="custProductType" column="CUST_PRODUCT_TYPE" />
+	<result property="productSpec" column="PRODUCT_SPEC" />
+	<result property="productCode" column="PRODUCT_CODE" />
+	<result property="customerCompany" column="CUSTOMER_COMPANY"/>
+	<result property="length" column="ORDER_LENGTH" />
+	<result property="finishedLength" column="FINISHED_LENGTH"/>
+	<result property="oa" column="SUB_OA_DATE" />
+	<result property="status" column="STATUS" />
+	<result property="totalVolumes" column="TOTAL_VOLUMES" />
+	<result property="latestStartDate" column="LATEST_START_DATE"/>
+	<result property="lastFinishDate" column="LATEST_FINISH_DATE"/>
+	<result property="operator" column="OPERATOR"/>
+	<result property="section" column="SECTION"/>
+	<result property="wiresStructure" column="WIRES_STRUCTURE"/>
+	<result property="numberOfWires" column="NUMBER_OF_WIRES"/>
+	<result property="contractAmount" column="CONTRACT_AMOUNT"/>
+    -->
+	<resultMap type="cc.oit.bsmes.pla.model.OrderOA" id="getMap">
+	</resultMap>
+	
+    <!-- 
+	<resultMap type="cc.oit.bsmes.pla.model.OrderOASubPageResult" id="getOrderSubMap">
+		<result property="id" column="ID"/>
+		<result property="itemId" column="ITEM_ID"/>		
+		<result property="processName" column="PROCESS_NAME"/>
+		<result property="equipCode" column="EQUIP_CODE"/>
+		<result property="halfProductCode" column="HALF_PRODUCT_CODE"/>
+		<result property="length" column="UN_FINISHED_LENGTH"/>
+		<result property="finishedLength" column="FINISHED_LENGTH"/>
+		<result property="usedLockLength" column="USED_STOCK_LENGTH"/>
+		<result property="planWorkHours" column="PLAN_WORK_HOURS"/>
+		<result property="processCode" column="PROCESS_CODE"/>
+		<result property="processId" column="PROCESS_ID"/>
+		<result property="latestStartDate" column="LATEST_START_DATE"/>
+		<result property="lastFinishDate" column="LATEST_FINISH_DATE"/>
+		<result property="seq" column="SEQ"/>
+		<result property="status" column="STATUS" />
+	</resultMap>
+    -->
+
+	<!-- OA查看主列表/订单产品：数据 -->
+	<select id="list" parameterType="map" resultMap="getMap">
+		SELECT R.*,
+		       (SELECT ROUND(SUM(TO_DATE(TO_CHAR(LATEST_FINISH_DATE,
+		                                         'YYYY-MM-DD HH24:MI:SS'),
+		                                 'YYYY-MM-DD HH24:MI:SS') -
+		                         TO_DATE(TO_CHAR(LATEST_START_DATE,
+		                                         'YYYY-MM-DD HH24:MI:SS'),
+		                                 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60,
+		                     2)
+		          FROM T_PLA_CU_ORDER_ITEM_PRO_DEC_OA PDO,
+		               T_PLA_CUSTOMER_ORDER_ITEM_DEC  COID
+		         WHERE PDO.ORDER_ITEM_DEC_ID = COID.ID
+		           AND COID.ORDER_ITEM_ID = R.ID) AS PLAN_WORK_HOURS,
+		       (SELECT SUM(PD.FINISHED_LENGTH)
+		          FROM T_PLA_CU_ORDER_ITEM_PRO_DEC   PD,
+		               T_PLA_CUSTOMER_ORDER_ITEM_DEC COID
+		         WHERE COID.ORDER_ITEM_ID = R.ID
+		           AND COID.ID = PD.ORDER_ITEM_DEC_ID) AS FINISHED_LENGTH
+		FROM (SELECT ROW_.*, ROWNUM ROWNUM_
+				  FROM (SELECT R.CONTRACT_NO,
+						       R.CUSTOMER_COMPANY,
+						       R.OPERATOR,
+						       T.CUST_PRODUCT_TYPE,
+						       T.PRODUCT_TYPE,
+						       T.PRODUCT_SPEC,
+						       T.PRODUCT_CODE,
+						       T.CONTRACT_AMOUNT,
+						       T.WIRES_STRUCTURE,
+						       T.SECTION,
+						       T.STATUS,
+						       V.ORDER_LENGTH,
+						       V.CONTRACT_LENGTH,
+						       V.SUB_OA_DATE,
+						       V.ID,
+						       V.LAST_OA,
+						       V.PLAN_START_DATE,
+				       		   V.PLAN_FINISH_DATE,
+				       		   V.CREATE_TIME,
+				       		   S.OA_DATE
+						  FROM T_ORD_SALES_ORDER         R,
+						       T_PLA_CUSTOMER_ORDER      S,
+						       T_PLA_CUSTOMER_ORDER_ITEM V,
+						       T_ORD_SALES_ORDER_ITEM    T
+						 WHERE R.ID = S.SALES_ORDER_ID
+						   AND S.ID = V.CUSTOMER_ORDER_ID
+						   AND T.ID = V.SALES_ORDER_ITEM_ID 
+						   <include refid = "getParameter" />
+						   <if test="sort != null and (sort instanceof java.util.ArrayList) and sort.size() > 0">
+				                ORDER BY 
+				                <foreach collection="sort" item="s" separator=",">  
+				                  ${s.property} ${s.direction}
+				              </foreach>
+				           </if>
+		               ) ROW_
+		     ) R WHERE ROWNUM_ <![CDATA[>]]> #{start, jdbcType=INTEGER} AND ROWNUM_ <![CDATA[<=]]> #{end, jdbcType=INTEGER} 
+	</select>
+	<!-- OA查看主列表/订单产品：数据 -->
+	<select id="count" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		  FROM T_ORD_SALES_ORDER         R,
+		       T_PLA_CUSTOMER_ORDER      S,
+		       T_PLA_CUSTOMER_ORDER_ITEM V,
+		       T_ORD_SALES_ORDER_ITEM    T
+		 WHERE R.ID = S.SALES_ORDER_ID
+		   AND S.ID = V.CUSTOMER_ORDER_ID
+		   AND T.ID = V.SALES_ORDER_ITEM_ID
+		   <include refid = "getParameter"/>	
+	</select>
+	<!-- OA查看主列表/订单产品：查询条件 -->
+	<sql id="getParameter">
+		<if test="contractNo!=null and (contractNo instanceof java.util.ArrayList) and contractNo!=''">
+			AND R.CONTRACT_NO IN
+			<foreach collection="contractNo" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="operator!=null and (operator instanceof java.util.ArrayList) and operator!=''">
+			AND R.OPERATOR IN
+			<foreach collection="operator" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="customerCompany!=null and (customerCompany instanceof java.util.ArrayList) and customerCompany!=''">
+			AND R.CUSTOMER_COMPANY IN   
+			<foreach collection="customerCompany" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="custProductType!=null and (custProductType instanceof java.util.ArrayList) and custProductType!=''">
+			AND T.CUST_PRODUCT_TYPE IN
+			<foreach collection="custProductType" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="productSpec!=null and (productSpec instanceof java.util.ArrayList) and productSpec!=''">
+			AND T.PRODUCT_SPEC IN
+			<foreach collection="productSpec" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="wiresStructure!=null and (wiresStructure instanceof java.util.ArrayList) and wiresStructure!=''">
+			AND T.WIRES_STRUCTURE IN
+			<foreach collection="wiresStructure" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="section!=null and (section instanceof java.util.ArrayList) and section!=''">
+			AND T.SECTION IN
+			<foreach collection="section" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="orderItemStatus!=null and (orderItemStatus instanceof java.util.ArrayList) and orderItemStatus.size() > 0">
+			AND T.STATUS IN
+			<foreach collection="orderItemStatus" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="planDate!=null and !(planDate instanceof java.util.ArrayList) and planDate!=''">
+			AND V.PLAN_START_DATE <![CDATA[>=]]> #{planDate,jdbcType=DATE}
+		</if>
+		<if test="to!=null and !(to instanceof java.util.ArrayList) and to!=''">
+			AND V.PLAN_FINISH_DATE <![CDATA[<]]> #{to,jdbcType=DATE}
+		</if>
+		<if test="orgCode!=null and !(orgCode instanceof java.util.ArrayList) and orgCode!=''">
+			AND R.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- OA查看子列表：订单产品工序分解明细 -->
+	<select id="getSubListByOrderItemId" parameterType="string" resultMap="getMap">
+		SELECT (CASE
+		         WHEN ((SELECT COUNT(*)
+		                  FROM T_PLA_CU_ORDER_ITEM_PRO_DEC   PD,
+		                       T_PLA_CUSTOMER_ORDER_ITEM_DEC COID1
+		                 WHERE PD.ORDER_ITEM_DEC_ID = COID1.ID
+		                   AND COID1.ORDER_ITEM_ID = COID.ORDER_ITEM_ID
+		                   AND PD.PROCESS_ID = PDO.PROCESS_ID) > 0) THEN
+		          (SELECT SUM(PD.UN_FINISHED_LENGTH)
+		             FROM T_PLA_CU_ORDER_ITEM_PRO_DEC   PD,
+		                  T_PLA_CUSTOMER_ORDER_ITEM_DEC COID1
+		            WHERE PD.ORDER_ITEM_DEC_ID = COID1.ID
+		              AND COID1.ORDER_ITEM_ID = COID.ORDER_ITEM_ID
+		              AND PD.PROCESS_ID = PDO.PROCESS_ID)
+		         ELSE
+		          (SUM(PDO.UN_FINISHED_LENGTH))
+		       END) AS UN_FINISHED_LENGTH,
+		       SUM((SELECT SUM(PD.FINISHED_LENGTH)
+		             FROM T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		            WHERE PD.ORDER_ITEM_DEC_ID = COID.ID
+		              AND PD.PROCESS_ID = PDO.PROCESS_ID)) AS FINISHED_LENGTH,
+		       ROUND(SUM((TO_DATE(TO_CHAR(PDO.LATEST_FINISH_DATE,
+		                                  'YYYY-MM-DD HH24:MI:SS'),
+		                          'YYYY-MM-DD HH24:MI:SS') -
+		                 TO_DATE(TO_CHAR(PDO.LATEST_START_DATE,
+		                                  'YYYY-MM-DD HH24:MI:SS'),
+		                          'YYYY-MM-DD HH24:MI:SS')) * 24 * 60*60),
+		             2) AS PLANWORKHOURS,
+		       WMSYS.WM_CONCAT(PDO.EQUIP_CODE) AS EQUIP_CODE,
+		       WMSYS.WM_CONCAT(NVL(EQUIP.EQUIP_ALIAS, EQUIP.NAME) || '[' || EQUIP.CODE || ']') AS EQUIP_NAME,
+		       MAX(PDO.HALF_PRODUCT_CODE) AS HALF_PRODUCT_CODE,
+		       MAX(PDO.PROCESS_NAME) AS PROCESS_NAME,
+		       MIN(PDO.LATEST_START_DATE) AS LATEST_START_DATE,
+		       MAX(PDO.LATEST_FINISH_DATE) AS LATEST_FINISH_DATE,
+		       MAX(PDO.STATUS) AS STATUS,
+		       PDO.PROCESS_ID,
+		       (CASE WHEN length(P.SEQ) > 3 THEN SUBSTR(P.SEQ, 0, 2) ELSE TO_CHAR(P.SEQ) END) AS SEQ
+		  FROM T_PLA_CU_ORDER_ITEM_PRO_DEC_OA PDO
+		 INNER JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC COID
+		    ON COID.ID = PDO.ORDER_ITEM_DEC_ID
+		 INNER JOIN T_PLA_CUSTOMER_ORDER_ITEM COI
+		    ON COID.ORDER_ITEM_ID = COI.ID
+		 INNER JOIN T_PRO_PRODUCT_PROCESS_WIP P
+		    ON PDO.PROCESS_ID = P.ID
+		  LEFT JOIN (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS
+		               FROM T_FAC_EQIP_INFO    LINE,
+		                    T_FAC_PRODUCT_EQIP PE,
+		                    T_FAC_EQIP_INFO    EQUIP
+		              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+		                AND PE.EQUIP_ID = EQUIP.ID
+		                AND LINE.TYPE = 'PRODUCT_LINE') EQUIP
+		    ON PDO.EQUIP_CODE = EQUIP.CODE
+		 WHERE COID.ORDER_ITEM_ID = #{orderItemId,jdbcType=VARCHAR}
+		 GROUP BY PDO.PROCESS_ID, P.SEQ, COID.ORDER_ITEM_ID
+		 ORDER BY SEQ ASC
+	</select>
+
+	<select id="getOrderOASubPageResult" parameterType="cc.oit.bsmes.pla.model.OrderOA" resultMap="getMap">
+		SELECT  t.ID as ITEM_ID,
+                r.ID,
+                r.EQUIP_CODE,
+                (CASE
+		          WHEN e.EQUIP_ALIAS IS NOT NULL THEN
+		            (e.EQUIP_ALIAS || '-')
+		          ELSE
+		              ''
+		         END || '[' || e.CODE || ']' || e.NAME) AS EQUIP_NAME,
+                a.NAME as PROCESS_NAME,
+                r.PROCESS_ID,
+                r.LATEST_START_DATE,
+                r.LATEST_FINISH_DATE,
+                r.USED_STOCK_LENGTH,
+                r.UN_FINISHED_LENGTH,
+                r.FINISHED_LENGTH,
+                r.STATUS,
+                r.HALF_PRODUCT_CODE,
+                m.MAT_NAME,
+                r.PROCESS_CODE,
+                soi.PRODUCT_CODE,
+                soi.PRODUCT_TYPE,
+                soi.PRODUCT_SPEC,
+                so.CONTRACT_NO,
+                v.SEQ
+    	FROM    T_PLA_CUSTOMER_ORDER_ITEM_DEC s,
+                T_PLA_CU_ORDER_ITEM_PRO_DEC_OA r,
+                T_PRO_PRODUCT_PROCESS v,
+                T_PLA_CUSTOMER_ORDER_ITEM t,
+                T_ORD_SALES_ORDER_ITEM soi,
+                T_ORD_SALES_ORDER so,
+                T_PRO_PROCESS_INFO a,
+                T_INV_MAT m,
+                (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS, LINE.ORG_CODE
+	               FROM T_FAC_EQIP_INFO    LINE,
+	                    T_FAC_PRODUCT_EQIP PE,
+	                    T_FAC_EQIP_INFO    EQUIP
+	              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+	                AND PE.EQUIP_ID = EQUIP.ID
+	                AND LINE.TYPE = 'PRODUCT_LINE') e
+    	WHERE s.ID=r.ORDER_ITEM_DEC_ID
+            AND r.PROCESS_ID=v.ID
+            AND t.ID=s.ORDER_ITEM_ID
+            AND a.CODE=r.PROCESS_CODE
+            AND t.SALES_ORDER_ITEM_ID = soi.ID
+            AND soi.SALES_ORDER_ID = so.ID
+            AND r.HALF_PRODUCT_CODE = m.MAT_CODE
+            AND r.EQUIP_CODE = e.CODE
+            AND t.STATUS IN ('TO_DO','IN_PROGRESS')
+            AND r.LATEST_START_DATE IS NOT NULL
+            AND r.LATEST_FINISH_DATE IS NOT NULL
+            AND r.STATUS IN ('TO_DO','IN_PROGRESS','FINISHED','PAUSE')
+            AND  r.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	    <if test="planDate!=null and planDate!=''">
+    		AND r.LATEST_START_DATE>=#{planDate,jdbcType=DATE}
+    	  </if>
+    	 <if test="to!=null and to!=''">
+    		AND r.LATEST_FINISH_DATE <![CDATA[<]]>#{to,jdbcType=DATE} 
+    	</if>
+    	ORDER BY t.ID,v.SEQ ASC,v.PROCESS_CODE,r.EQUIP_CODE,r.LATEST_START_DATE ASC
+	</select>
+	
+	<select id="getStartAndEndDateByCustOrderItemId" parameterType="map" resultMap="getMap" >
+		SELECT
+            t.STATUS,
+            LATEST_START_DATE,
+            LATEST_FINISH_DATE
+		FROM    T_PLA_CUSTOMER_ORDER_ITEM r,
+                T_PLA_CUSTOMER_ORDER_ITEM_DEC s,
+                T_PLA_CU_ORDER_ITEM_PRO_DEC t
+		WHERE r.ID=s.ORDER_ITEM_ID
+            AND s.ID=t.ORDER_ITEM_DEC_ID
+            AND r.ID=#{customerOrderItemId,jdbcType=VARCHAR}
+            AND t.PROCESS_ID=#{processId,jdbcType=VARCHAR}
+            <if test="equipCode!=null and equipCode!=''">
+                AND t.EQUIP_CODE=#{equipCode,jdbcType=VARCHAR}
+            </if>
+            AND t.STATUS IN ('TO_DO','IN_PROGRESS','FINISHED')
+	</select>
+	<select id="getSectionOrStructure" resultMap="getMap">
+		SELECT
+		  ID,
+		  SECTION,
+		  WIRES_STRUCTURE
+        FROM T_ORD_SALES_ORDER_ITEM
+        WHERE ORG_CODE = #{param1,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.pla.model.OrderOA">
+		SELECT * FROM T_ORD_SALES_ORDER_ITEM WHERE ID = #{param1,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAll" resultType="cc.oit.bsmes.pla.model.OrderOA">
+		SELECT * FROM T_ORD_SALES_ORDER_ITEM
+	</select>
+	
+	<update id="update" parameterType="cc.oit.bsmes.pla.model.OrderOA">
+		UPDATE T_ORD_SALES_ORDER_ITEM
+		<set>
+			<if test="section != null and section !=''">
+				SECTION = #{section,jdbcType=DOUBLE},
+			</if>
+			MODIFY_TIME = sysdate,
+			MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR} 
+	</update>
+	
+	<update id="setOaDate" parameterType="Map">
+	     UPDATE T_PLA_CUSTOMER_ORDER t
+   SET T.OA_DATE = #{date,jdbcType=TIMESTAMP}
+ WHERE ID IN (SELECT TI.CUSTOMER_ORDER_ID
+                FROM T_PLA_CUSTOMER_ORDER_ITEM TI
+               WHERE TI.ID = #{id,jdbcType=VARCHAR})
+	</update>
+	
+	<select id="getProductCodeByContractNo" resultMap="getMap" parameterType="string">
+            SELECT
+                T."ID"
+                T.PRODUCT_CODE
+            FROM T_PLA_CUSTOMER_ORDER_ITEM T
+            WHERE T.STATUS IN ('TO_DO','IN_PROGRESS','FINISHED')
+            AND EXISTS (
+              SELECT 1
+              FROM T_PLA_CUSTOMER_ORDER CO,T_ORD_SALES_ORDER SO
+              WHERE CO.SALES_ORDER_ID = SO.ID
+               AND SO.CONTRACT_NO=#{param1,jdbcType=VARCHAR}
+               <if test="param2 !=null and param2 != ''">
+                   AND SO.ORG_CODE = #{param2,jdbcType=VARCHAR}
+               </if>
+            )
+            ORDER BY t.PRODUCT_CODE ASC
+	</select>
+	
+	 <!--  获取手动排程订单产品下的工序
+    <select id="getHandScheduleOrderProcess" parameterType="string" resultMap="getMap" >
+		SELECT
+		    P."ID",
+		    P.PROCESS_CODE,
+		    P.PROCESS_NAME,
+		    P.SEQ,
+		    R.EQUIP_CODE,
+		    R.HALF_PRODUCT_CODE,
+		    MIN(R.LATEST_START_DATE)  AS LATEST_START_DATE,
+		    MAX(R.LATEST_FINISH_DATE) AS LATEST_FINISH_DATE
+		FROM
+    		T_PRO_PRODUCT_PROCESS P,
+    		T_PLA_CU_ORDER_ITEM_PRO_DEC R, 
+    		T_PLA_CUSTOMER_ORDER_ITEM_DEC D, 
+    		T_PLA_CUSTOMER_ORDER_ITEM I
+		WHERE
+		R.PROCESS_ID = P.ID
+		AND R.ORDER_ITEM_DEC_ID=D.ID
+		AND D.ORDER_ITEM_ID = I.ID
+		AND I.ID=#{orderItemId, jdbcType=VARCHAR}
+		GROUP BY
+		    P.PROCESS_CODE,
+		    P.PROCESS_NAME,
+		    P.SEQ,
+		    P."ID",
+		    R.EQUIP_CODE,
+		    R.HALF_PRODUCT_CODE
+		ORDER BY
+		    P.SEQ ASC
+    </select>
+    -->
+    
+	<!-- 绝缘下单列表 ：获取查询下拉框：合同号 -->
+	<select id="getContractNo" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SO.CONTRACT_NO
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.CONTRACT_NO IS NOT NULL
+	</select>
+	<!-- 绝缘下单列表 ：获取查询下拉框：单位 -->
+	<select id="getCustomerCompany" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SO.CUSTOMER_COMPANY
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.CUSTOMER_COMPANY IS NOT NULL
+	</select>
+	<!-- 绝缘下单列表 ：获取查询下拉框：经办人 -->
+	<select id="getOperator" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SO.OPERATOR
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.OPERATOR IS NOT NULL
+	</select>
+	<!-- 绝缘下单列表 ：获取查询下拉框：客户型号 -->
+	<select id="getCustproductType" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SOI.CUST_PRODUCT_TYPE
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.CUST_PRODUCT_TYPE IS NOT NULL
+	</select>
+	<!-- 绝缘下单列表 ：获取查询下拉框：产品型号 -->
+	<select id="getProductType" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SOI.PRODUCT_TYPE
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.PRODUCT_TYPE IS NOT NULL
+	</select>
+	<!-- 绝缘下单列表 ：获取查询下拉框：产品规格 -->
+	<select id="getProductSpec" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SOI.PRODUCT_SPEC
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.PRODUCT_SPEC IS NOT NULL
+	</select>
+	<!-- 绝缘下单列表 ：获取查询下拉框：线芯结构 -->
+	<select id="getWiresStructure" resultMap="getMap">
+		SELECT T.* FROM (
+	        SELECT DISTINCT SOI.WIRES_STRUCTURE
+	        <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.WIRES_STRUCTURE IS NOT NULL
+    </select>
+    <!-- 绝缘/成缆/护套下单/生产单列表 ：获取查询下拉框：线芯数 -->
+    <select id="getnumberOfWires" resultMap="getMap">
+    	SELECT T.* FROM (
+	        SELECT DISTINCT SOI.NUMBER_OF_WIRES
+	        <include refid="sendOrderCommonQuery"/>
+        ) T WHERE T.NUMBER_OF_WIRES IS NOT NULL
+    </select>
+    <!-- 绝缘下单列表 ：获取查询下拉框：截面 -->
+	<select id="getSection" resultMap="getMap">
+		SELECT T.* FROM (
+	        SELECT DISTINCT SOI.SECTION
+	        <include refid="sendOrderCommonQuery"/>
+        ) T WHERE T.SECTION IS NOT NULL
+    </select>
+    <!-- 绝缘/成缆/护套下单/生产单列表 ：获取查询下拉框：状态 -->
+    <select id="getstatus" resultMap="getMap">
+        SELECT DISTINCT SOI.STATUS
+        <include refid="sendOrderCommonQuery"/>
+    </select>
+    <!-- 下拉框查询的公共部分 -->
+	<sql id="sendOrderCommonQuery">
+		FROM T_ORD_SALES_ORDER SO,
+	         T_ORD_SALES_ORDER_ITEM SOI
+	    WHERE SO.ID = SOI.SALES_ORDER_ID
+    	<!-- 下面是其他条件的关联查询条件 -->
+    	<if test="contractNo != null and (contractNo instanceof java.util.ArrayList) and contractNo.size() > 0">
+			AND SO.CONTRACT_NO IN 
+			<foreach collection="contractNo" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="operator != null and (operator instanceof java.util.ArrayList) and operator.size() > 0">
+			AND SO.OPERATOR IN 
+			<foreach collection="operator" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="customerCompany != null and (customerCompany instanceof java.util.ArrayList) and customerCompany.size() > 0">
+			AND SO.CUSTOMER_COMPANY IN 
+			<foreach collection="customerCompany" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="custProductType != null and (custProductType instanceof java.util.ArrayList) and custProductType.size() > 0">
+			AND SOI.CUST_PRODUCT_TYPE IN
+			<foreach collection="custProductType" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="productType != null and (productType instanceof java.util.ArrayList) and productType.size() > 0">
+			AND SOI.PRODUCT_TYPE IN
+			<foreach collection="productType" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="productSpec != null and (productSpec instanceof java.util.ArrayList) and productSpec.size() > 0">
+			AND SOI.PRODUCT_SPEC IN
+			<foreach collection="productSpec" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="section != null and (section instanceof java.util.ArrayList) and section.size() > 0">
+			AND SOI.SECTION IN
+			<foreach collection="section" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="wiresStructure != null and (wiresStructure instanceof java.util.ArrayList) and wiresStructure.size() > 0">
+			AND SOI.WIRES_STRUCTURE IN
+			<foreach collection="wiresStructure" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="status != null and (status instanceof java.util.ArrayList) and status.size() > 0">
+		    AND SOI.STATUS IN 
+			<foreach collection="status" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<!-- 下面是自身模糊查询条件 -->
+		<if test="contractNo != null and !(contractNo instanceof java.util.ArrayList) and contractNo != ''">
+			AND SO.CONTRACT_NO LIKE #{contractNo, jdbcType=VARCHAR}
+		</if>
+		<if test="operator != null and !(operator instanceof java.util.ArrayList) and operator != ''">
+			AND SO.OPERATOR LIKE #{operator, jdbcType=VARCHAR}
+		</if>
+		<if test="customerCompany != null and !(customerCompany instanceof java.util.ArrayList) and customerCompany != ''">
+			AND SO.CUSTOMER_COMPANY LIKE #{customerCompany, jdbcType=VARCHAR} 
+		</if>
+		<if test="custProductType != null and !(custProductType instanceof java.util.ArrayList) and custProductType != ''">
+			AND SOI.CUST_PRODUCT_TYPE LIKE #{custProductType, jdbcType=VARCHAR}
+		</if>
+		<if test="productType != null and !(productType instanceof java.util.ArrayList) and productType != ''">
+			AND SOI.PRODUCT_TYPE LIKE #{productType, jdbcType=VARCHAR}
+		</if>
+		<if test="productSpec != null and !(productSpec instanceof java.util.ArrayList) and productSpec != ''">
+			AND SOI.PRODUCT_SPEC LIKE #{productSpec, jdbcType=VARCHAR}
+		</if>
+		<if test="section != null and !(section instanceof java.util.ArrayList) and section != ''">
+			AND SOI.SECTION LIKE #{section, jdbcType=VARCHAR}
+		</if>
+		<if test="wiresStructure != null and !(wiresStructure instanceof java.util.ArrayList) and wiresStructure != ''">
+			AND SOI.WIRES_STRUCTURE LIKE #{wiresStructure, jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and !(status instanceof java.util.ArrayList) and status != ''">
+		    AND SOI.STATUS LIKE #{status, jdbcType=VARCHAR} 
+		</if>
+		<if test="orgCode!=null and !(orgCode instanceof java.util.ArrayList) and orgCode!=''">
+			AND SO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		    AND SOI.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="createDate!=null and !(createDate instanceof java.util.ArrayList) and createDate!=''">
+			AND SOI.CREATE_TIME > TO_DATE(#{createDate, jdbcType=TIMESTAMP}, 'yyyy-mm-dd')
+		</if>
+	</sql>
+
+    <select id="getnumberOfWires" resultMap="getMap">
+        SELECT DISTINCT TOSOI.NUMBER_OF_WIRES FROM T_ORD_SALES_ORDER_ITEM TOSOI 
+        <where>
+        	TOSOI.NUMBER_OF_WIRES IS NOT NULL
+			<if test="operator != null and operator.size() > 0">
+				AND TOSOI.SALES_ORDER_ID in
+				(SELECT ID FROM T_ORD_SALES_ORDER WHERE OPERATOR IN
+				<foreach collection="operator" item="no_1"  open="(" separator="," close=")">  
+			    	#{no_1, jdbcType=VARCHAR}
+			    </foreach>)
+			</if>
+			<if test="customerCompany != null and customerCompany.size() > 0">
+				AND TOSOI.SALES_ORDER_ID in
+				(SELECT ID FROM T_ORD_SALES_ORDER WHERE CUSTOMER_COMPANY IN
+				<foreach collection="customerCompany" item="no_2"  open="(" separator="," close=")">  
+			    	#{no_2, jdbcType=VARCHAR}
+			    </foreach>)
+			</if>
+			<if test="contractNo != null and contractNo.size() > 0">
+				AND TOSOI.SALES_ORDER_ID in
+				(SELECT ID FROM T_ORD_SALES_ORDER WHERE CONTRACT_NO IN
+				<foreach collection="contractNo" item="no_3"  open="(" separator="," close=")">  
+			    	#{no_3, jdbcType=VARCHAR}
+			    </foreach>)
+			</if>
+			<if test="custProductType != null and custProductType.size() > 0">
+				AND TOSOI.CUST_PRODUCT_TYPE in 
+				<foreach collection="custProductType" item="no_4"  open="(" separator="," close=")">  
+			    	#{no_4, jdbcType=VARCHAR}
+			    </foreach>
+			</if>
+			<if test="productSpec != null and productSpec.size() > 0">
+				AND TOSOI.PRODUCT_SPEC in 
+				<foreach collection="productSpec" item="no_5"  open="(" separator="," close=")">  
+			    	#{no_5, jdbcType=VARCHAR}
+			    </foreach>
+			</if>
+			<if test="wiresStructure != null and wiresStructure.size() > 0">
+				AND TOSOI.WIRES_STRUCTURE in 
+				<foreach collection="wiresStructure" item="no_6"  open="(" separator="," close=")">  
+			    	#{no_6, jdbcType=VARCHAR}
+			    </foreach>
+			</if>
+			<if test="productType != null and productType.size() > 0">
+				AND TOSOI.PRODUCT_TYPE in 
+				<foreach collection="productType" item="no_7"  open="(" separator="," close=")">  
+			    	#{no_7, jdbcType=VARCHAR}
+			    </foreach>
+			</if>
+			<if test="section != null and section.size() > 0">
+				AND TOSOI.SECTION IN 
+				<foreach collection="section" item="no_8"  open="(" separator="," close=")">  
+			    	#{no_8, jdbcType=VARCHAR}
+			    </foreach>
+			</if>
+			<if test="status != null and status.size() > 0">
+			    AND TOSOI.STATUS IN 
+			    <foreach collection="status" item="no_9"  open="(" separator="," close=")">  
+			    	#{no_9, jdbcType=VARCHAR}
+			    </foreach>
+			</if>
+		</where>
+    </select>
+    
+    <select id="getstatus" resultMap="getMap">
+	    SELECT DISTINCT STATUS FROM T_ORD_SALES_ORDER_ITEM
+	</select>
+
+</mapper>

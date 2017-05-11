@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.WorkShiftDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.WorkShift" id="getMap">
+	</resultMap>
+	
+	<select id="getByWeekNo" parameterType="int" resultMap="getMap">
+		SELECT 
+		       ws.* 
+		FROM T_BAS_WORK_SHIFT ws
+		WHERE EXISTS (
+	                      SELECT 
+	                        1 
+	                      FROM 	T_BAS_WEEK_CALENDAR_SHIFT cs LEFT JOIN T_BAS_WEEK_CALENDAR wc on cs.WEEK_CALENDAR_ID = wc.id 
+	                      WHERE ws.id = cs.work_shift_id
+	                      AND 	wc.week_no = #{weekNo}
+		             )
+		ORDER BY SHIFT_START_TIME
+	</select>
+	
+	<select id="getWorkShiftByShiftName" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_BAS_WORK_SHIFT WHERE SHIFT_NAME=#{shiftName,jdbcType=VARCHAR} AND STATUS = '1'
+	</select>
+	
+	<select id="getWorkShiftName" resultMap="getMap">
+		SELECT DISTINCT(SHIFT_NAME) FROM T_BAS_WORK_SHIFT WHERE SHIFT_NAME IS NOT NULL AND STATUS = '1'
+	</select>
+	
+	<select id="getWorkShiftInfo" resultMap="getMap">
+		SELECT  ID,SHIFT_NAME||'  '||SUBSTR(SHIFT_START_TIME,1,LENGTH(SHIFT_START_TIME)-2)||':'||SUBSTR(SHIFT_START_TIME,LENGTH(SHIFT_START_TIME)-1, 2)||'-'||SUBSTR(SHIFT_END_TIME,1,LENGTH(SHIFT_END_TIME)-2)||':'||SUBSTR(SHIFT_END_TIME,LENGTH(SHIFT_END_TIME)-1, 2) AS SHIFT_NAME 
+		FROM T_BAS_WORK_SHIFT  WHERE STATUS = '1' ORDER BY SHIFT_NAME DESC
+	</select>
+
+</mapper>

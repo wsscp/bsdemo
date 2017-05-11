@@ -1,0 +1,157 @@
+﻿/* Increase height of list item so title and narrative fit */
+.x-list .x-list-item .x-list-item-label
+{
+     min-height: 62px!important;
+}
+/* Move the disclosure button up to account for the list item height increase */
+.x-list .x-list-disclosure {
+position: absolute;
+bottom: 0.85em;
+right: 0.44em;
+}
+.list-item-title
+{
+    float:left;
+    width:100%;
+    font-size:90%;
+    white-space: nowrap;  
+    overflow: hidden;  
+    text-overflow: ellipsis;  
+    padding-right:25px;
+    line-height:150%;
+}
+.list-item-narrative
+{
+    float:left;
+    width:95%;
+    color:#666666;
+    font-size:80%;
+    white-space: nowrap;  
+    overflow: hidden;  
+    text-overflow: ellipsis;   
+    padding-right:25px;
+}
+.x-item-selected .list-item-title 
+{
+    color:#ffffff;
+}
+.x-item-selected .list-item-narrative
+{
+    color:#ffffff;
+}
+.notes-list-empty-text 
+{
+    padding:10px;
+}
+
+.bottle{-webkit-mask-image:url(../img/bottle.png)}
+
+.list-item-title
+{
+    float:left;
+    width:50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.list-item-narrative
+{
+    float:left;
+    width:50%;
+    color:#666666;
+    white-space: nowrap;
+}
+
+.list-item-remark
+{
+    float:left;
+    width:100%;
+    color:#666666;
+    font-size:80%;
+    white-space: nowrap;
+    line-height:150%;
+}
+
+.x-item-selected .list-item-remark
+{
+    color:#ffffff;
+}
+
+.list-item-number
+{
+	width:20px;
+	height: 42px;
+	float: left;
+	line-height: 42px;
+}
+
+.x-item-selected .list-item-number
+{
+    color:#ffffff;
+}
+
+.list-item-content
+{
+	width:80%;
+	float: left;
+}
+
+.x-list-item {
+	min-height: 62px !important;
+}
+
+.title {
+}
+
+.title-1 {
+    float: left;
+    display: inline-block;
+}
+
+.title-2 {
+    display: inline-block;
+    margin: 5px;
+    padding-top: 5px;
+}
+
+.title-2-1 {
+    font-size: 1.2em;
+}
+
+.title-2-2 {
+    font-size: 0.6em;
+}
+
+.nav {
+    margin: 0;
+    padding: 0;
+    font-size: 0.6em;
+}
+
+.nav {
+	margin: auto;
+    padding: 0px;
+}
+
+.nav ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+.nav ul li {
+    width: 33%;
+    height: 100px;
+    float: left;
+    display: inline;
+    text-align: center;
+}
+
+.nav ul li img {
+    width: 64px;
+    height: 64px;
+}
+
+.nav ul li a {
+    display: block;
+    text-decoration: none;
+}

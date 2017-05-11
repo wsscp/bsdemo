@@ -1,0 +1,1491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.CustomerOrderItemProDecDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.CustomerOrderItemProDec" id="getMap">
+		<result property="id" column="ID"/>
+		<result property="processId" column="PROCESS_ID"/>
+		<!--<association property="productProcess" column="PROCESS_ID"-->
+		<!--select="cc.oit.bsmes.pro.dao.ProductProcessDAO.getById"/>-->
+		<!--<association property="processOut" column="PROCESS_ID"-->
+		<!--select="cc.oit.bsmes.pro.dao.ProcessInOutDAO.getOutByProductProcessId"/>-->
+		<association property="orderTask" column="ID"
+			select="cc.oit.bsmes.pla.dao.OrderTaskDAO.getForOALockedByProDecId"/>
+		<!--<collection property="inventoryUseLogs" column="ID" javaType="arraylist"-->
+		<!--ofType="cc.oit.bsmes.pla.model.InvOaUseLog"-->
+		<!--select="cc.oit.bsmes.pla.dao.InvOaUseLogDAO.getByRefId"></collection>-->
+	</resultMap>
+
+	<sql id="queryColumns">
+	   o.ID,o.ORDER_ITEM_DEC_ID,o.CRAFTS_ID,o.PROCESS_PATH,o.PROCESS_ID,o.EQUIP_CODE,o.PROCESS_CODE,o.PROCESS_NAME,o.OUT_ATTR_DESC,
+	   o.PLAN_WORK_HOURS,o.USE_STOCK,o.USED_STOCK_LENGTH,o.HALF_PRODUCT_CODE,o.EARLIEST_START_DATE,o.PRODUCT_CODE,o.CONTRACT_NO,
+	   o.EARLIEST_FINISH_DATE,o.LATEST_START_DATE,o.LATEST_FINISH_DATE,o.UN_FINISHED_LENGTH,o.FINISHED_LENGTH,o.IS_LOCKED,o.NEXT_ORDER_ID,
+	   o.STATUS,o.CREATE_USER_CODE,o.CREATE_TIME,o.MODIFY_USER_CODE,o.MODIFY_TIME,o.ORG_CODE, o.OPTIONAL_EQUIP_CODE, o.FIXED_EQUIP_CODE
+	</sql>
+
+	<!-- 计划排成修改，因为父列变更为包含正在生产的，故此过滤正在生产的 -->
+	<select id="getByCusOrderItemDecIdForPlan" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="queryColumns"/>
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o WHERE o.ORDER_ITEM_DEC_ID = #{id,jdbcType=VARCHAR} AND STATUS ='TO_DO'
+	</select>
+	
+
+    
+	<select id="getByCusOrderItemDecId" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="queryColumns"/>
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o WHERE o.ORDER_ITEM_DEC_ID = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByStatus" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="queryColumns"/>
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o
+        WHERE o.ORG_CODE = #{param1} AND o.STATUS IN
+		<foreach collection="param2" item="status" open="(" separator="," close=")">
+            #{status,jdbcType=VARCHAR}
+		</foreach>
+        ORDER BY o.PROCESS_PATH DESC,o.LATEST_START_DATE
+	</select>
+	
+	<select id="getByTodoCusOrderItemId" parameterType="string" resultMap="getMap">
+        SELECT  * FROM T_PLA_CU_ORDER_ITEM_PRO_DEC
+		WHERE ORDER_ITEM_DEC_ID IN
+		(SELECT ID FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC WHERE
+		ORDER_ITEM_ID= #{cusOrderItemId,jdbcType=VARCHAR})
+		AND STATUS='TO_DO'
+	</select>
+
+	<select id="getUnaudited" resultMap="getMap">
+		SELECT <include refid="queryColumns"/>, pr.SEQ as processSeq, s.OPERATOR
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o LEFT JOIN T_PLA_ORDER_TASK t ON o.ID = t.ORDER_ITEM_PRO_DEC_ID
+        JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC d ON d.ID = o.ORDER_ITEM_DEC_ID
+        JOIN T_PLA_CUSTOMER_ORDER_ITEM i ON i.ID = d.ORDER_ITEM_ID
+        JOIN T_PRO_PRODUCT_PROCESS pr ON o.PROCESS_ID = pr.ID
+        LEFT JOIN T_PLA_HIGH_PRIORITY_ORDER_ITEM p ON p.ID = i.CUSTOMER_ORDER_ID
+        JOIN T_PLA_CUSTOMER_ORDER c ON c.ID = i.CUSTOMER_ORDER_ID
+        JOIN T_ORD_SALES_ORDER s ON s.ID = c.SALES_ORDER_ID
+        WHERE o.ORG_CODE = #{param1}
+        AND (t.STATUS = 'TO_AUDIT' OR t.STATUS IS NULL)
+        AND o.IS_LOCKED = '0'
+        AND (d.STATUS = 'IN_PROGRESS' OR (d.STATUS = 'TO_DO'
+		<if test="#{param2} != null">
+		AND o.LATEST_START_DATE <![CDATA[<=]]> #{param2,jdbcType=TIMESTAMP}
+		</if>))
+        ORDER BY p.SEQ, s.IMPORTANCE DESC, o.LATEST_START_DATE
+	</select>
+
+	<select id="getItemDecInProgress" resultMap="getMap">
+        SELECT o.ID
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o LEFT JOIN T_PLA_ORDER_TASK t ON o.ID = t.ORDER_ITEM_PRO_DEC_ID
+        JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC d ON d.ID = o.ORDER_ITEM_DEC_ID
+        JOIN T_PRO_PRODUCT_PROCESS pr ON o.PROCESS_ID = pr.ID
+        WHERE o.ORG_CODE = #{param1} AND d.STATUS = 'IN_PROGRESS'
+        AND o.IS_LOCKED = '0'
+	-- AND c.STATUS <![CDATA[<>]]> 'TO_CONFIRM'
+		<if test="#{param2} != null">
+		AND o.LATEST_START_DATE <![CDATA[>]]> #{param2,jdbcType=TIMESTAMP}
+		</if>
+        ORDER BY o.LATEST_START_DATE
+	</select>
+
+	<!-- 删除PRO_DEC -->
+	<delete id="deleteByOrderItemId" parameterType="string">
+		CALL DELETE_ITEM_PRO_DEC(#{param1},#{param2})
+	</delete>
+
+	<select id="getCurrentByWoNo" parameterType="string" resultMap="getMap">
+        SELECT ROWNUM,T.* FROM (
+            SELECT
+		<include refid="queryColumns"/>
+            FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o,T_PLA_ORDER_TASK t
+            WHERE t.WORK_ORDER_NO = #{workOrderNo} AND o."ID" = t.ORDER_ITEM_PRO_DEC_ID
+            AND t.STATUS IN ('TO_DO','IN_PROGRESS')
+            ORDER BY t.PLAN_START_DATE
+        ) T WHERE ROWNUM =1
+	</select>
+
+	<update id="cancelOffset" parameterType="string" statementType="CALLABLE">
+    	CALL UPDATE_INV_OA_USE_LOG(#{param1},#{param2})
+	</update>
+
+	<update id="updateOptionalEquipCode" parameterType="string" statementType="CALLABLE">
+        UPDATE T_PLA_CU_ORDER_ITEM_PRO_DEC A SET A.OPTIONAL_EQUIP_CODE = #{param1}
+        WHERE EXISTS (
+                    SELECT
+                      B.ID
+                    FROM T_PLA_CU_ORDER_ITEM_PRO_DEC B
+                    LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC C ON B.ORDER_ITEM_DEC_ID = C.ID
+                    WHERE C.ORDER_ITEM_ID = #{param2}
+                      AND B.PROCESS_ID = #{param3}
+                      AND A.ID = B.ID
+        )
+	</update>
+
+	<update id="updateFixEquipForWorkOrderSeq" parameterType="string" flushCache="true" >
+		UPDATE T_PLA_CU_ORDER_ITEM_PRO_DEC T
+		   SET T.FIXED_EQUIP_CODE = #{param1,jdbcType=VARCHAR},
+		       T.MODIFY_USER_CODE = #{param3},
+		       T.MODIFY_TIME      = SYSDATE
+		 WHERE EXISTS (SELECT 1
+		          FROM T_PLA_ORDER_TASK OT
+		         WHERE T.ID = OT.ORDER_ITEM_PRO_DEC_ID
+		           AND OT.WORK_ORDER_NO = #{param2})
+		<if test="param1==null or param1 == ''">
+         	AND T.EQUIP_CODE = T.FIXED_EQUIP_CODE
+		</if>
+	</update>
+	
+	<select id="getUnFinishedLength" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="queryColumns"/>
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o
+        WHERE o.CONTRACT_NO = #{param1,jdbcType=VARCHAR}
+            AND o.PROCESS_ID = #{param2,jdbcType=VARCHAR}
+            AND o.ORG_CODE = #{param3,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByWoNo" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="queryColumns"/>
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o
+        WHERE o.WORK_ORDER_NO = #{woNo}
+        AND (o.UN_FINISHED_LENGTH IS NULL OR o.UN_FINISHED_LENGTH > 0)
+        ORDER BY o.UN_FINISHED_LENGTH DESC
+	</select>
+    
+	<select id="checkProDecUseStock" parameterType="string" resultType="int">
+        SELECT
+          COUNT(A."ID")
+        FROM T_PLA_INV_OA_USE_LOG A LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC B ON A.REF_ID = B.ID
+          WHERE B.ORDER_ITEM_DEC_ID = #{itemDecId}
+	</select>
+    
+	<!-- 获取上层orderTaskId关联的所有的ProDec -->
+	<select id="getProDecByOrderTaskId" parameterType="string" resultType="cc.oit.bsmes.pla.model.CustomerOrderItemProDec">
+		SELECT  <include refid="queryColumns"/>  
+				FROM  T_PLA_CU_ORDER_ITEM_PRO_DEC o  
+				WHERE o.ORDER_ITEM_DEC_ID=(
+				      SELECT ORDER_ITEM_DEC_ID  
+				      FROM  T_PLA_CU_ORDER_ITEM_PRO_DEC  
+				      WHERE ID=(
+				            SELECT ORDER_ITEM_PRO_DEC_ID 
+				            FROM T_PLA_ORDER_TASK 
+				            WHERE ID=#{orderTaskId, jdbcType=VARCHAR}
+				      )
+				)
+	</select>
+    
+	<!-- 获取手动排程工序下的明细分解 -->
+	<select id="getHandScheduleOrderItemProDec" parameterType="map" resultMap="getMap">
+		SELECT <include refid="queryColumns"/>,
+	(SELECT e.NAME || '[' || e.CODE || ']' FROM T_FAC_EQIP_INFO e WHERE e.CODE=o.FIXED_EQUIP_CODE AND ROWNUM <![CDATA[<=]]> 1) AS FIXED_EQUIP_NAME
+      FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o, 
+      T_PLA_CUSTOMER_ORDER_ITEM_DEC id,
+      T_PLA_CUSTOMER_ORDER_ITEM i
+      WHERE 
+        i.ID=id.ORDER_ITEM_ID
+        AND id.ID=o.ORDER_ITEM_DEC_ID
+        AND i.ID=#{orderItemId,jdbcType=VARCHAR}
+        AND o.PROCESS_ID = #{processId,jdbcType=VARCHAR} 
+	</select>
+	
+	<!-- 根据主键更新固定设备equipCode -->
+	<update id="updateFixEquipById" parameterType="string" flushCache="true" >
+		UPDATE T_PLA_CU_ORDER_ITEM_PRO_DEC T
+		   SET T.FIXED_EQUIP_CODE = #{param2,jdbcType=VARCHAR}
+		WHERE T.ID = #{param1,jdbcType=VARCHAR}
+	</update> 
+	
+	<!-- 获取分卷下未完成明细：根据分卷ID -->
+	<select id="getUncompleteOrderItemProDecByDecId" parameterType="string" resultMap="getMap">
+		SELECT 
+		<include refid="queryColumns"/> 
+		FROM T_PLA_CU_ORDER_ITEM_PRO_DEC o
+		WHERE o.ORDER_ITEM_DEC_ID = #{customerOrderItemDecId}
+		  AND o.STATUS IN ('TO_DO', 'IN_PROGRESS')
+	</select>
+	
+	<insert id="insertOrderItemProDec" parameterType="map">
+	   INSERT INTO T_PLA_CU_ORDER_ITEM_PRO_DEC
+	    (ID, 
+	     ORDER_ITEM_DEC_ID,
+	     CRAFTS_ID,
+	     PROCESS_PATH,
+	     PROCESS_NAME,
+	     HALF_PRODUCT_CODE,
+	     CONTRACT_NO,
+	     PROCESS_CODE,
+	     PROCESS_ID,
+	     PRODUCT_SPEC,
+	     PRODUCT_CODE,
+	     STATUS,
+	     CREATE_USER_CODE,
+	     CREATE_TIME,
+	     MODIFY_USER_CODE,
+	     MODIFY_TIME,
+	     ORG_CODE)
+	    SELECT GET_UUID(),
+	           COID.ID,
+	           COI.CRAFTS_ID,
+	           PPP.FULL_PATH,
+	           PPP.PROCESS_NAME,
+	           (SELECT IM.MAT_CODE FROM T_PRO_PROCESS_IN_OUT PIO,T_INV_MAT IM WHERE PIO.MAT_CODE=IM.MAT_CODE AND PIO.PRODUCT_PROCESS_ID=PPP.ID AND PIO.IN_OR_OUT = 'OUT' AND IM.MAT_TYPE = 'SEMI_FINISHED_PRODUCT' AND ROWNUM=1) HALF_MAT_CODE,
+	           SO.CONTRACT_NO,
+	           PPP.PROCESS_CODE,
+	           PPP.ID,
+	           SOI.PRODUCT_SPEC,
+	           SOI.PRODUCT_CODE,
+	           'TO_DO',
+	           #{userCode,jdbcType=VARCHAR},
+	           SYSDATE,
+	           #{userCode,jdbcType=VARCHAR},
+	           SYSDATE,
+	           SOI.ORG_CODE
+	      FROM T_ORD_SALES_ORDER_ITEM SOI
+	      LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM COI
+	        ON SOI.ID = COI.SALES_ORDER_ITEM_ID
+	      LEFT JOIN T_ORD_SALES_ORDER SO
+	        ON SOI.SALES_ORDER_ID = SO.ID
+	      LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC COID
+	        ON COI.ID = COID.ORDER_ITEM_ID
+	      LEFT JOIN T_PLA_PRODUCT PP
+	        ON COI.PRODUCT_CODE = PP.PRODUCT_CODE
+	      LEFT JOIN T_PRO_PRODUCT_CRAFTS PPC
+	        ON COI.CRAFTS_ID = PPC.ID
+	      LEFT JOIN T_PRO_PRODUCT_PROCESS PPP
+	        ON PPC.ID = PPP.PRODUCT_CRAFTS_ID
+	     WHERE SOI.ID=#{orderItemId,jdbcType=VARCHAR} 
+	       AND PPP.ID=#{processId,jdbcType=VARCHAR}
+	</insert>
+	
+	<select id="getFirstProcessByCode" parameterType="string" resultType="map">
+        SELECT W.PROCESS_NAME
+  		FROM T_PLA_CUSTOMER_ORDER_ITEM T, T_PRO_PRODUCT_PROCESS_WIP W
+ 		WHERE T.CRAFTS_ID = W.PRODUCT_CRAFTS_ID
+   		AND T.ID = #{orderItemIdArray,jdbcType=VARCHAR}
+ 		ORDER BY TO_CHAR(W.SEQ)
+	</select>
+	
+	<!-- 绝缘：获取工序根据工序CODE和订单ID 
+	(SELECT TEMP.PROP_TARGET_VALUE FROM MATERIALTEMP TEMP WHERE TEMP.ID=P.ID AND IO.MAT_CODE=TEMP.MAT_CODE AND TEMP.PROP_NAME = '字码/颜色' AND ROWNUM <![CDATA[<=]]> 1) AS COLOR,
+	AND QC.NEED_IN_CHECK = '1'
+	-->
+	<select id="getOrderProcessByCodeJY" parameterType="map" resultMap="getMap">
+	    WITH PROPTEMP AS (
+			SELECT DISTINCT QC.PROCESS_ID,
+	                        QC.CHECK_ITEM_CODE,
+	                        QC.CHECK_ITEM_NAME,
+	                        QC.ITEM_TARGET_VALUE,
+	                        PPP.NEXT_PROCESS_ID,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_PRO_PROCESS_QC_WIP          QC,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI
+	         WHERE QC.PROCESS_ID = PPP.ID
+	           AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+	           AND PPP.PROCESS_CODE  IN ('Extrusion-Single', 'Extrusion-Dual')
+	           AND QC.ITEM_TARGET_VALUE IS NOT NULL
+	           AND CHECK_ITEM_NAME IN ('绝缘标称厚度',
+	                                    '绝缘最小厚度',
+	                                    '绝缘最大厚度',
+	                                    '绝缘标称外径',
+	                                    '绝缘前外径', 
+	                                    '导体外径近似值',
+	                                    '导体结构',
+	                                    'I-导体结构')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				                 #{id, jdbcType=VARCHAR} 
+					         </foreach> 
+            UNION ALL
+            SELECT DISTINCT QC.PROCESS_ID,
+	                        QC.CHECK_ITEM_CODE,
+	                        QC.CHECK_ITEM_NAME,
+	                        QC.ITEM_TARGET_VALUE,
+	                        PPP.NEXT_PROCESS_ID,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_PRO_PROCESS_QC_WIP          QC,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI
+	         WHERE QC.PROCESS_ID = PPP.ID
+	           AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+	           AND PPP.PROCESS_CODE = 'wrapping_ymd'
+	           AND CHECK_ITEM_NAME IN ('包带搭盖率')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				                 #{id, jdbcType=VARCHAR} 
+					         </foreach> 
+	    ), 
+		MATERIALTEMP AS (
+			SELECT DISTINCT PPP.ID,
+	                        M.MAT_CODE,
+	                        M.MAT_NAME,
+	                        D.PROP_NAME,
+	                        P.PROP_TARGET_VALUE,
+	                        IO.IN_OR_OUT,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_INV_MAT_WIP                 M,
+	               T_INV_MAT_PROP_WIP            P,
+	               T_INV_TEMPLET_DETAIL          D,
+	               T_PRO_PROCESS_IN_OUT_WIP      IO,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI
+	         WHERE P.MAT_ID = M.ID
+	           AND P.TEMPLET_DETAIL_ID = D.ID
+	           AND M.MAT_CODE = IO.MAT_CODE
+	           AND M.PROCESS_IN_OUT_WIP_ID = IO.ID
+	           AND IO.PRODUCT_PROCESS_ID = PPP.ID
+	           AND COI.CRAFTS_ID = PPP.PRODUCT_CRAFTS_ID
+	           AND PPP.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual', 'wrapping_ymd')
+	           AND D.PROP_NAME IN ('宽度',
+	                               '厚度',
+	                               '材质',
+	                               '尺寸',
+	                               '规格',
+	                               '字码/颜色',
+	                               '颜色',
+	                               '单丝直径',
+	                               '单丝标准直径')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				        #{id, jdbcType=VARCHAR} 
+					 </foreach>
+		 ),
+		 MATERIALTEMP1 AS (
+		     SELECT DISTINCT PIO.PRODUCT_PROCESS_ID AS PROCESS_ID, (IM.MAT_NAME || (CASE WHEN IM.COLOR IS NOT NULL THEN '(' || IM.COLOR || ')' ELSE '' END)) AS MAT_NAME
+			 FROM T_PRO_PROCESS_IN_OUT_WIP      PIO,
+			      T_INV_MAT_WIP                 IM,
+			      T_PRO_PRODUCT_PROCESS_WIP     PROCESS,
+			      T_PLA_CUSTOMER_ORDER_ITEM COI
+			 WHERE PIO.MAT_CODE = IM.MAT_CODE
+			   AND PIO.IN_OR_OUT = 'IN'
+			   AND PROCESS.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+			   AND PIO.ID = IM.PROCESS_IN_OUT_WIP_ID
+			   AND PIO.PRODUCT_PROCESS_ID = PROCESS.ID
+			   AND PROCESS.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual', 'wrapping_ymd')
+			   AND INSTR(IM.MAT_NAME, '半成品') = 0
+			   AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+						        #{id, jdbcType=VARCHAR} 
+							 </foreach>
+		 )
+		 SELECT I.ID AS ORDER_ITEM_ID,
+		       I.ID AS RELATE_ORDER_IDS,
+		       SOI.PRODUCT_TYPE,
+		       IDEC.ID AS ORDER_ITEM_DEC_ID,
+		       SOI.PRODUCT_CODE,
+		       SOI.PRODUCT_SPEC,
+		       SOI.CUST_PRODUCT_TYPE,
+		       SOI.CUST_PRODUCT_SPEC,
+		       I.CRAFTS_ID AS CRAFTS_ID,
+		       P.ID AS PROCESS_ID,
+		       SO.CONTRACT_NO,
+		       M.MAT_CODE AS HALF_PRODUCT_CODE,
+		       M.MAT_CODE AS MAT_CODE,
+		       M.MAT_TYPE AS MAT_TYPE,
+		       P.PROCESS_NAME AS PROCESS_NAME,
+		       P.FULL_PATH AS PROCESS_PATH,
+		       P.PROCESS_CODE AS PROCESS_CODE,
+		       P.OLD_PROCESS_ID AS OLD_PROCESS_ID,
+		       SOI.CONTRACT_LENGTH AS UN_FINISHED_LENGTH,
+               (CASE
+		         WHEN IO.IN_OR_OUT = 'OUT' THEN
+		          ((SELECT TEMP.PROP_TARGET_VALUE
+		              FROM MATERIALTEMP          TEMP
+		             WHERE TEMP.ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID)
+		               AND (TEMP.PROP_NAME = '字码/颜色' OR TEMP.PROP_NAME = '颜色')
+		               AND TEMP.IN_OR_OUT = 'OUT'
+		               AND ROWNUM = 1))
+		         ELSE
+		          (SELECT TEMP.PROP_TARGET_VALUE
+		             FROM MATERIALTEMP TEMP
+		            WHERE
+		            IO.MAT_CODE = TEMP.MAT_CODE
+		         AND (TEMP.PROP_NAME = '字码/颜色' OR TEMP.PROP_NAME = '颜色')
+		         AND ROWNUM = 1)
+		       END) AS COLOR,
+		       IO.IN_OR_OUT AS IN_OR_OUT,
+		       IO.QUANTITY AS QUANTITY,
+		       M.MAT_NAME AS MAT_NAME,
+		       IO.UNIT,
+		       (I.ORDER_LENGTH * IO.QUANTITY) AS TOTAL_QUANTITY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '包带搭盖率'
+		           AND TEMP.PROCESS_ID = P.ID
+		           AND ROWNUM = 1) AS COVER_RATE,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘标称厚度'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1) AS STANDARD_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最大厚度'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1) AS STANDARD_MAX_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最小厚度'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1) AS STANDARD_MIN_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘标称外径'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1) AS OUTSIDE_VALUE,
+		       NVL((SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = 'I-导体结构'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1),
+		         (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '导体结构'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1)) AS WIRES_STRUCTURE,
+		       NVL((SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘前外径'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1),
+		           (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '导体外径近似值'
+		           AND (TEMP.PROCESS_ID = (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID))
+		           AND ROWNUM = 1)) AS FRONT_OUTSIDE_VALUE,
+		       (SELECT LISTAGG(MTEMP.MAT_NAME, '<![CDATA[<br/>]]>') WITHIN GROUP(ORDER BY MTEMP.MAT_NAME) AS MATERIAL
+		          FROM MATERIALTEMP1 MTEMP
+		         WHERE MTEMP.PROCESS_ID = (CASE
+		                 WHEN P.PROCESS_CODE IN ('Respool', 'Irradition') THEN
+		                  (SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID UNION SELECT T1.ID FROM T_PRO_PRODUCT_PROCESS_WIP T1 WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual') AND ROWNUM=1 START WITH T1.ID = P.ID CONNECT BY PRIOR  T1.NEXT_PROCESS_ID=T1.ID)
+		                 ELSE
+		                  P.ID
+		               END)) AS MATERIAL,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '宽度'
+		           AND ROWNUM = 1) AS KUANDU,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '厚度'
+		           AND ROWNUM = 1) AS HOUDU,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '材质'
+		           AND ROWNUM = 1) AS CAIZHI,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '尺寸'
+		           AND ROWNUM = 1) AS CHICUN,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '规格'
+		           AND ROWNUM = 1) AS GUIGE,
+		       (CASE
+		         WHEN IO.IN_OR_OUT = 'IN' THEN
+		          (SELECT TEMP.PROP_TARGET_VALUE
+		             FROM MATERIALTEMP TEMP
+		            WHERE TEMP.ID = P.ID
+		              AND IO.MAT_CODE = TEMP.MAT_CODE
+		              AND (TEMP.PROP_NAME = '单丝直径' OR TEMP.PROP_NAME = '单丝标准直径')
+		              AND ROWNUM = 1)
+		         ELSE
+		          (SELECT TEMP.PROP_TARGET_VALUE
+		             FROM MATERIALTEMP TEMP
+		            WHERE TEMP.ID IN
+		                  (SELECT T1.ID
+		                     FROM T_PRO_PRODUCT_PROCESS_WIP T1
+		                    WHERE T1.PROCESS_CODE IN ('Extrusion-Single', 'wrapping_ymd', 'Extrusion-Dual')
+		                    START WITH T1.ID = P.ID
+		                   CONNECT BY PRIOR T1.ID = T1.NEXT_PROCESS_ID)
+		              AND (TEMP.PROP_NAME = '单丝直径' OR TEMP.PROP_NAME = '单丝标准直径')
+		              AND ROWNUM = 1)
+		       END) AS DANSIZHIJING
+		  FROM T_PLA_CUSTOMER_ORDER_ITEM     I,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P,
+		       T_PRO_PROCESS_INFO            INFO,
+		       T_PRO_PROCESS_IN_OUT_WIP      IO,
+		       T_INV_MAT_WIP                 M,
+		       T_ORD_SALES_ORDER_ITEM        SOI,
+		       T_ORD_SALES_ORDER             SO
+		 WHERE I.ID = IDEC.ORDER_ITEM_ID
+		   AND I.CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+		   AND P.ID = IO.PRODUCT_PROCESS_ID
+		   AND IO.MAT_CODE = M.MAT_CODE
+		   AND IO.ID = M.PROCESS_IN_OUT_WIP_ID
+		   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+		   AND SOI.SALES_ORDER_ID = SO.ID
+		   AND P.PROCESS_CODE = INFO.CODE
+		   AND INFO.SECTION = '绝缘'
+		   AND I.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+					       #{id, jdbcType=VARCHAR} 
+					   </foreach>
+		 ORDER BY MAT_TYPE
+	</select>
+	<!-- 成缆：获取工序根据工序CODE和订单ID AND NEED_IN_CHECK = '1' -->
+	<select id="getOrderProcessByCodeCL" parameterType="map" resultMap="getMap">
+		WITH PROPTEMP AS (
+	        SELECT DISTINCT QC.PROCESS_ID,
+	                        QC.CHECK_ITEM_CODE,
+	                        QC.CHECK_ITEM_NAME,
+	                        QC.ITEM_TARGET_VALUE,
+	                        PPP.NEXT_PROCESS_ID,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_PRO_PROCESS_QC_WIP          QC,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI
+	         WHERE QC.PROCESS_ID = PPP.ID
+	           AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+	           AND PPP.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual')
+	           AND CHECK_ITEM_NAME IN ('绝缘标称厚度', '绝缘最小厚度', '绝缘最大厚度')
+	           AND ITEM_TARGET_VALUE IS NOT NULL
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				                 #{id, jdbcType=VARCHAR} 
+					         </foreach> 
+		    UNION ALL
+		    SELECT DISTINCT QC.PROCESS_ID,
+	                        QC.CHECK_ITEM_CODE,
+	                        QC.CHECK_ITEM_NAME,
+	                        QC.ITEM_TARGET_VALUE,
+	                        PPP.NEXT_PROCESS_ID,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_PRO_PROCESS_QC_WIP          QC,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI,
+	               T_PRO_PROCESS_INFO        INFO
+	         WHERE QC.PROCESS_ID = PPP.ID
+	           AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+	           AND PPP.PROCESS_CODE = INFO.CODE
+	           AND INFO.SECTION = '成缆'
+	           AND CHECK_ITEM_NAME IN ('编织后外径', '铠装后外径', '成缆后外径', '绕包后外径', '绞合外径')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				                 #{id, jdbcType=VARCHAR} 
+					         </foreach> 
+		),
+		MATERIALTEMP AS (
+		    SELECT DISTINCT PPP.ID,
+	                        M.MAT_CODE,
+	                        M.MAT_NAME,
+	                        D.PROP_NAME,
+	                        P.PROP_TARGET_VALUE,
+	                        IO.IN_OR_OUT,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_INV_MAT_WIP             M,
+	               T_INV_MAT_PROP_WIP        P,
+	               T_INV_TEMPLET_DETAIL      D,
+	               T_PRO_PROCESS_IN_OUT_WIP  IO,
+	               T_PRO_PRODUCT_PROCESS_WIP PPP,
+	               T_PRO_PROCESS_INFO        INFO,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI
+	         WHERE P.MAT_ID = M.ID
+	           AND P.TEMPLET_DETAIL_ID = D.ID
+	           AND M.MAT_CODE = IO.MAT_CODE
+	           AND IO.PRODUCT_PROCESS_ID = PPP.ID
+	           AND M.PROCESS_IN_OUT_WIP_ID = IO.ID
+	           AND COI.CRAFTS_ID = PPP.PRODUCT_CRAFTS_ID
+	           AND PPP.PROCESS_CODE = INFO.CODE
+	           AND INFO.SECTION = '成缆'
+	           AND D.PROP_NAME IN ('宽度', '厚度', '材质', '尺寸', '规格', '结构', '字码/颜色', '颜色', '单丝直径', '单丝标准直径')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				        #{id, jdbcType=VARCHAR} 
+					 </foreach>
+		),
+		MATERIALTEMP2 AS (
+	         SELECT DISTINCT PIO.PRODUCT_PROCESS_ID, (IM.MAT_NAME || (CASE WHEN IM.COLOR IS NOT NULL THEN '(' || IM.COLOR || ')' ELSE '' END)) AS MAT_NAME
+			 FROM  T_PRO_PROCESS_IN_OUT_WIP  PIO,
+			       T_INV_MAT_WIP             IM,
+			       T_PRO_PRODUCT_PROCESS_WIP PPP,
+			       T_PRO_PROCESS_INFO        INFO,
+			       T_PLA_CUSTOMER_ORDER_ITEM coi
+			 WHERE PIO.MAT_CODE = IM.MAT_CODE
+			   AND PIO.IN_OR_OUT = 'IN'
+			   AND PIO.PRODUCT_PROCESS_ID = ppp.id
+			   AND IM.PROCESS_IN_OUT_WIP_ID = PIO.ID
+			   AND PPP.PROCESS_CODE = INFO.CODE
+			   AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+			   AND INFO.SECTION = '成缆'
+			   AND INSTR(IM.MAT_NAME, '半成品') = 0
+			   AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+						        #{id, jdbcType=VARCHAR} 
+							 </foreach>
+		)
+		SELECT T.*, (CASE WHEN T.COLOR IS NULL THEN NULL WHEN instr(T.COLOR,'-')>0 THEN NULL WHEN instr(T.COLOR,'#') = 0 THEN NULL ELSE to_number(SUBSTR(T.COLOR,0,INSTR(T.COLOR,'#',1,1)-1)) END) AS Order_SEQ FROM (
+			SELECT I.ID AS ORDER_ITEM_ID,
+			       '' AS RELATE_ORDER_IDS,
+			       SOI.PRODUCT_TYPE,
+			       SOI.CUST_PRODUCT_TYPE,
+			       SOI.CUST_PRODUCT_SPEC,
+			       SOI.WIRES_STRUCTURE,
+			       IDEC.ID AS ORDER_ITEM_DEC_ID,
+			       SOI.PRODUCT_CODE,
+			       SOI.PRODUCT_SPEC,
+			       I.CRAFTS_ID AS CRAFTS_ID,
+			       P.ID AS PROCESS_ID,
+			       SO.CONTRACT_NO,
+			       M.MAT_CODE AS HALF_PRODUCT_CODE,
+			       M.MAT_CODE AS MAT_CODE,
+			       M.MAT_TYPE AS MAT_TYPE,
+			       P.PROCESS_NAME AS PROCESS_NAME,
+			       P.FULL_PATH AS PROCESS_PATH,
+			       P.PROCESS_CODE AS PROCESS_CODE,
+			       P.OLD_PROCESS_ID AS OLD_PROCESS_ID,
+			       SOI.CONTRACT_LENGTH AS UN_FINISHED_LENGTH,
+			       (SELECT WO.PROCESS_CODE FROM T_WIP_WORK_ORDER WO WHERE WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}) AS PRE_PROCESS_CODE,
+			    <!--   REGEXP_REPLACE(M.COLOR,
+	                      '([[:digit:]]#+-[[:digit:]]+#)\/([^,]+)',
+	                      '\2 \1',1)AS COLOR, -->
+	               (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME IN ('字码/颜色', '颜色')
+			           AND ROWNUM = 1) AS COLOR,
+	               (SELECT PD.WIRE_COIL
+			          FROM T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+			         WHERE PD.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+			           AND PD.HALF_PRODUCT_CODE = M.MAT_CODE
+			           AND ROWNUM = 1) AS WIRE_COIL,
+			       IO.IN_OR_OUT AS IN_OR_OUT,
+			       IO.QUANTITY AS QUANTITY,
+			       M.MAT_NAME AS MAT_NAME,
+			       IO.UNIT,
+			       P.SEQ,
+			       (I.ORDER_LENGTH * IO.QUANTITY) AS TOTAL_QUANTITY,
+			       (SELECT ITEM_TARGET_VALUE
+			          FROM PROPTEMP TEMP
+			         WHERE TEMP.CHECK_ITEM_NAME IN ('编织后外径', '铠装后外径', '成缆后外径', '绕包后外径', '绞合外径')
+			           AND TEMP.PROCESS_ID = P.ID
+			           AND ITEM_TARGET_VALUE IS NOT NULL
+			           AND ROWNUM = 1) AS OUTSIDE_VALUE,
+			       (SELECT ITEM_TARGET_VALUE
+			          FROM PROPTEMP TEMP, T_PRO_PRODUCT_PROCESS_WIP PRO
+			         WHERE TEMP.CHECK_ITEM_NAME = '绝缘标称厚度'
+			           AND TEMP.PROCESS_ID = PRO.ID
+			           AND PRO.PRODUCT_CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+			           AND ROWNUM = 1) AS STANDARD_PLY,
+			       (SELECT ITEM_TARGET_VALUE
+			          FROM PROPTEMP TEMP, T_PRO_PRODUCT_PROCESS_WIP PRO
+			         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最大厚度'
+			           AND TEMP.PROCESS_ID = PRO.ID
+			           AND PRO.PRODUCT_CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+			           AND ROWNUM = 1) AS STANDARD_MAX_PLY,
+			       (SELECT ITEM_TARGET_VALUE
+			          FROM PROPTEMP TEMP, T_PRO_PRODUCT_PROCESS_WIP PRO
+			         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最小厚度'
+			           AND TEMP.PROCESS_ID = PRO.ID
+			           AND PRO.PRODUCT_CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+			           AND ROWNUM = 1) AS STANDARD_MIN_PLY,
+			       (SELECT LISTAGG(MTEMP.MAT_NAME, '<![CDATA[<br/>]]>') WITHIN GROUP(ORDER BY MTEMP.MAT_NAME) AS MATERIAL
+			          FROM MATERIALTEMP2 MTEMP
+			         WHERE MTEMP.PRODUCT_PROCESS_ID = P.ID) AS MATERIAL,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '宽度'
+			           AND ROWNUM = 1) AS KUANDU,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '厚度'
+			           AND ROWNUM = 1) AS HOUDU,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '材质'
+			           AND ROWNUM = 1) AS CAIZHI,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '尺寸'
+			           AND ROWNUM = 1) AS CHICUN,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME IN ('规格', '结构')
+			           AND ROWNUM = 1) AS GUIGE,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '单丝标准直径'
+			           AND ROWNUM = 1) AS DANSIZHIJING
+			           <!-- 
+			           ,
+			       (SELECT REPLACE(WM_CONCAT(T.LOCATION_NAME),
+			                       ',',
+			                       '<![CDATA[<br/>]]>')
+			          FROM T_INV_LOCATION T
+			         WHERE T.ID IN
+			               (SELECT Y.LOCATION_ID
+			                  FROM T_INV_INVENTORY Y
+			                 WHERE Y.BAR_CODE IN (SELECT SERIAL_NUM
+			                                        FROM T_WIP_REPORT L
+			                                       WHERE L.MAT_CODE = M.MAT_CODE
+			                                         AND L.WORK_ORDER_NO = #{workOrderNo, jdbcType = VARCHAR}))) AS DISK
+			                                    -->
+			  FROM T_PLA_CUSTOMER_ORDER_ITEM     I,
+			       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+			       T_PRO_PRODUCT_PROCESS_WIP     P,
+			       T_PRO_PROCESS_INFO            INFO,
+			       T_PRO_PROCESS_IN_OUT_WIP      IO,
+			       T_INV_MAT_WIP                 M,
+			       T_ORD_SALES_ORDER_ITEM        SOI,
+			       T_ORD_SALES_ORDER             SO
+			 WHERE I.ID = IDEC.ORDER_ITEM_ID
+			   AND I.CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+			   AND P.ID = IO.PRODUCT_PROCESS_ID
+			   AND IO.ID = M.PROCESS_IN_OUT_WIP_ID
+			   AND IO.MAT_CODE = M.MAT_CODE
+			   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+			   AND SOI.SALES_ORDER_ID = SO.ID
+			   AND P.PROCESS_CODE = INFO.CODE
+			   AND INFO.SECTION = '成缆'
+			   AND ((SELECT PROCESS.PROCESS_CODE
+		           FROM T_PRO_PRODUCT_PROCESS_WIP PROCESS
+		          WHERE PROCESS.NEXT_PROCESS_ID = P.ID
+		            AND ROWNUM = 1) <![CDATA[<>]]> 'Respool' OR IO.IN_OR_OUT = 'OUT' OR
+		       INSTR(M.MAT_NAME, '半成品') = 0)
+			   AND I.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+						       #{id, jdbcType=VARCHAR} 
+						   </foreach>
+			 UNION ALL
+
+			 SELECT I.ID AS ORDER_ITEM_ID,
+				   PD.RELATE_ORDER_IDS AS RELATE_ORDER_IDS,
+			       SOI.PRODUCT_TYPE,
+			       SOI.CUST_PRODUCT_TYPE,
+			       SOI.CUST_PRODUCT_SPEC,
+			       SOI.WIRES_STRUCTURE,
+			       IDEC.ID AS ORDER_ITEM_DEC_ID,
+			       SOI.PRODUCT_CODE,
+			       SOI.PRODUCT_SPEC,
+			       I.CRAFTS_ID AS CRAFTS_ID,
+			       P.ID AS PROCESS_ID,
+			       SO.CONTRACT_NO,
+			       M.MAT_CODE AS HALF_PRODUCT_CODE,
+			       M.MAT_CODE AS MAT_CODE,
+			       M.MAT_TYPE AS MAT_TYPE,
+			       P.PROCESS_NAME AS PROCESS_NAME,
+			       P.FULL_PATH AS PROCESS_PATH,
+			       P.PROCESS_CODE AS PROCESS_CODE,
+			       P.OLD_PROCESS_ID AS OLD_PROCESS_ID,
+			       (PD.FINISHED_LENGTH + PD.UN_FINISHED_LENGTH) AS UN_FINISHED_LENGTH,
+			       PD.PROCESS_CODE AS PRE_PROCESS_CODE,		
+			       PD.COLOR AS COLOR,
+			       PD.WIRE_COIL AS WIRE_COIL,
+			       IO.IN_OR_OUT AS IN_OR_OUT,
+			       IO.QUANTITY AS QUANTITY,
+			       (CASE WHEN PD.PROCESS_CODE = 'Steam-Line' THEN '蒸线半成品' ELSE M.MAT_NAME END) AS MAT_NAME,
+			       IO.UNIT,
+			       P.SEQ,
+			       (PD.UN_FINISHED_LENGTH * IO.QUANTITY) AS TOTAL_QUANTITY,
+			       '' AS OUTSIDE_VALUE,
+			       '' AS MATERIAL,
+			       '' AS STANDARD_PLY,
+			       '' AS STANDARD_MAX_PLY,
+			       '' AS STANDARD_MIN_PLY,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '宽度'
+			           AND ROWNUM = 1) AS KUANDU,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '厚度'
+			           AND ROWNUM = 1) AS HOUDU,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '材质'
+			           AND ROWNUM = 1) AS CAIZHI,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '尺寸'
+			           AND ROWNUM = 1) AS CHICUN,
+			       (SELECT TEMP.PROP_TARGET_VALUE
+			          FROM MATERIALTEMP TEMP
+			         WHERE TEMP.ID = P.ID
+			           AND IO.MAT_CODE = TEMP.MAT_CODE
+			           AND TEMP.PROP_NAME = '规格'
+			           AND ROWNUM = 1) AS GUIGE,
+			       '' AS DANSIZHIJING
+			       <!--
+			       ,
+			       (SELECT REPLACE(WM_CONCAT(T.LOCATION_NAME), ',', '<![CDATA[<br/>]]>')
+			          FROM T_INV_LOCATION T
+			         WHERE T.ID IN
+			               (SELECT Y.LOCATION_ID
+			                  FROM T_INV_INVENTORY Y
+			                 WHERE Y.BAR_CODE IN
+			                       (SELECT SERIAL_NUM
+			                          FROM T_WIP_REPORT L
+			                         WHERE L.MAT_CODE = M.MAT_CODE
+			                           AND L.WORK_ORDER_NO = #{workOrderNo, jdbcType = VARCHAR}))) AS DISK
+			                           -->
+			  FROM T_PLA_CUSTOMER_ORDER_ITEM I,
+			  	   T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+			  	   T_PLA_CU_ORDER_ITEM_PRO_DEC PD,
+			       T_PRO_PRODUCT_PROCESS_WIP   P,
+			       T_PRO_PROCESS_INFO          INFO,
+			       T_PRO_PROCESS_IN_OUT_WIP    IO,
+			       T_INV_MAT_WIP               M,
+			       T_ORD_SALES_ORDER_ITEM      SOI,
+			       T_ORD_SALES_ORDER           SO
+			 WHERE I.ID = IDEC.ORDER_ITEM_ID
+			   AND IDEC.ID = PD.ORDER_ITEM_DEC_ID
+			   AND I.CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+			   AND P.ID = IO.PRODUCT_PROCESS_ID
+			   AND IO.MAT_CODE = M.MAT_CODE
+			   AND IO.ID =M.PROCESS_IN_OUT_WIP_ID
+			   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+			   AND SOI.SALES_ORDER_ID = SO.ID
+			   AND P.PROCESS_CODE = INFO.CODE
+			   AND INFO.SECTION = '成缆'
+			   AND (SELECT PROCESS.PROCESS_CODE
+			          FROM T_PRO_PRODUCT_PROCESS_WIP PROCESS
+			         WHERE PROCESS.NEXT_PROCESS_ID = P.ID
+			           AND ROWNUM = 1) IN ('Respool', 'Steam-Line')
+			   AND IO.IN_OR_OUT = 'IN'
+			   AND INSTR(M.MAT_NAME, '半成品') <![CDATA[>]]> 0
+			   AND PD.HALF_PRODUCT_CODE = M.MAT_CODE
+			   AND PD.WORK_ORDER_NO = #{workOrderNo, jdbcType = VARCHAR}
+			   AND I.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+						       #{id, jdbcType=VARCHAR} 
+						   </foreach>
+		) T ORDER BY ORDER_SEQ, MAT_TYPE
+		                
+	</select>
+	<!-- 护套：获取工序根据工序CODE和订单ID AND NEED_IN_CHECK = '1' -->
+	<select id="getOrderProcessByCodeHT" parameterType="map" resultMap="getMap">
+		WITH PROPTEMP AS (
+			SELECT DISTINCT QC.PROCESS_ID,
+	                        QC.CHECK_ITEM_CODE,
+	                        QC.CHECK_ITEM_NAME,
+	                        QC.ITEM_TARGET_VALUE,
+	                        PPP.NEXT_PROCESS_ID,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_PRO_PROCESS_QC_WIP          QC,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PRO_PROCESS_INFO        INFO,
+	               T_PLA_CUSTOMER_ORDER_ITEM COI
+	         WHERE QC.PROCESS_ID = PPP.ID
+	           AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+	           AND PPP.PROCESS_CODE = INFO.CODE
+	           AND INFO.SECTION = '护套'
+	           AND CHECK_ITEM_NAME IN ('指导厚度', '护套标称厚度', '护套厚度', '标准印字内容', '护套前外径','最小厚度')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				                 #{id, jdbcType=VARCHAR} 
+					         </foreach> 
+		),
+		MATERIALTEMP AS (
+			SELECT DISTINCT PPP.ID,
+	                        M.MAT_CODE,
+	                        M.MAT_NAME,
+	                        D.PROP_NAME,
+	                        P.PROP_TARGET_VALUE,
+	                        IO.IN_OR_OUT,
+	                        COI.SALES_ORDER_ITEM_ID
+	          FROM T_INV_MAT_WIP                 M,
+	               T_INV_MAT_PROP_WIP            P,
+	               T_INV_TEMPLET_DETAIL          D,
+	               T_PRO_PROCESS_IN_OUT_WIP      IO,
+	               T_PRO_PRODUCT_PROCESS_WIP     PPP,
+	               T_PRO_PROCESS_INFO            INFO,
+	               T_PLA_CUSTOMER_ORDER_ITEM     COI
+	         WHERE P.MAT_ID = M.ID
+	           AND P.TEMPLET_DETAIL_ID = D.ID
+	           AND M.MAT_CODE = IO.MAT_CODE
+	           AND IO.PRODUCT_PROCESS_ID = PPP.ID
+	           AND IO.ID = M.PROCESS_IN_OUT_WIP_ID
+	           AND COI.CRAFTS_ID = PPP.PRODUCT_CRAFTS_ID
+	           AND PPP.PROCESS_CODE = INFO.CODE
+	           AND INFO.SECTION = '护套'
+	           AND D.PROP_NAME IN ('宽度',
+                         '厚度',
+                         '材质',
+                         '尺寸',
+                         '规格',
+                         '结构',
+                         '成品电线最大外径',
+                         '成品电线最小外径',
+                         '成品电线标准外径',
+                         '字码/颜色',
+                         '颜色')
+	           AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				        #{id, jdbcType=VARCHAR} 
+					 </foreach>
+		),
+		MATERIALTEMP2 AS
+		 (SELECT DISTINCT PIO.PRODUCT_PROCESS_ID,
+		                  (IM.MAT_NAME || (CASE
+		                    WHEN (SELECT TEMP.PROP_TARGET_VALUE
+		                            FROM MATERIALTEMP TEMP
+		                           WHERE TEMP.MAT_CODE = IM.MAT_CODE
+		                             AND TEMP.PROP_NAME IN ('字码/颜色', '颜色')
+		                             AND ROWNUM = 1) IS NOT NULL THEN
+		                     '(' || (SELECT TEMP.PROP_TARGET_VALUE
+		                               FROM MATERIALTEMP TEMP
+		                              WHERE TEMP.MAT_CODE = IM.MAT_CODE
+		                                AND TEMP.PROP_NAME IN ('字码/颜色', '颜色')
+		                                AND ROWNUM = 1) || ')'
+		                    ELSE
+		                     ''
+		                  END)) AS MAT_NAME
+		    FROM T_PRO_PROCESS_IN_OUT_WIP      PIO,
+		         T_INV_MAT_WIP                 IM,
+		         T_PRO_PRODUCT_PROCESS_WIP     PPP,
+		         T_PRO_PROCESS_INFO        INFO,
+		         T_PLA_CUSTOMER_ORDER_ITEM COI
+		   WHERE PIO.MAT_CODE = IM.MAT_CODE
+		     AND PIO.IN_OR_OUT = 'IN'
+		     AND PIO.PRODUCT_PROCESS_ID = PPP.ID
+		     AND PIO.ID = IM.PROCESS_IN_OUT_WIP_ID
+		     AND PPP.PROCESS_CODE = INFO.CODE
+		     AND PPP.PRODUCT_CRAFTS_ID = COI.CRAFTS_ID
+		     AND INFO.SECTION = '护套'
+		     AND INSTR(IM.MAT_NAME, '半成品') = 0
+		     AND COI.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				               #{id, jdbcType=VARCHAR} 
+					       </foreach>
+		)
+		SELECT I.ID AS ORDER_ITEM_ID,
+		       SOI.PRODUCT_TYPE,
+		       SOI.CUST_PRODUCT_TYPE,
+		       SOI.WIRES_STRUCTURE,
+		       IDEC.ID AS ORDER_ITEM_DEC_ID,
+		       SOI.PRODUCT_CODE,
+		       SOI.CUST_PRODUCT_SPEC,
+		       SOI.PRODUCT_SPEC,
+		       I.CRAFTS_ID AS CRAFTS_ID,
+		       P.ID AS PROCESS_ID,
+		       SO.CONTRACT_NO,
+		       M.MAT_CODE AS HALF_PRODUCT_CODE,
+		       M.MAT_CODE AS MAT_CODE,
+		       M.MAT_TYPE AS MAT_TYPE,
+		       P.PROCESS_NAME AS PROCESS_NAME,
+		       P.FULL_PATH AS PROCESS_PATH,
+		       P.PROCESS_CODE AS PROCESS_CODE,
+		       P.OLD_PROCESS_ID AS OLD_PROCESS_ID,
+		       SOI.CONTRACT_LENGTH AS UN_FINISHED_LENGTH,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME IN ('字码/颜色', '颜色')
+		           AND ROWNUM = 1) AS COLOR,
+		       IO.IN_OR_OUT AS IN_OR_OUT,
+		       IO.QUANTITY AS QUANTITY,
+		       M.MAT_NAME AS MAT_NAME,
+		       IO.UNIT,
+		       P.SEQ,
+		       (I.ORDER_LENGTH * IO.QUANTITY) AS TOTAL_QUANTITY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '最小厚度')
+		           AND TEMP.PROCESS_ID = P.ID
+		           AND ROWNUM = 1) AS MIN_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '指导厚度')
+		           AND TEMP.PROCESS_ID = P.ID
+		           AND ROWNUM = 1) AS GUIDE_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME IN ('护套标称厚度', '护套厚度')
+		           AND TEMP.PROCESS_ID = P.ID
+		           AND ROWNUM = 1) AS STANDARD_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '标准印字内容')
+		           AND TEMP.PROCESS_ID = P.ID
+		           AND ROWNUM = 1) AS OUT_MAT_DESC,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '护套前外径')
+		           AND TEMP.PROCESS_ID = P.ID
+		           AND ROWNUM = 1) AS FRONT_OUTSIDE_VALUE,   
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '成品电线标准外径'
+		           AND ROWNUM = 1) AS OUTSIDE_VALUE,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '成品电线最大外径'
+		           AND ROWNUM = 1) AS OUTSIDE_MAX_VALUE,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '成品电线最小外径'
+		           AND ROWNUM = 1) AS OUTSIDE_MIN_VALUE,
+		       (SELECT LISTAGG(MTEMP.MAT_NAME, '<![CDATA[<br/>]]>') WITHIN GROUP(ORDER BY MTEMP.MAT_NAME) AS MATERIAL
+		          FROM MATERIALTEMP2 MTEMP
+		         WHERE MTEMP.PRODUCT_PROCESS_ID = P.ID) AS MATERIAL,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '宽度'
+		           AND ROWNUM = 1) AS KUANDU,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '厚度'
+		           AND ROWNUM = 1) AS HOUDU,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '材质'
+		           AND ROWNUM = 1) AS CAIZHI,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '尺寸'
+		           AND ROWNUM = 1) AS CHICUN,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = P.ID
+		           AND IO.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME IN ('规格', '结构')
+		           AND ROWNUM = 1) AS GUIGE
+		  FROM T_PLA_CUSTOMER_ORDER_ITEM     I,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P,
+		       T_PRO_PROCESS_INFO            INFO,
+		       T_PRO_PROCESS_IN_OUT_WIP      IO,
+		       T_INV_MAT_WIP                 M,
+		       T_ORD_SALES_ORDER_ITEM        SOI,
+		       T_ORD_SALES_ORDER             SO
+		 WHERE I.ID = IDEC.ORDER_ITEM_ID
+		   AND I.CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+		   AND P.ID = IO.PRODUCT_PROCESS_ID
+		   AND IO.ID = M.PROCESS_IN_OUT_WIP_ID
+		   AND IO.MAT_CODE = M.MAT_CODE
+		   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+		   AND SOI.SALES_ORDER_ID = SO.ID
+		   AND P.PROCESS_CODE = INFO.CODE
+		   AND INFO.SECTION = '护套'
+		   AND I.ID IN <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				          #{id, jdbcType=VARCHAR} 
+					   </foreach>
+		 ORDER BY MAT_TYPE
+	</select>
+	
+	<select id="getSwitchHistory" resultMap="getMap">
+	   SELECT
+		    LOG.WORK_ORDER_NO,
+		     EI.CODE,
+		     EI.NAME,
+		     EI.EQUIP_ALIAS,
+		    LOG.OPERATE_REASON,
+		     EMP.NAME AS CREATE_USER_NAME,
+		    LOG.CREATE_TIME
+		FROM
+		    T_WIP_WORK_ORDER_OPERATE_LOG LOG,
+		    T_FAC_EQIP_INFO EI,
+		    T_BAS_EMPLOYEE EMP
+		WHERE
+		    WORK_ORDER_NO = #{workorderno,jdbcType=VARCHAR}
+		    AND LOG. EQUIP_CODE = EI.CODE
+		    AND EMP.USER_CODE = LOG.CREATE_USER_CODE
+		    AND LOG.STATUS = 'SWITCH'
+		order by LOG.CREATE_TIME desc
+	</select>
+	
+	<update id="changeTask" parameterType="map" flushCache="true">
+		UPDATE T_PLA_CU_ORDER_ITEM_PRO_DEC A SET STATUS = #{updateStatus},MODIFY_TIME = SYSDATE WHERE EXISTS (
+		   SELECT
+			 B.ID
+		   FROM T_PLA_ORDER_TASK B
+		   WHERE B.ID IN
+			<foreach collection="ids" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+		   AND B.ORDER_ITEM_PRO_DEC_ID =A.ID
+		)
+		AND STATUS = #{oldStatus}
+	</update>
+	
+	
+	<!-- 数据准备的，后期是没用的，前期修改代码需要使用 -->
+	<!-- 投入物料的数据补充，查询物料需求的物料明细 -->
+	<select id="getPatchOutAttrDescJY" parameterType="map" resultType="map">
+		WITH PROPTEMP AS
+		 (SELECT DISTINCT QC.PROCESS_ID,
+		                  QC.CHECK_ITEM_CODE,
+		                  QC.CHECK_ITEM_NAME,
+		                  QC.ITEM_TARGET_VALUE,
+		                  PPP.NEXT_PROCESS_ID
+		    FROM T_PRO_PROCESS_QC QC, T_PRO_PRODUCT_PROCESS PPP
+		   WHERE QC.PROCESS_ID = PPP.id
+		     AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		     AND QC.CHECK_ITEM_NAME IN ('绝缘标称厚度',
+		                                '绝缘最小厚度',
+		                                '绝缘最大厚度',
+		                                '绝缘标称外径',
+		                                '导体结构')
+		     AND (PPP.id = #{processId,jdbcType=VARCHAR} or
+		         PPP.NEXT_PROCESS_ID = #{processId,jdbcType=VARCHAR})),
+		MATERIALTEMP AS (
+		    SELECT DISTINCT PIO.PRODUCT_PROCESS_ID,
+	                      (IM.MAT_NAME || (CASE
+	                        WHEN IM.COLOR IS NOT NULL THEN
+	                         '(' || IM.COLOR || ')'
+	                        ELSE
+	                         ''
+	                      END)) AS MAT_NAME
+	        FROM T_PRO_PROCESS_IN_OUT  PIO,
+	             T_INV_MAT             IM,
+	             T_PRO_PRODUCT_PROCESS     P,
+	             T_PRO_PRODUCT_PROCESS PROCESS
+	       WHERE PIO.MAT_CODE = IM.MAT_CODE
+	         AND PIO.IN_OR_OUT = 'IN'
+	         AND PIO.PRODUCT_PROCESS_ID = P.ID
+	         AND P.PRODUCT_CRAFTS_ID = PROCESS.PRODUCT_CRAFTS_ID
+	         AND PROCESS.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual', 'wrapping_ymd') 
+	         AND INSTR(IM.MAT_NAME, '半成品') = 0
+	         AND PROCESS.ID = #{processId,jdbcType=VARCHAR}
+		)
+		SELECT PRODEC.ID,
+		       PRODEC.PROCESS_CODE AS PROCESSCODE,
+		       SOI.PRODUCT_CODE AS PRODUCTCODE,
+		       SOI.PRODUCT_TYPE AS PRODUCTTYPE,
+		       SOI.CUST_PRODUCT_TYPE AS CUSTPRODUCTTYPE,
+		       SO.OPERATOR,
+		       TASK.WORK_ORDER_NO AS WORKORDERNO,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘标称厚度'
+		           AND (TEMP.PROCESS_ID = PRODEC.PROCESS_ID OR
+		               TEMP.NEXT_PROCESS_ID = PRODEC.PROCESS_ID)
+		           AND ROWNUM = 1) AS STANDARDPLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最大厚度'
+		           AND (TEMP.PROCESS_ID = PRODEC.PROCESS_ID OR
+		               TEMP.NEXT_PROCESS_ID = PRODEC.PROCESS_ID)
+		           AND ROWNUM = 1) AS STANDARDMAXPLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最小厚度'
+		           AND (TEMP.PROCESS_ID = PRODEC.PROCESS_ID OR
+		               TEMP.NEXT_PROCESS_ID = PRODEC.PROCESS_ID)
+		           AND ROWNUM = 1) AS STANDARDMINPLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘标称外径'
+		           AND (TEMP.PROCESS_ID = PRODEC.PROCESS_ID OR
+		               TEMP.NEXT_PROCESS_ID = PRODEC.PROCESS_ID)
+		           AND ROWNUM = 1) AS OUTSIDEVALUE,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE TEMP.CHECK_ITEM_NAME = '导体结构'
+		           AND (TEMP.PROCESS_ID = PRODEC.PROCESS_ID OR
+		               TEMP.NEXT_PROCESS_ID = PRODEC.PROCESS_ID)
+		           AND ROWNUM = 1) AS WIRESSTRUCTURE,
+		       (SELECT LISTAGG(MTEMP.MAT_NAME, '<![CDATA[<br/>]]>') WITHIN GROUP(ORDER BY MTEMP.MAT_NAME) AS MATERIAL
+		          FROM MATERIALTEMP MTEMP
+		         WHERE MTEMP.PRODUCT_PROCESS_ID = (CASE
+		                 WHEN PRODEC.PROCESS_CODE = 'Respool' THEN
+		                  (SELECT ID
+		                     FROM T_PRO_PRODUCT_PROCESS OO
+		                    WHERE OO.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual')
+		                      AND OO.NEXT_PROCESS_ID = PRODEC.PROCESS_ID
+		                      AND ROWNUM = 1)
+		                 ELSE
+		                  PRODEC.PROCESS_ID
+		               END)) AS MATERIAL,
+		       SOI.WIRES_STRUCTURE || '' || (SELECT WMSYS.WM_CONCAT(DISTINCT ITEM_TARGET_VALUE)
+		          FROM T_PRO_PRODUCT_CRAFTS  PPC,
+		               T_PRO_PRODUCT_PROCESS PPP,
+		               T_PRO_PROCESS_QC      PPQ,
+		               T_PRO_PRODUCT_PROCESS tmp
+		         WHERE PPC.ID = PPP.PRODUCT_CRAFTS_ID
+		           and PPC.ID = tmp.PRODUCT_CRAFTS_ID
+		           and PPP.id = PPQ.PROCESS_ID
+		           AND PPQ.CHECK_ITEM_NAME = '导体结构'
+		           AND PPP.PROCESS_CODE = IN ('Extrusion-Single', 'Extrusion-Dual')
+		           AND tmp.id = PRODEC.PROCESS_ID) AS CONDUCTORSTRUCT
+		  FROM T_PLA_CUSTOMER_ORDER_ITEM     I,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC   PRODEC,
+		       T_ORD_SALES_ORDER_ITEM        SOI,
+		       T_ORD_SALES_ORDER             SO,
+       		   T_PLA_ORDER_TASK TASK
+		 WHERE PRODEC.ID=TASK.ORDER_ITEM_PRO_DEC_ID
+		   AND I.ID = IDEC.ORDER_ITEM_ID
+		   AND IDEC.ID = PRODEC.ORDER_ITEM_DEC_ID
+		   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+		   AND SOI.SALES_ORDER_ID = SO.ID
+		   AND PRODEC.ID = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 投入物料的数据补充，查询物料需求的物料明细 -->
+	<select id="getPatchOutAttrDescCL" parameterType="map" resultType="map">
+		WITH PROPTEMP AS
+		 (SELECT DISTINCT PROCESS_ID,
+		                  CHECK_ITEM_CODE,
+		                  CHECK_ITEM_NAME,
+		                  ITEM_TARGET_VALUE
+		    FROM T_PRO_PROCESS_QC      QC,
+		         T_PRO_PRODUCT_PROCESS PPP,
+		         T_PRO_PRODUCT_PROCESS PROCESS
+		   WHERE QC.PROCESS_ID = PPP.ID
+		     and PPP.PRODUCT_CRAFTS_ID = PROCESS.PRODUCT_CRAFTS_ID
+		     AND PPP.PROCESS_CODE = IN ('Extrusion-Single', 'Extrusion-Dual')
+		     AND CHECK_ITEM_NAME IN ('绝缘标称厚度', '绝缘最小厚度', '绝缘最大厚度')
+		     AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		     AND PROCESS.ID = #{processId,jdbcType=VARCHAR}
+		  UNION ALL
+		  SELECT DISTINCT QC.PROCESS_ID,
+		                  QC.CHECK_ITEM_CODE,
+		                  QC.CHECK_ITEM_NAME,
+		                  QC.ITEM_TARGET_VALUE
+		    FROM T_PRO_PROCESS_QC QC, T_PRO_PRODUCT_PROCESS PPP
+		   WHERE QC.PROCESS_ID = PPP.id
+		     AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		     AND QC.CHECK_ITEM_NAME IN
+		         ('铠装后外径', '成缆后外径', '绕包后外径', '绞合外径')
+		     AND PPP.ID = #{processId,jdbcType=VARCHAR}),
+		MATERIALTEMP2 AS
+		 (SELECT DISTINCT PIO.PRODUCT_PROCESS_ID,
+		                  (IM.MAT_NAME || (CASE
+		                    WHEN IM.COLOR IS NOT NULL THEN
+		                     '(' || IM.COLOR || ')'
+		                    ELSE
+		                     ''
+		                  END)) AS MAT_NAME
+		    FROM T_PRO_PROCESS_IN_OUT  PIO,
+		         T_INV_MAT             IM,
+		         T_PRO_PRODUCT_PROCESS PROCESS
+		   WHERE PIO.MAT_CODE = IM.MAT_CODE
+		     AND PIO.IN_OR_OUT = 'IN'
+		     AND PIO.PRODUCT_PROCESS_ID = PROCESS.ID
+		     AND INSTR(IM.MAT_NAME, '半成品') = 0
+		     AND PROCESS.ID = #{processId,jdbcType=VARCHAR})
+		SELECT PRODEC.ID,
+		       PRODEC.PROCESS_CODE AS PROCESSCODE,
+		       SOI.PRODUCT_CODE AS PRODUCTCODE,
+		       SOI.PRODUCT_TYPE AS PRODUCTTYPE,
+		       SOI.CUST_PRODUCT_TYPE CUSTPRODUCTTYPE,
+		       SO.OPERATOR,
+		       TASK.WORK_ORDER_NO AS WORKORDERNO,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '铠装后外径' OR
+		               TEMP.CHECK_ITEM_NAME = '成缆后外径' OR
+		               TEMP.CHECK_ITEM_NAME = '绕包后外径' OR
+		               TEMP.CHECK_ITEM_NAME = '绞合外径')
+		           AND TEMP.PROCESS_ID = PRODEC.PROCESS_ID
+		           AND ITEM_TARGET_VALUE IS NOT NULL
+		           AND ROWNUM = 1) AS OUTSIDEVALUE,
+		       (SELECT LISTAGG(MTEMP.MAT_NAME, '<![CDATA[<br/>]]>') WITHIN GROUP(ORDER BY MTEMP.MAT_NAME) AS MATERIAL
+		          FROM MATERIALTEMP2 MTEMP
+		         WHERE MTEMP.PRODUCT_PROCESS_ID = PRODEC.PROCESS_ID) AS MATERIAL,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP              TEMP,
+		               T_PRO_PRODUCT_PROCESS PRO,
+		               T_PRO_PRODUCT_PROCESS P
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘标称厚度'
+		           AND TEMP.PROCESS_ID = PRO.ID
+		           AND PRO.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual')
+		           AND PRO.PRODUCT_CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+		           and p.id = PRODEC.Process_Id
+		           AND ROWNUM = 1) AS STANDARD_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP              TEMP,
+		               T_PRO_PRODUCT_PROCESS PRO,
+		               T_PRO_PRODUCT_PROCESS P
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最大厚度'
+		           AND TEMP.PROCESS_ID = PRO.ID
+		           AND PRO.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual')
+		           AND PRO.PRODUCT_CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+		           and p.id = PRODEC.Process_Id
+		           AND ROWNUM = 1) AS STANDARD_MAX_PLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP              TEMP,
+		               T_PRO_PRODUCT_PROCESS PRO,
+		               T_PRO_PRODUCT_PROCESS P
+		         WHERE TEMP.CHECK_ITEM_NAME = '绝缘最小厚度'
+		           AND TEMP.PROCESS_ID = PRO.ID
+		           AND PRO.PROCESS_CODE IN ('Extrusion-Single', 'Extrusion-Dual')
+		           AND PRO.PRODUCT_CRAFTS_ID = P.PRODUCT_CRAFTS_ID
+		           and p.id = PRODEC.Process_Id
+		           AND ROWNUM = 1) AS STANDARD_MIN_PLY,
+		       SOI.WIRES_STRUCTURE || '' || (SELECT WMSYS.WM_CONCAT(DISTINCT ITEM_TARGET_VALUE)
+		          FROM T_PRO_PRODUCT_CRAFTS  PPC,
+		               T_PRO_PRODUCT_PROCESS PPP,
+		               T_PRO_PROCESS_QC      PPQ,
+		               T_PRO_PRODUCT_PROCESS tmp
+		         WHERE PPC.ID = PPP.PRODUCT_CRAFTS_ID
+		           and PPC.ID = TMP.PRODUCT_CRAFTS_ID
+		           AND PPP.ID = PPQ.PROCESS_ID
+		           AND PPQ.CHECK_ITEM_NAME = '导体结构'
+		           AND PPP.PROCESS_CODE  IN ('Extrusion-Single', 'Extrusion-Dual')
+		           AND TMP.ID = PRODEC.PROCESS_ID) AS CONDUCTORSTRUCT
+		  FROM T_PLA_CUSTOMER_ORDER_ITEM     I,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC   PRODEC,
+		       T_ORD_SALES_ORDER_ITEM        SOI,
+		       T_ORD_SALES_ORDER             SO,
+		       T_PLA_ORDER_TASK              TASK
+		 WHERE I.ID = IDEC.ORDER_ITEM_ID
+		   AND IDEC.ID = PRODEC.ORDER_ITEM_DEC_ID
+		   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+		   AND SOI.SALES_ORDER_ID = SO.ID
+		   AND PRODEC.ID = TASK.ORDER_ITEM_PRO_DEC_ID
+		   AND PRODEC.ID = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 投入物料的数据补充，查询物料需求的物料明细 -->
+	<select id="getPatchOutAttrDescHT" parameterType="map" resultType="map">
+		WITH PROPTEMP AS
+		 (SELECT DISTINCT QC.PROCESS_ID,
+		                  QC.CHECK_ITEM_CODE,
+		                  QC.CHECK_ITEM_NAME,
+		                  QC.ITEM_TARGET_VALUE
+		    FROM T_PRO_PROCESS_QC QC, T_PRO_PRODUCT_PROCESS PPP
+		   WHERE QC.PROCESS_ID = PPP.id
+		     AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		     AND QC.CHECK_ITEM_NAME IN ('指导厚度', '护套标称厚度', '护套厚度', '标准印字内容')
+		     AND PPP.id = #{processId,jdbcType=VARCHAR}),
+		MATERIALTEMP AS
+		 (SELECT DISTINCT PPP.ID,
+		                  M.MAT_CODE,
+		                  M.MAT_NAME,
+		                  D.PROP_NAME,
+		                  P.PROP_TARGET_VALUE
+		    FROM T_INV_MAT             M,
+		         T_INV_MAT_PROP        P,
+		         T_INV_TEMPLET_DETAIL  D,
+		         T_PRO_PROCESS_IN_OUT  IO,
+		         T_PRO_PRODUCT_PROCESS PPP
+		   WHERE P.MAT_ID = M.ID
+		     AND P.TEMPLET_DETAIL_ID = D.ID
+		     AND M.MAT_CODE = IO.MAT_CODE
+		     AND IO.PRODUCT_PROCESS_ID = PPP.ID
+		        
+		     AND (D.PROP_NAME = '成品电线最大外径' OR D.PROP_NAME = '成品电线最小外径' OR
+		         D.PROP_NAME = '成品电线标准外径')
+		     AND PPP.id = #{processId,jdbcType=VARCHAR}),
+		MATERIALTEMP2 AS
+		 (SELECT DISTINCT PIO.PRODUCT_PROCESS_ID,
+		                  (IM.MAT_NAME || (CASE
+		                    WHEN IM.COLOR IS NOT NULL THEN
+		                     '(' || IM.COLOR || ')'
+		                    ELSE
+		                     ''
+		                  END)) AS MAT_NAME
+		    FROM T_PRO_PROCESS_IN_OUT  PIO,
+		         T_INV_MAT             IM,
+		         T_PRO_PRODUCT_PROCESS PROCESS
+		   WHERE PIO.MAT_CODE = IM.MAT_CODE
+		     AND PIO.IN_OR_OUT = 'IN'
+		     AND PIO.PRODUCT_PROCESS_ID = PROCESS.ID
+		     AND INSTR(IM.MAT_NAME, '半成品') = 0
+		     AND PROCESS.ID = #{processId,jdbcType=VARCHAR})
+		SELECT PRODEC.ID,
+		       PRODEC.PROCESS_CODE AS PROCESSCODE,
+		       SOI.PRODUCT_TYPE AS PRODUCTTYPE,
+		       SOI.CUST_PRODUCT_TYPE AS CUSTPRODUCTTYPE,
+		       SO.OPERATOR,
+		       TASK.WORK_ORDER_NO AS WORKORDERNO,   
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '指导厚度')
+		           AND TEMP.PROCESS_ID = PRODEC.PROCESS_ID
+		           AND ROWNUM = 1) AS GUIDEPLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '护套标称厚度' OR
+		               TEMP.CHECK_ITEM_NAME = '护套厚度')
+		           AND TEMP.PROCESS_ID = PRODEC.PROCESS_ID
+		           AND ROWNUM = 1) AS STANDARDPLY,
+		       (SELECT ITEM_TARGET_VALUE
+		          FROM PROPTEMP TEMP
+		         WHERE (TEMP.CHECK_ITEM_NAME = '标准印字内容')
+		           AND TEMP.PROCESS_ID = PRODEC.PROCESS_ID
+		           AND ROWNUM = 1) AS OUTMATDESC,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = PRODEC.PROCESS_ID
+		           AND PRODEC.HALF_PRODUCT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '成品电线标准外径'
+		           AND ROWNUM = 1) AS OUTSIDEVALUE,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = PRODEC.PROCESS_ID
+		           AND PRODEC.HALF_PRODUCT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '成品电线最大外径'
+		           AND ROWNUM = 1) AS OUTSIDEMAXVALUE,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE TEMP.ID = PRODEC.PROCESS_ID
+		           AND PRODEC.HALF_PRODUCT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '成品电线最小外径'
+		           AND ROWNUM = 1) AS OUTSIDE_MIN_VALUE,
+		       (SELECT LISTAGG(MTEMP.MAT_NAME, '<![CDATA[<br/>]]>') WITHIN GROUP(ORDER BY MTEMP.MAT_NAME) AS MATERIAL
+		          FROM MATERIALTEMP2 MTEMP
+		         WHERE MTEMP.PRODUCT_PROCESS_ID = PRODEC.PROCESS_ID) AS MATERIAL
+		  FROM T_PLA_CUSTOMER_ORDER_ITEM     I,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC   PRODEC,
+		       T_ORD_SALES_ORDER_ITEM        SOI,
+		       T_ORD_SALES_ORDER             SO,
+		       T_PLA_ORDER_TASK              task
+		 WHERE I.ID = IDEC.ORDER_ITEM_ID
+		   AND IDEC.ID = PRODEC.ORDER_ITEM_DEC_ID
+		   AND I.SALES_ORDER_ITEM_ID = SOI.ID
+		   AND SOI.SALES_ORDER_ID = SO.ID
+		   AND PRODEC.ID = TASK.ORDER_ITEM_PRO_DEC_ID
+		   AND PRODEC.ID = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 对prodec的关联ID：RelateOrderIds做补充 -->
+	<select id="patchProdecRelateOrderIds" resultType="map">
+		SELECT WM_CONCAT(DISTINCT T1.ORDER_ITEM_ID) as ORDERITEMIDS, WM_CONCAT(T.ID) AS PRODECIDS
+		  FROM T_PLA_CU_ORDER_ITEM_PRO_DEC T, T_PLA_CUSTOMER_ORDER_ITEM_DEC T1
+		 WHERE T.ORDER_ITEM_DEC_ID = T1.ID
+		   AND T.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		 GROUP BY T.PRODUCT_TYPE, T.PRODUCT_SPEC
+	</select>
+	
+	<!-- 更新生产单状态：1、workOrder 2、orderTask 3、proDec/param workOrderNo:生产单号;status:状态 -->
+	<update id="updateWorkerOrderStatus" parameterType="string" flushCache="true">
+		UPDATE T_PLA_CU_ORDER_ITEM_PRO_DEC SET STATUS = #{status, jdbcType=VARCHAR} 
+		WHERE WORK_ORDER_NO IN
+		<foreach collection="workOrderNo" item="no" open="(" separator="," close=")">
+            #{no, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+</mapper>

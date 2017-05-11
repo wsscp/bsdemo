@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.ImportProductDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.ImportProduct" id="getMap">
+	</resultMap>
+
+
+	<select id="checkExistsByName" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_PLM_PRO_IMPORT_LOG
+		WHERE SERIES_NAME=UPPER(#{seriesName,jdbcType=VARCHAR})
+	</select>
+	
+	<select id="getSeriesNameAndUserName"  resultMap="getMap">
+		SELECT DISTINCT SERIES_NAME FROM T_PLM_PRO_IMPORT_LOG
+	</select>
+
+
+   <select id="getUserName"  resultMap="getMap">
+		SELECT PL.CREATE_USER_CODE,BE.NAME FROM T_PLM_PRO_IMPORT_LOG PL
+		LEFT JOIN T_BAS_EMPLOYEE BE ON (BE.USER_CODE=PL.CREATE_USER_CODE)
+		GROUP BY BE.NAME,PL.CREATE_USER_CODE
+	</select>
+
+</mapper>

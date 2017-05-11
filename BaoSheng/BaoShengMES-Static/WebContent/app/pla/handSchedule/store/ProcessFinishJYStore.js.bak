@@ -1,0 +1,6 @@
+Ext.define('bsmes.store.ProcessFinishJYStore', {
+			extend : 'Oit.app.data.GridStore',
+			model : 'bsmes.model.ProcessFinish',
+			autoLoad : false,
+			proxy : {}
+		});

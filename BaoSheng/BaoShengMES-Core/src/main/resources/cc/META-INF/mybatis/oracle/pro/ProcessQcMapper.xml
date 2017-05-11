@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessQcDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessQc" id="getMap">
+	</resultMap>
+	
+	<sql id="sqlColumns"> 
+		Q."ID",Q.PROCESS_ID,Q.CHECK_ITEM_CODE,Q.CHECK_ITEM_NAME,Q.FREQUENCE,
+		Q.NEED_DA,Q.NEED_IS,Q.ITEM_TARGET_VALUE,Q.ITEM_MAX_VALUE,Q.ITEM_MIN_VALUE,
+		Q.DATA_TYPE,Q.DATA_UNIT,Q.MARKS,Q.HAS_PIC,Q.NEED_MIDDLE_CHECK,Q.NEED_IN_CHECK,Q.NEED_OUT_CHECK,
+		Q.NEED_FIRST_CHECK,Q.NEED_SHOW,Q.NEED_ALARM,Q.VALUE_DOMAIN,
+		Q.CREATE_USER_CODE,Q.CREATE_TIME,Q.MODIFY_USER_CODE,Q.MODIFY_TIME
+	</sql>
+	
+	<!-- 生产单获取质量参数信息  -->
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT
+			<include refid="sqlColumns"/>
+        FROM T_PRO_PROCESS_QC_WIP Q
+	    WHERE EXISTS (
+	            SELECT WO.ID
+	            FROM T_WIP_WORK_ORDER WO
+	            WHERE WO.PROCESS_ID = Q.PROCESS_ID
+	            AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+	        )
+	        AND Q.DATA_STATUS = '正常'
+	        AND Q.NEED_SHOW = '1'
+	        AND Q.NEED_FIRST_CHECK = '1'
+		ORDER BY Q.CHECK_ITEM_NAME
+	</select>
+	
+	<select id="getByProcessId" parameterType="map" resultMap="getMap">
+	    SELECT * FROM T_PRO_PROCESS_QC WHERE PROCESS_ID IN
+	    <foreach collection="processIds" item="item"  open="(" separator="," close=")">
+               #{item, jdbcType=VARCHAR}
+        </foreach>
+	</select>
+	
+	<insert id="insertByWorkOrderNO" statementType="CALLABLE">
+		CALL SAVE_PRODUCT_WEIGHT_BY_WONO(#{param1}, #{param2}, #{param3},#{param4})
+	</insert>
+	
+	<sql id="sqlColumnsDistinct"> 
+		DISTINCT
+		Q.CHECK_ITEM_CODE,
+		Q.CHECK_ITEM_NAME
+	</sql>
+	
+	<select id="getByProcessCode" parameterType="string" resultMap="getMap">
+		SELECT 
+		<include refid="sqlColumnsDistinct"/> 
+		FROM T_PRO_PROCESS_QC Q
+		LEFT JOIN T_PRO_PRODUCT_PROCESS PP 
+		ON Q.PROCESS_ID = PP.ID
+		 LEFT JOIN T_PRO_PROCESS_QC_EQIP ep 
+		ON Q.ID = ep.QC_ID
+		WHERE Q.NEED_DA = 1
+		AND Q.DATA_STATUS = 'NORMAL'
+		AND PP.PROCESS_CODE = #{processCode,jdbcType=VARCHAR} 	 
+		AND ep.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+		order by Q.CHECK_ITEM_NAME
+	</select>
+	
+	<select id="getByEquipCodeAndProcessCodeAndReceiptCode" parameterType="map" resultMap="getMap">
+		SELECT 
+		<include refid="sqlColumns"/> 
+		FROM T_PRO_PROCESS_QC Q
+		LEFT JOIN T_PRO_PRODUCT_PROCESS PP 
+		ON Q.PROCESS_ID = PP.ID
+		 LEFT JOIN T_PRO_PROCESS_QC_EQIP ep 
+		ON Q.ID = ep.QC_ID
+		WHERE Q.NEED_DA = 1
+		AND Q.DATA_STATUS = 'NORMAL'
+		AND PP.PROCESS_CODE = #{processCode} 	 
+		AND ep.EQUIP_CODE = #{equipCode}
+		AND Q.CHECK_ITEM_CODE = #{receiptCode}
+	</select>
+	
+	<select id="getByEquipLineAndProcessId" parameterType="string" resultMap="getMap">
+		SELECT
+		<include refid="sqlColumns"/>,
+			PEQ.EQUIP_CODE AS equipCode
+		FROM T_PRO_PROCESS_QC Q
+		LEFT JOIN T_PRO_PROCESS_QC_EQIP PQE ON Q.ID = PQE.QC_ID
+		LEFT JOIN T_FAC_PRODUCT_EQIP FPE ON FPE.EQUIP_ID = PQE.EQUIP_ID
+		LEFT JOIN T_FAC_EQIP_INFO FEI ON FEI.ID = FPE.PRODUCT_LINE_ID
+		WHERE FEI.CODE = #{param1}
+		AND Q.DATA_STATUS = 'NORMAL'
+		AND Q.PROCESS_ID = #{param2}
+	</select>
+	
+	<select id="getByWorkOrderNoAndDistinctEqipCode" parameterType="string" resultMap="getMap">
+		  SELECT
+		<include refid="sqlColumns"/>
+		  FROM T_PRO_PROCESS_QC_WIP      Q,
+		       T_WIP_WORK_ORDER      WO
+			WHERE 
+			   WO.PROCESS_ID = Q.PROCESS_ID	
+			   AND WO.WORK_ORDER_NO = #{param1}
+			   AND Q.NEED_SHOW = '1'
+			  <!--  AND Q.DATA_STATUS = 'NORMAL'  -->
+		<if test="param3 == 'FIRST_CHECK'">
+                 AND  Q.NEED_FIRST_CHECK = '1'
+		</if>
+		<if test="param3 == 'MIDDLE_CHECK'">
+                AND  Q.NEED_MIDDLE_CHECK = '1'
+		</if>
+		<if test="param3 == 'IN_CHECK'">
+                AND  Q.NEED_IN_CHECK = '1'
+		</if>
+		<if test="param3 == 'OUT_CHECK'">
+                AND  Q.NEED_OUT_CHECK = '1'
+		</if>
+	</select>
+	
+	<select id="getEmphShow" parameterType="string" resultType="map">
+		SELECT
+			R.CHECK_ITEM_CODE AS receiptCode,
+			R.CHECK_ITEM_NAME AS receiptName,
+			R.ITEM_TARGET_VALUE AS targetValue
+		FROM T_PRO_PROCESS_QC R
+		WHERE R.EMPH_SHOW = '1'
+		AND R.DATA_STATUS = 'NORMAL'
+		AND R.PROCESS_ID = #{param1}
+		AND EXISTS (
+			SELECT 1 FROM T_PRO_PROCESS_QC_EQIP EQ WHERE R.ID = EQ.QC_ID
+			AND EXISTS (
+				SELECT 1 FROM T_FAC_EQIP_INFO EI, T_FAC_PRODUCT_EQIP PE
+				WHERE EI.CODE = #{param2}
+				AND PE.PRODUCT_LINE_ID = EI.ID
+				AND PE.EQUIP_ID = EQ.EQUIP_ID
+			)
+		)
+		union
+		SELECT
+			A.RECEIPT_CODE AS receiptCode,
+			A.RECEIPT_NAME AS receiptName,
+			A.RECEIPT_TARGET_VALUE AS targetValue
+		FROM T_PRO_PROCESS_RECEIPT A LEFT JOIN T_PRO_EQIP_LIST B
+		ON A.EQIP_LIST_ID = B.ID
+		WHERE B.PROCESS_ID = #{param1}
+		AND A.EMPH_SHOW = '1'
+		AND B.EQUIP_CODE = #{param2}
+	</select>
+
+	    <insert id="insertBatch" parameterType="ArrayList"> 
+			  insert into T_PRO_PROCESS_QC ( ID, PROCESS_ID,
+			  CHECK_ITEM_CODE,CHECK_ITEM_NAME,FREQUENCE,
+			  NEED_DA,NEED_IS,ITEM_TARGET_VALUE,ITEM_MAX_VALUE,ITEM_MIN_VALUE,
+			  DATA_TYPE,DATA_UNIT,MARKS,
+			  CREATE_TIME,CREATE_USER_CODE, MODIFY_TIME,MODIFY_USER_CODE,
+			  HAS_PIC,NEED_SHOW,NEED_FIRST_CHECK,NEED_MIDDLE_CHECK,NEED_IN_CHECK,NEED_OUT_CHECK, NEED_ALARM,
+			  VALUE_DOMAIN,EMPH_SHOW,DATA_STATUS  )   
+			  <foreach collection="list" item="item" index="index" 
+			  separator="union all"> 
+			  select 
+			   #{item.id,jdbcType=VARCHAR},  #{item.processId,jdbcType=VARCHAR}, 
+			  #{item.checkItemCode,jdbcType=VARCHAR}, #{item.checkItemName,jdbcType=VARCHAR},  #{item.frequence,jdbcType=DECIMAL}, 
+			  #{item.needDa,jdbcType=CHAR}, #{item.needIs,jdbcType=CHAR},  #{item.itemTargetValue,jdbcType=VARCHAR},  #{item.itemMaxValue,jdbcType=VARCHAR}, #{item.itemMinValue,jdbcType=VARCHAR},
+			  #{item.dataType,jdbcType=VARCHAR}, #{item.dataUnit,jdbcType=VARCHAR},  #{item.marks,jdbcType=VARCHAR},
+			  sysdate, 'PLM', sysdate, 'PLM', 
+			  #{item.hasPic,jdbcType=CHAR}, #{item.needShow,jdbcType=CHAR}, #{item.needFirstCheck,jdbcType=CHAR}, #{item.needMiddleCheck,jdbcType=CHAR},   #{item.needInCheck,jdbcType=CHAR}, #{item.needOutCheck,jdbcType=CHAR}, #{item.needAlarm,jdbcType=CHAR},  
+			  #{item.valueDomain,jdbcType=VARCHAR},#{item.emphShow,jdbcType=VARCHAR},#{item.dataStatus,jdbcType=VARCHAR}  from dual
+			  </foreach>
+			  
+	   </insert>	
+	   
+	   
+	   <insert id="insertBackGround" parameterType="java.util.List">
+		    insert into  T_PRO_PROCESS_QC(ID,PROCESS_ID,CHECK_ITEM_CODE,CHECK_ITEM_NAME,FREQUENCE,NEED_DA,
+			NEED_IS,ITEM_TARGET_VALUE,ITEM_MAX_VALUE,ITEM_MIN_VALUE,DATA_TYPE,DATA_UNIT,MARKS,
+			CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,HAS_PIC,NEED_SHOW,NEED_FIRST_CHECK,NEED_MIDDLE_CHECK) 
+			select ID,#{param1},CHECK_ITEM_CODE,CHECK_ITEM_NAME,FREQUENCE,NEED_DA,NEED_IS,ITEM_TARGET_VALUE,ITEM_MAX_VALUE,ITEM_MIN_VALUE,
+			DATA_TYPE,DATA_UNIT,MARKS,CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,HAS_PIC,NEED_SHOW,
+			NEED_FIRST_CHECK,NEED_MIDDLE_CHECK from  T_PRO_PROCESS_QC_BZ where process_id in   
+			<foreach collection="param2" item="ids" open="(" separator="," close=")">
+	            #{ids,jdbcType=VARCHAR}
+			</foreach>	
+	    </insert>	
+	   
+	 	<select id="getQcInfoByTaskId" parameterType="String" resultType="map">
+	 		select distinct CHECK_ITEM_NAME,ITEM_TARGET_VALUE 
+			from T_PRO_PROCESS_QC_WIP where process_id=(
+			select process_id from T_PLA_ORDER_TASK where id=#{taskId,jdbcType=VARCHAR}) 
+			and ITEM_TARGET_VALUE is not null
+	 	</select>
+	
+</mapper>

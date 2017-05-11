@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/11933/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/listener
+END
+ContextListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/7746/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/listener/ContextListener.java
+END
+MessageListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4936/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/listener/MessageListener.java
+END
+EmailListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/7997/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/listener/EmailListener.java
+END
+SocketListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/11933/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/listener/SocketListener.java
+END

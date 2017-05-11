@@ -1,0 +1,185 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BSMES/!svn/ver/11989/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model
+END
+UserRole.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/4981/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/UserRole.java
+END
+Resume.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/11250/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Resume.java
+END
+EmployeeResume.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/11408/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EmployeeResume.java
+END
+Role.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/9766/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Role.java
+END
+EquipCalShift.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EquipCalShift.java
+END
+RoleEquip.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/RoleEquip.java
+END
+EquipEnergyMonitor.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/11874/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EquipEnergyMonitor.java
+END
+PropConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/PropConfig.java
+END
+VProcessEquip.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/VProcessEquip.java
+END
+RoleResource.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/RoleResource.java
+END
+Resources.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/9814/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Resources.java
+END
+EquipEnergyMonthMonitor.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/11989/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EquipEnergyMonthMonitor.java
+END
+EquipCalendar.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/7320/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EquipCalendar.java
+END
+User.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/7573/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/User.java
+END
+Employee.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/7576/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Employee.java
+END
+MonthCalendar.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/MonthCalendar.java
+END
+WorkShift.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/WorkShift.java
+END
+EquipMESWWMapping.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EquipMESWWMapping.java
+END
+MesClient.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7308/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/MesClient.java
+END
+SysMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/SysMessage.java
+END
+WeekCalendarShift.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/WeekCalendarShift.java
+END
+Amoeba.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/11502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Amoeba.java
+END
+WeekCalendar.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/WeekCalendar.java
+END
+ParamConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/3007/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/ParamConfig.java
+END
+Org.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Org.java
+END
+Attachment.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4622/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/Attachment.java
+END
+DataDic.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/DataDic.java
+END
+EmployeeFamilyInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/11249/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/EmployeeFamilyInfo.java
+END
+MesClientManEqip.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5161/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/MesClientManEqip.java
+END
+ParmsMapping.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/model/ParmsMapping.java
+END

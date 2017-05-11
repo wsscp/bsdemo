@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductProcessDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProductProcess" id="getMap">
+		<result property="id" column="ID" />
+		<collection property="processInOutList"  column="ID" javaType="java.util.ArrayList" ofType="cc.oit.bsmes.pro.model.ProcessInOut"
+			select="cc.oit.bsmes.pro.dao.ProcessInOutDAO.getByProductProcessId" />
+	</resultMap>
+	
+	<sql id="processColumns">
+		P."ID",
+		P.PROCESS_CODE,
+		P.PROCESS_NAME,
+		P.SEQ,
+		P.PRODUCT_CRAFTS_ID,
+		P.PROCESS_TIME,
+		P.SET_UP_TIME,
+		P.SHUT_DOWN_TIME,
+		P.FULL_PATH,
+		P.NEXT_PROCESS_ID,
+		P.SAME_PRODUCT_LINE,
+		P.IS_OPTION,P.IS_DEFAULT_SKIP,
+		P.CREATE_USER_CODE,P.CREATE_TIME,P.MODIFY_USER_CODE,P.MODIFY_TIME
+	</sql>
+	<sql id="findByCraftsIdAndParamCondition">
+		FROM T_PRO_PRODUCT_PROCESS P
+		INNER JOIN T_PRO_PRODUCT_CRAFTS C ON P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN T_PRO_PRODUCT_PROCESS NEXT ON P.NEXT_PROCESS_ID = NEXT.ID
+		<where>
+			<if test="processCode != null and processCode != '' ">
+				AND P.PROCESS_CODE LIKE  #{processCode}
+			</if>
+			<if test="processName != null and processName != '' ">
+				AND P.PROCESS_NAME LIKE  #{processName}
+			</if>
+			<if test="productCraftsId != null and productCraftsId != '' ">
+				AND C.ID = #{productCraftsId}
+			</if>
+			<if test="nextProcessId != null and nextProcessId != '' ">
+				AND P.NEXT_PROCESS_ID = #{nextProcessId}
+			</if>
+		</where>
+	</sql>
+	<select id="getByProductCraftsIdAndSeq" resultMap="getMap" parameterType="map">
+		SELECT <include refid="processColumns"/> 
+		FROM T_PRO_PRODUCT_PROCESS P
+		WHERE  P.PRODUCT_CRAFTS_ID=(SELECT ID FROM T_PRO_PRODUCT_CRAFTS WHERE CRAFTS_CODE=#{craftsCode}) AND SEQ=#{seq}
+	</select>
+	<!-- 用于列表查询的sql语句 -->
+	<select id="findByCraftsIdAndParam" resultMap="getMap">
+		SELECT 
+		<include refid="processColumns"/> ,
+			C.CRAFTS_NAME,
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+	<select id="countByCraftsIdAndParam" resultType="int">
+		SELECT 
+			COUNT(1)
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+	<!-- 用于导出的sql语句 -->
+	<select id="find" resultMap="getMap">
+		SELECT 
+		<include refid="processColumns"/> ,
+			C.CRAFTS_NAME,
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+	
+	
+	<select id="findByParam" resultMap="getMap" parameterType="map">
+		SELECT 
+		<include refid="processColumns"/> ,
+			C.CRAFTS_NAME,
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME
+		<include refid="findByParamCondition"/>
+	</select>
+	<select id="countByParam" resultType="int" parameterType="map">
+		SELECT 
+			COUNT(1)
+		<include refid="findByParamCondition"/>
+	</select>
+	<sql id="findByParamCondition">
+		FROM T_PRO_PRODUCT_PROCESS P 
+		LEFT JOIN T_PRO_PRODUCT_CRAFTS C ON P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN T_PRO_PRODUCT_PROCESS NEXT ON P.NEXT_PROCESS_ID = NEXT.ID
+		<where>
+			<if test="processCode != null and processCode != '' ">
+				AND P.PROCESS_CODE LIKE  #{processCode}
+			</if>
+			<if test="processName != null and processName != '' ">
+				AND P.PROCESS_NAME LIKE  #{processName}
+			</if>
+			<if test="craftCode != null and craftCode != '' ">
+				AND C.CRAFTS_CODE LIKE  #{craftCode}
+			</if>
+		</where>
+	</sql>
+
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.pro.model.ProductProcess">
+        SELECT
+		<include refid="processColumns"/>
+        FROM  T_PRO_PRODUCT_PROCESS p
+        WHERE p.ID = #{id}
+	</select>
+	
+	<!-- 根据产品代码获取该工艺的流程 -->
+	<select id="getByProductCode" resultMap="getMap" parameterType="string">
+		SELECT DISTINCT(P.ID) as ID,P.PROCESS_CODE,P.PROCESS_NAME,P.SEQ,P.PRODUCT_CRAFTS_ID,P.PROCESS_TIME,P.SET_UP_TIME,P.SHUT_DOWN_TIME,
+			   P.IS_OPTION,P.IS_DEFAULT_SKIP,P.FULL_PATH,P.NEXT_PROCESS_ID
+	   FROM T_PRO_PRODUCT_PROCESS P
+	   WHERE P.PRODUCT_CRAFTS_ID=(SELECT ID FROM T_PRO_PRODUCT_CRAFTS WHERE PRODUCT_CODE=#{productCode,jdbcType=VARCHAR})
+	   CONNECT BY NOCYCLE PRIOR P.ID=P.NEXT_PROCESS_ID
+         ORDER BY SEQ DESC
+	</select>
+	<!-- 获取设备能力 -->
+	<select id="getEqipCapacityByProcessIdAndEqipCode" parameterType="map" resultType="double">
+		SELECT EQIP_CAPACITY FROM  T_PRO_EQIP_LIST WHERE PROCESS_ID=#{processId,jdbcType=VARCHAR} AND EQIP_CODE=#{eqipCode,jdbcType=VARCHAR}
+	</select>
+	<select id="getByProductCraftsId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="processColumns"/>
+		FROM T_PRO_PRODUCT_PROCESS P
+		WHERE PRODUCT_CRAFTS_ID=#{productCraftsId,jdbcType=VARCHAR}
+		ORDER BY SEQ DESC
+	</select>
+	
+	<select id="findByEquipCode" resultType="java.util.HashMap" parameterType="map">
+		SELECT DISTINCT PRO.PROCESS_CODE, PRO.PROCESS_NAME
+		  FROM T_PRO_PRODUCT_PROCESS PRO,
+		       T_PRO_EQIP_LIST       EQPLIST,
+		       T_FAC_EQIP_INFO       FAC,
+		       T_FAC_PRODUCT_EQIP    EQUIP,
+		       T_FAC_EQIP_INFO       FAC2
+		 WHERE PRO.ID = EQPLIST.PROCESS_ID
+		   AND EQPLIST.EQUIP_CODE = FAC.CODE
+		   AND FAC.ID = EQUIP.PRODUCT_LINE_ID
+		   AND EQUIP.EQUIP_ID = FAC2.ID
+		<if test="equipCode!=null and equipCode!=''">
+			   AND FAC2.CODE = #{equipCode,jdbcType=VARCHAR}
+		</if>
+		<if test="query !=null and query!=''">
+		   		AND	(UPPER(FAC2.CODE) LIKE UPPER(#{query,jdbcType=VARCHAR}) OR UPPER(FAC2.NAME) LIKE UPPER(#{query,jdbcType=VARCHAR})) 
+		</if>
+	</select>
+
+	<!-- 通过设备代码查询设备关联工序 -->
+	<select id="getByEquipCode" parameterType="string" resultMap="getMap" >
+		SELECT <include refid="processColumns"/> 
+      FROM 
+        T_PRO_PRODUCT_PROCESS P, 
+        T_PRO_EQIP_LIST EL
+      WHERE 
+        P.ID = EL.PROCESS_ID
+        AND EL.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+	</select>
+    
+	<!-- 查看工艺流程详情 -->
+	<select id="getByProductCraftsIdAsc" parameterType="string" resultMap="getMap">
+		SELECT <include refid="processColumns"/>,  
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME,
+			(SELECT  WMSYS.WM_CONCAT(t.EQUIP_CODE) FROM (SELECT * FROM T_PRO_EQIP_LIST l WHERE l.IS_DEFAULT='1' ORDER BY l.EQUIP_CODE ) t WHERE t.PROCESS_ID=P.ID) AS EQUIP_CODE_ARRAY , 
+		    (SELECT  WMSYS.WM_CONCAT(t.NAME || '[' || t.CODE || ']') FROM (SELECT e.*,l.PROCESS_ID FROM T_PRO_EQIP_LIST l, T_FAC_EQIP_INFO E WHERE l.EQUIP_CODE=E.CODE AND l.IS_DEFAULT='1' ORDER BY l.equip_code) t WHERE t.PROCESS_ID=P.ID)  AS EQUIP_NAME_ARRAY 
+		FROM T_PRO_PRODUCT_PROCESS P
+		INNER JOIN
+		    T_PRO_PRODUCT_CRAFTS C
+		ON
+		    P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN
+		    T_PRO_PRODUCT_PROCESS NEXT
+		ON
+		    P.NEXT_PROCESS_ID = NEXT.ID
+		WHERE P.PRODUCT_CRAFTS_ID=#{productCraftsId,jdbcType=VARCHAR}
+		ORDER BY TO_CHAR(P.SEQ) ASC
+	</select>
+	
+	<!-- 查看工段的工序列表 ： 成缆工序重组： 产看订单产品的成缆工段工序 -->
+	<select id="getSectionProcessArray" parameterType="map" resultMap="getMap">
+		SELECT <include refid="processColumns"/>,  
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME,
+			OI.ID AS ORDER_ITEM_ID,
+			(SELECT  WMSYS.WM_CONCAT(t.EQUIP_CODE) FROM (SELECT * FROM T_PRO_EQIP_LIST l WHERE l.IS_DEFAULT='1' ORDER BY l.EQUIP_CODE ) t WHERE t.PROCESS_ID=P.ID) AS EQUIP_CODE_ARRAY , 
+		    (SELECT  WMSYS.WM_CONCAT(t.NAME || '[' || t.CODE || ']') FROM (SELECT e.*,l.PROCESS_ID FROM T_PRO_EQIP_LIST l, T_FAC_EQIP_INFO E WHERE l.EQUIP_CODE=E.CODE AND l.IS_DEFAULT='1' ORDER BY l.equip_code) t WHERE t.PROCESS_ID=P.ID)  AS EQUIP_NAME_ARRAY 
+		FROM T_PRO_PRODUCT_PROCESS P
+		INNER JOIN
+		    T_PRO_PRODUCT_CRAFTS C
+		ON
+		    P.PRODUCT_CRAFTS_ID = C.ID
+		INNER JOIN
+		    T_PLA_CUSTOMER_ORDER_ITEM OI
+		ON
+		    OI.CRAFTS_ID = C.ID
+		INNER JOIN
+		    T_PRO_PROCESS_INFO PI
+		ON
+		    P.PROCESS_CODE = PI.CODE
+		LEFT JOIN
+		    T_PRO_PRODUCT_PROCESS NEXT
+		ON
+		    P.NEXT_PROCESS_ID = NEXT.ID
+		WHERE OI.ID IN 
+			<foreach collection="orderItemId" item="id"  open="(" separator="," close=")">  
+		        #{id, jdbcType=VARCHAR} 
+			</foreach>
+		    AND PI.SECTION = #{section, jdbcType=VARCHAR}
+		ORDER BY P.SEQ ASC
+	</select>
+
+
+	<select id="getParentProcessId" parameterType="string" resultType="string">
+		SELECT
+			ID
+		FROM T_PRO_PRODUCT_PROCESS PRO
+		WHERE PRO.NEXT_PROCESS_ID = #{param1}
+	</select>
+	
+	<select id="setProEqipList" parameterType="string" statementType="CALLABLE">
+		CALL sp_set_pro_eqip_list()
+	</select>
+	
+	<select id="updateOrderCraftsId" parameterType="string" statementType="CALLABLE">
+		CALL SP_UPDATE_ORDER_CRAFTSID()
+	</select>
+
+	<select id="getSaleOrderProcess" parameterType="string"	resultType="map">
+		SELECT
+		      A.ID,
+		      A.PROCESS_NAME||'|'||A.SEQ AS NAME
+		FROM T_PRO_PRODUCT_PROCESS_WIP A
+		WHERE EXISTS (
+		      SELECT 1 FROM T_PLA_CUSTOMER_ORDER_ITEM B WHERE B.CRAFTS_ID = A.PRODUCT_CRAFTS_ID
+		      AND B.SALES_ORDER_ITEM_ID = #{param1}
+		)
+		ORDER BY SEQ
+	</select>
+	
+	<select id="isJYProcess" parameterType="String" resultType="map">
+		SELECT ID,PROCESS_CODE FROM T_PRO_PRODUCT_PROCESS_WIP
+		WHERE PRODUCT_CRAFTS_ID=
+		(SELECT CRAFTS_ID FROM T_PLA_CUSTOMER_ORDER_ITEM 
+		WHERE ID= #{custOrderItemId,jdbcType=VARCHAR})
+		AND PROCESS_CODE='wrapping_ymd' 
+	</select>
+	
+	<select id="getRBMatPropsByProcessId" parameterType="String" resultType="map">
+		SELECT MAT.MAT_CODE,TD.PROP_NAME,
+		PROP.PROP_TARGET_VALUE FROM 
+		T_INV_MAT MAT,T_INV_MAT_PROP PROP,T_INV_TEMPLET_DETAIL TD,
+		T_INV_TEMPLET T
+		WHERE MAT.MAT_CODE=
+		(SELECT MAT.MAT_CODE
+		FROM T_PRO_PROCESS_IN_OUT_WIP IO,
+		T_INV_MAT MAT,T_INV_TEMPLET T
+		WHERE IO.PRODUCT_PROCESS_ID=#{processId,jdbcType=VARCHAR}
+		AND MAT.MAT_CODE=IO.MAT_CODE
+		AND MAT.TEMPLET_ID=T.ID AND MAT.MAT_TYPE='MATERIALS'
+		AND T.NAME='带材')
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID AND PROP.MAT_ID=MAT.ID
+		AND PROP.TEMPLET_DETAIL_ID=TD.ID AND MAT.TEMPLET_ID=T.ID	
+		AND TD.PROP_NAME='材质'
+	</select>
+	
+	
+</mapper>

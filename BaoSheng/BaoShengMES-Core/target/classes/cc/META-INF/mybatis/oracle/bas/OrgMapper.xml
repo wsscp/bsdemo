@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.OrgDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.Org" id="getMap">
+	</resultMap>
+	
+	<select id="getOrgByName" resultType="cc.oit.bsmes.bas.model.Org" parameterType="string"  >
+		SELECT * FROM T_BAS_ORG WHERE NAME = #{orgCode,jdbcType=VARCHAR} OR ORG_CODE= #{orgCode,jdbcType=VARCHAR}
+	</select>
+	<select id="getByParentId" resultType="cc.oit.bsmes.bas.model.Org" parameterType="string">
+		SELECT * FROM T_BAS_ORG WHERE PARENT_ID = #{parentId}
+	</select>
+	<select id="checkOrgCodeUnique" resultType="cc.oit.bsmes.bas.model.Org" parameterType="string" >
+		SELECT * FROM T_BAS_ORG WHERE ORG_CODE=#{orgCode,jdbcType=VARCHAR} 
+	</select>
+	<insert id="insert" parameterType="cc.oit.bsmes.bas.model.Org" >
+		INSERT INTO T_BAS_ORG(ID, ORG_CODE, NAME,PARENT_ID,PARENT_CODE, TYPE, STATUS, DESCRIPTION, CREATE_USER_CODE, CREATE_TIME,MODIFY_USER_CODE,MODIFY_TIME,DEMO)
+		VALUES(#{id,jdbcType=VARCHAR},#{orgCode,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{parentId,jdbcType=VARCHAR},#{parentCode,jdbcType=VARCHAR},
+			   #{type,jdbcType=VARCHAR},#{status,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},#{createUserCode,jdbcType=VARCHAR},sysdate,#{modifyUserCode,jdbcType=VARCHAR},sysdate,#{demo,jdbcType=VARCHAR})	
+	</insert>
+	<select id="getByParentCode" parameterType="string" resultType="string" >
+		SELECT ID FROM T_BAS_ORG WHERE ORG_CODE=#{parentCode,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 获取组织机构：封装top组织，最顶层的机构代码 -->
+	<select id="getByCode" resultType="cc.oit.bsmes.bas.model.Org" parameterType="string"  >
+		SELECT *
+	    FROM (SELECT BO.*, LEVEL AS L
+	          FROM T_BAS_ORG BO
+	         START WITH ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+	        CONNECT BY PRIOR PARENT_CODE = ORG_CODE
+	               AND PARENT_CODE != '-1'
+	         ORDER BY LEVEL DESC) MM
+	    WHERE ROWNUM = 1
+	</select>
+	
+</mapper>

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/integration
+END
+CheckCrafts.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5675/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/integration/CheckCrafts.java
+END
+CraftUpgradeTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/2448/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/integration/CraftUpgradeTest.java
+END
+InvUseTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5959/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/integration/InvUseTest.java
+END
+PlanTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/integration/PlanTest.java
+END

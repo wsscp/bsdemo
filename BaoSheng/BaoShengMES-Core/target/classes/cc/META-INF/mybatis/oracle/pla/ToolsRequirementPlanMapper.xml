@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.ToolsRequirementPlanDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.ToolsRequirementPlan" id="getMap">
+		<result property="equipCode" column="EQUIP_CODE"/>
+	</resultMap>
+	<sql id="getParameter">
+		<if test="orgCode !=null and orgCode !=''">
+			AND r.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if> 
+		<if test="processCode!=null and processCode!='' ">
+			AND  r.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+		</if>
+		<if test="tooles !=null and tooles !=''">
+			AND r.TOOLES=#{tooles,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	<select id="find" parameterType="cc.oit.bsmes.pla.model.ToolsRequirementPlan" resultMap="getMap">
+<!--		SELECT
+		    r.PROCESS_CODE,
+		    (SELECT NAME FROM T_PRO_PROCESS_INFO WHERE CODE=r.PROCESS_CODE) AS PROCESS_NAME,
+		    r.PLAN_DATE ,
+		    RO.TOOLES,SUM(r.QUANYITY)
+		FROM T_PLA_TOOLES_RP r,T_WIP_WORK_ORDER s
+		WHERE r.WORK_ORDER_ID=s.ID
+		<include refid="getParameter"/>
+		GROUP BY r.PLAN_DATE,s.EQUIP_CODE,r.PROCESS_CODE
+		ORDER BY PLAN_DATE ASC-->
+        SELECT
+            s.WORK_ORDER_NO,
+            r.PROCESS_CODE,
+            (SELECT NAME FROM T_PRO_PRODUCT_PROCESS WHERE ID=s.PROCESS_ID) AS PROCESS_NAME,
+            r.PLAN_DATE,
+            U.NAME AS TOOLES,
+            r.QUANYITY,
+            s.EQUIP_CODE
+        FROM T_PLA_TOOLES_RP r,T_WIP_WORK_ORDER s,T_FAC_EQIP_INFO U
+        WHERE r.WORK_ORDER_ID=s.ID AND  R.TOOLES = U.CODE
+        <include refid="getParameter"/>
+	</select>
+	<select id="count" parameterType="cc.oit.bsmes.pla.model.ToolsRequirementPlan" resultType="int">
+		SELECT COUNT(1) 
+		FROM (SELECT * FROM 
+		T_PLA_TOOLES_RP r,T_WIP_WORK_ORDER s
+		WHERE r.WORK_ORDER_ID=s.ID
+		<include refid="getParameter"/>
+		GROUP BY r.PLAN_DATE,s.EQUIP_CODE,r.PROCESS_CODE)
+	</select>
+
+	<select id="findByOrgCode" parameterType="string" resultMap="getMap" >
+		SELECT 
+		    DISTINCT P.NAME AS PROCESS_NAME, R.PROCESS_CODE 
+		FROM 
+		    T_PLA_TOOLES_RP R, T_PRO_PROCESS_INFO P 
+		WHERE 
+		    R.PROCESS_CODE = P.CODE
+		    AND R.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT R.ID,R.TOOLES,R.QUANYITY
+		FROM T_PLA_TOOLES_RP R
+		WHERE EXISTS ( SELECT 1 FROM T_WIP_WORK_ORDER T WHERE R.WORK_ORDER_ID =
+		T.ID AND T.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR})
+	</select>
+</mapper>

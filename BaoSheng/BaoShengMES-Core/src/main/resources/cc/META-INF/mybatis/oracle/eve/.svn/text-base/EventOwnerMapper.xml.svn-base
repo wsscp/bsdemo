@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.eve.dao.EventOwnerDAO"> 
+	<resultMap type="EventOwner" id="getMap"></resultMap>  
+	
+	<delete id="deleteByEventId">
+	   delete from T_EVE_EVENT_OWNER where EVENT_ID=#{eventId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

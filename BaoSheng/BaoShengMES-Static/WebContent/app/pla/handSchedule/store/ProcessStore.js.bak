@@ -1,0 +1,9 @@
+Ext.define('bsmes.store.ProcessStore', {
+			extend : 'Oit.app.data.GridStore',
+			model : 'bsmes.model.Process',
+			autoLoad : false,
+			proxy : {
+				type : 'rest'
+			}
+
+		});

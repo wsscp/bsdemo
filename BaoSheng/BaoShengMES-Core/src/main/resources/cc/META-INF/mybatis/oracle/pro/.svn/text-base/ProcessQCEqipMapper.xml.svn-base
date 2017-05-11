@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessQCEqipDAO">
+
+	<resultMap type="ProcessQCEqip" id="getMap">
+	</resultMap>
+
+	<select id="getEquipCodeByWorkOrderNo" parameterType="string" resultType="string">
+          SELECT distinct
+              QE.EQUIP_CODE 
+          FROM T_PRO_PROCESS_QC_EQIP QE 
+          LEFT JOIN T_PRO_PROCESS_QC QC ON QE.QC_ID = QC.ID
+          WHERE QC.CHECK_ITEM_CODE = #{param1}
+          AND EXISTS (
+		              SELECT 
+		                EI2.CODE 
+		              FROM T_FAC_EQIP_INFO EI2
+		              WHERE EXISTS (
+		                        	SELECT 
+		                                EQUIP_ID 
+		                            FROM T_FAC_PRODUCT_EQIP PE 
+		                            LEFT JOIN T_FAC_EQIP_INFO EI1 ON PE.PRODUCT_LINE_ID = EI1.ID
+		                            LEFT JOIN T_WIP_WORK_ORDER WO ON WO.EQUIP_CODE = EI1.CODE
+		                            WHERE WO.WORK_ORDER_NO = #{param2} 
+		                            AND EI2.ID = PE.EQUIP_ID
+		                           )
+		             AND  EI2.CODE  = QE.EQUIP_CODE 
+          )
+	</select>	
+	
+	<select id="getAllByOcId" parameterType="string" resultMap="getMap">
+	         SELECT * FROM T_PRO_PROCESS_QC_EQIP PQE WHERE EXISTS(
+	           SELECT 1 FROM T_PRO_PROCESS_QC PQ WHERE
+	           PQ.ID = PQE.QC_ID
+	           AND PQ.PROCESS_ID IN
+	           <foreach collection="processIds" item="item"  open="(" separator="," close=")">
+                   #{item, jdbcType=VARCHAR}
+               </foreach>
+	         )
+	 </select>
+	
+	  <insert id="insertBatch" parameterType="ArrayList">
+			  insert into T_PRO_PROCESS_QC_EQIP ( ID, QC_ID, EQUIP_ID, 
+			  EQUIP_CODE, CREATE_TIME, CREATE_USER_CODE, MODIFY_TIME, 
+			  MODIFY_USER_CODE,AC_EQUIP_CODE )  
+			  <foreach collection="list" item="item" index="index" 
+			  separator="union all"> 
+			  select 
+			    #{item.id,jdbcType=VARCHAR},  #{item.qcId,jdbcType=VARCHAR}, 
+			  #{item.equipId,jdbcType=VARCHAR},
+			  #{item.equipCode,jdbcType=VARCHAR} ,
+			  sysdate, 'PLM', 
+			  sysdate, 'PLM', 
+			  #{item.acEquipCode ,jdbcType=VARCHAR }   from dual
+			  </foreach>
+	 </insert>
+	
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.Desf2DAO">
+    <resultMap type="cc.oit.bsmes.interfacePLM.model.Desf2" id="getMap">
+    </resultMap>
+	<select id="getByProductId" parameterType="map" resultMap="getMap">
+		SELECT A.ID,A.NO,A.NAME,A.FNAME,A.LOCATION
+		FROM DESF2 A,DESF2_OBJOF B,PRODUCT C
+		WHERE A.ID=B.ITEMID2 AND B.ITEMID1=C.ID AND C.ID=#{productId}
+		AND C.WKAID<![CDATA[<>]]>'3'
+		AND A.WKAID<![CDATA[<>]]>'3'
+		AND B.WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<insert id="insertDesf2" parameterType="cc.oit.bsmes.interfacePLM.model.Desf2">
+		INSERT INTO DESF2(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,NO,NAME,VER,FNAME,
+		LOCATION,CREATOR,CTIME,MUSER,MTIME,OWNER,STATE,FSIZE,FMTIME,FMSTATE)
+		VALUES(#{id},'0','N','1',#{designno},#{bldesignno},
+		#{no},#{name},'1',#{fname},#{location},'admin',sysdate,'admin',sysdate,
+		'admin','A',#{fsize,jdbcType=INTEGER},sysdate,'0')
+	</insert>
+	
+	<insert  id="insertDesf2Objof" parameterType="map">
+		INSERT INTO DESF2_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,
+		OWNER,STATE,ITEMID1,ITEMTN1,ITEMID2,ITEMTN2) VALUES
+		(#{id},0,'N','1',#{designNo},#{designNo},'admin',sysdate,
+		'admin','A',#{productId},'PRODUCT',#{desf2Id},'DESF2')
+	</insert>
+	
+	<select id="getByProductNo" parameterType="String" resultMap="getMap">
+		<![CDATA[
+			SELECT ID,NO,NAME,FNAME,LOCATION FROM DESF2
+			WHERE NO=#{no,jdbcType=VARCHAR} AND WKAID<>'3'
+		]]>
+	</select>
+	
+	<delete id="deleteByProductNo" parameterType="String">
+		DELETE FROM DESF2 WHERE NO=#{no,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteObjofByProductId" parameterType="String">
+		DELETE FROM DESF2_OBJOF WHERE ITEMID1=#{no,jdbcType=VARCHAR}
+	</delete>
+	
+	
+</mapper>

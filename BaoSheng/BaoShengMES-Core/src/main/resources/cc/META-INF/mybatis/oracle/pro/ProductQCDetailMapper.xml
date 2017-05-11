@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductQCDetailDAO">
+
+	<resultMap type="ProductQCDetail" id="getMap">
+		<result column="WIRE_REQU" property="wireRequest"/>
+		<result column="ENV_PARM" property="environmentParameter"/>
+		<result column="ENV_VALUE" property="environmentValue"/>
+		<result column="MAT_REQU" property="matRequest"/>
+		<result column="EQIP_REQU" property="equipRequest"/>
+	</resultMap>
+	<select id="getByResId" resultMap="getMap" parameterType="string">
+		SELECT r.ID,r.QC_RESULT,s.PRODUCT_CODE,s.NAME,s.WIRE_REQU,s.PRE_PROCESS,s.ENV_PARM,
+			   s.ENV_VALUE,s.MAT_REQU,s.EQIP_REQU,s.CHARACTER_DESC,s.CHARACTER_VALUE,s.REF_CONTENT,s.REMARKS
+		FROM T_PRO_PRODUCT_QC_DET r, T_PRO_PRODUCT_QC_TEMP s
+		WHERE r.QC_TEMP_ID=s.ID AND QC_RES_ID=#{resultId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getBySampleBarCode" resultMap="getMap" parameterType="string">
+		SELECT s.ID,s.PRODUCT_CODE,s.NAME,s.WIRE_REQU,s.PRE_PROCESS,s.ENV_PARM,
+			   s.ENV_VALUE,s.MAT_REQU,s.EQIP_REQU,s.CHARACTER_DESC,s.CHARACTER_VALUE,s.REF_CONTENT,s.REMARKS
+		FROM  T_PRO_PRODUCT_QC_TEMP s
+		WHERE s.PRODUCT_CODE=#{sampleCode,jdbcType=VARCHAR}
+		      AND STATUS='VALID'
+	</select>
+	<delete id="deleteByResId" parameterType="string">
+		DELETE FROM T_PRO_PRODUCT_QC_DET WHERE QC_RES_ID=#{resId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

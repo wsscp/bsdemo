@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/5641/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/model
+END
+Strategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4295/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/model/Strategy.java
+END
+OrderListToSchedule.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/4664/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/model/OrderListToSchedule.java
+END
+IScheduleable.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/2777/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/model/IScheduleable.java
+END
+Capacity.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5641/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/model/Capacity.java
+END

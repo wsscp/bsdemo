@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/11205/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store
+END
+WorkOrderNoInfoStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/9208/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/WorkOrderNoInfoStore.js
+END
+MatBatchGridStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/3409/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/MatBatchGridStore.js
+END
+ProcessReceiptStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ProcessReceiptStore.js
+END
+EquipAlarmListStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/6386/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/EquipAlarmListStore.js
+END
+TodayMatPlanStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8411/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/TodayMatPlanStore.js
+END
+DailyCheckStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5365/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/DailyCheckStore.js
+END
+ReportSectionStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/3890/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ReportSectionStore.js
+END
+PrintBarCodeSectionStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4832/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/PrintBarCodeSectionStore.js
+END
+ProcessQcStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8341/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ProcessQcStore.js
+END
+SectionStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/3129/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/SectionStore.js
+END
+ProcessInStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8355/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ProcessInStore.js
+END
+AgreementStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/3241/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/AgreementStore.js
+END
+ReportStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5358/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ReportStore.js
+END
+ShiftRecordStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/7363/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ShiftRecordStore.js
+END
+CheckWorkOrderStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/6846/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/CheckWorkOrderStore.js
+END
+ProductReportStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11205/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ProductReportStore.js
+END
+TaskInfoStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8493/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/TaskInfoStore.js
+END
+WorkOrderStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8411/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/WorkOrderStore.js
+END
+EquipReportStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/3041/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/EquipReportStore.js
+END
+ProcessQAEntryStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5036/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/ProcessQAEntryStore.js
+END
+CheckGridStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/5003/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/CheckGridStore.js
+END
+SparkRepairStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6878/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/SparkRepairStore.js
+END
+InvLocationStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4318/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/store/InvLocationStore.js
+END

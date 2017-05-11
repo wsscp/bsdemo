@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.TempletDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.Templet" id="getMap">
+	</resultMap>
+	
+	<select id="find" parameterType="cc.oit.bsmes.inv.model.Templet" resultMap="getMap">
+		SELECT ID ,NAME FROM T_INV_TEMPLET 
+		<where>
+  			<if test="name != null and name != ''">
+				 NAME=#{name,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultMap="getMap">
+		SELECT ID, CREATE_TIME, "DESC", CREATE_USER_CODE, ORG_CODE, MODIFY_USER_CODE, NAME, MODIFY_TIME FROM T_INV_TEMPLET
+	</select>
+	
+</mapper>

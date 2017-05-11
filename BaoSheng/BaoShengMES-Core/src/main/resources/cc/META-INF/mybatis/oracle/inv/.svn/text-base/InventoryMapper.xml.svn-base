@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.InventoryDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.Inventory" id="getMap">
+		<result property="id" column="ID" />
+		<collection property="inventoryDetails" column="ID" javaType="java.util.ArrayList"
+		 ofType="cc.oit.bsmes.inv.model.InventoryDetail"  select="cc.oit.bsmes.inv.dao.InventoryDetailDAO.getByInvertoryId"></collection>
+	</resultMap>
+	
+	<sql id="sqlColumns">
+		   i."ID",                           
+		   i.LOCATION_ID,          
+		   i.WAREHOUSE_ID,                
+		   i.MATERIAL_CODE,        
+		   i.MATERIAL_NAME, 
+		   i.MATERIAL_DESC,               
+		   i.BAR_CODE,             
+		   i.QUANTITY,           
+		   i.LOCKED_QUANTITY,      
+		   i.UNIT,                 
+		   i.CREATE_TIME,        
+		   i.CREATE_USER_CODE,     
+		   i.MODIFY_TIME,          
+		   i.MODIFY_USER_CODE,     
+		   i.ORG_CODE             
+	</sql>
+	
+	<select id="getById" parameterType="string" resultMap="getMap">
+		SELECT <include refid="sqlColumns"/> FROM T_INV_INVENTORY i WHERE i.ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findByMatCodeOrLocationName" parameterType="string" resultMap="getMap">
+		SELECT 
+			<include refid="sqlColumns"/>,l.LOCATION_NAME
+		FROM T_INV_INVENTORY i,T_INV_LOCATION l
+		WHERE i.LOCATION_ID = l.ID
+		<if test="param1 != '' and param1 != null">
+			AND i.MATERIAL_CODE LIKE #{param1}
+		</if>
+		<if test="param2 != '' and param2 != null">
+			AND l.LOCATION_NAME LIKE #{param2}
+		</if>
+	</select>
+	
+	<select id="countByMatCodeOrLocationName" parameterType="string" resultType="int">
+		SELECT 
+			COUNT(i.ID)
+		FROM T_INV_INVENTORY i,T_INV_LOCATION l
+		WHERE i.LOCATION_ID = l.ID
+		<if test="param1 != '' and param1 != null">
+			AND i.MATERIAL_CODE LIKE #{param1}
+		</if>
+		<if test="param2 != '' and param2 != null">
+			AND l.LOCATION_NAME LIKE #{param2}
+		</if>
+	</select>
+	
+	<!-- 库存管理查询列表 -->
+	<select id="findInvenTory" parameterType="cc.oit.bsmes.inv.model.Inventory" resultMap="getMap">
+		SELECT 
+			<include refid="sqlColumns"/>, 
+			pi.NAME as PROCESS_NAME,
+			il.PROCESS_CODE, 
+			il.LOCATION_NAME, 
+			iw.WAREHOUSE_NAME,
+			il.LOCATION_X,
+		    il.LOCATION_Y,
+		    il.LOCATION_Z
+		FROM T_INV_INVENTORY i
+        INNER JOIN T_INV_LOCATION il ON i.LOCATION_ID = il.ID
+        INNER JOIN T_INV_WAREHOUSE iw ON i.WAREHOUSE_ID = iw.ID
+        LEFT JOIN T_PRO_PROCESS_INFO pi ON pi.CODE = il.PROCESS_CODE
+		WHERE 
+		  (i.ORG_CODE=#{orgCode, jdbcType=VARCHAR} OR i.ORG_CODE IS NULL) AND
+		  il.ORG_CODE=#{orgCode, jdbcType=VARCHAR} AND
+		  iw.ORG_CODE=#{orgCode, jdbcType=VARCHAR}
+		<if test="materialCode != '' and materialCode != null">
+			AND i.MATERIAL_CODE LIKE '%'||#{materialCode, jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="warehouseId != '' and warehouseId != null">
+			AND i.WAREHOUSE_ID LIKE '%'||#{warehouseId, jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="locationName != '' and locationName != null">
+			AND il.LOCATION_NAME LIKE '%'||#{locationName, jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="processCode != '' and processCode != null">
+			AND il.PROCESS_CODE LIKE '%'||#{processCode, jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+	<!-- 库存管理列表数目 -->
+	<select id="countInvenTory" parameterType="cc.oit.bsmes.inv.model.Inventory" resultType="int">
+		SELECT COUNT(*)
+		FROM T_INV_INVENTORY i
+        INNER JOIN T_INV_LOCATION il ON i.LOCATION_ID = il.ID
+        INNER JOIN T_INV_WAREHOUSE iw ON i.WAREHOUSE_ID = iw.ID
+        LEFT JOIN T_PRO_PROCESS_INFO pi ON pi.CODE = il.PROCESS_CODE
+		WHERE 
+		  (i.ORG_CODE=#{orgCode, jdbcType=VARCHAR} OR i.ORG_CODE IS NULL) AND
+		  il.ORG_CODE=#{orgCode, jdbcType=VARCHAR} AND
+		  iw.ORG_CODE=#{orgCode, jdbcType=VARCHAR}
+		<if test="materialCode != '' and materialCode != null">
+			AND i.MATERIAL_CODE LIKE '%'||#{materialCode, jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="warehouseId != '' and warehouseId != null">
+			AND i.WAREHOUSE_ID LIKE '%'||#{warehouseId, jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="locationName != '' and locationName != null">
+			AND il.LOCATION_NAME LIKE '%'||#{locationName, jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="processCode != '' and processCode != null">
+			AND il.PROCESS_CODE LIKE '%'||#{processCode, jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+	
+	<!-- 库存管理块：获取当前工序的物料位置信息  AND OT.STATUS = 'FINISHED'-->
+	<select id="getLocationByWorkOrderNo" parameterType="cc.oit.bsmes.inv.model.Inventory" resultType="cc.oit.bsmes.inv.model.Inventory">
+		SELECT DISTINCT  L.LOCATION_NAME,I.MATERIAL_CODE,R.SERIAL_NUM FROM T_INV_LOCATION L 
+       LEFT JOIN T_INV_INVENTORY I ON L.ID = I.LOCATION_ID
+       LEFT JOIN T_WIP_REPORT R ON R.SERIAL_NUM = I.BAR_CODE
+       WHERE R.MAT_CODE=#{materialCode,jdbcType=VARCHAR} AND L.TYPE = 'FIX' ORDER BY R.SERIAL_NUM
+	</select>
+
+    <select id="getByBarCode" parameterType="string" resultType="cc.oit.bsmes.inv.model.Inventory">
+            SELECT
+                <include refid="sqlColumns"/>,
+                il.LOCATION_NAME,
+                iw.WAREHOUSE_NAME,
+                il.LOCATION_X,
+                il.LOCATION_Y,
+                il.LOCATION_Z
+            FROM T_INV_INVENTORY i, T_INV_LOCATION il, T_INV_WAREHOUSE iw
+            WHERE i.WAREHOUSE_ID=iw.ID
+                AND i.LOCATION_ID=il.ID
+                AND i.BAR_CODE = #{barCode}
+    </select>
+    
+    <select id="findByBarCode" parameterType="string" resultMap="getMap">
+    	SELECT DISTINCT T2.LOCATION_NAME 
+    		FROM T_INV_INVENTORY T1 LEFT JOIN T_INV_LOCATION T2 ON T1.LOCATION_ID=T2.ID 
+    		WHERE BAR_CODE LIKE #{barCode,jdbcType=VARCHAR}||'%'
+    </select>
+    
+    <!-- 获取订单的原材料的物料需求 
+    SELECT
+		    mat.MAT_CODE AS MATERIALCODE,
+		    mat.MAT_NAME AS MATERIALNAME,
+		    mat.MATERIAL_DESC AS MATERIALDESC,
+		    mat.MAT_TYPE AS MATTYPE,
+		    NVL(INVENTORY.QUANTITY, 0) AS QUANTITY,
+		    NVL(INVENTORY.LOCKED_QUANTITY, 0) AS LOCKEDQUANTITY,
+		    INVENTORY.UNIT AS UNIT,
+		    INVENTORY.DESCRIPTION AS DESCRIPTION,
+		    INVENTORY.COLOR,
+		    INVENTORY.disk_number as DISKNUMBER
+		FROM
+		    (
+		        SELECT
+				    TMP.MAT_CODE                                                   AS MAT_CODE,
+				    TMP.MAT_NAME                                                   AS MAT_NAME,
+				    MAX(TMP.MAT_TYPE)                                              AS MAT_TYPE,
+				    WMSYS.WM_CONCAT(TMP.PROP_NAME || ':' || TMP.PROP_TARGET_VALUE) AS MATERIAL_DESC
+				FROM
+				    (
+				        SELECT DISTINCT
+				            M.MAT_CODE,
+				            M.MAT_NAME,
+				            M.MAT_TYPE,
+				            D.PROP_NAME,
+				            MP.PROP_TARGET_VALUE
+				        FROM
+				            T_INV_MAT_WIP m,
+				            T_INV_MAT_PROP_WIP MP,
+				            T_INV_TEMPLET_DETAIL D,
+				            T_PRO_PROCESS_IN_OUT_WIP io,
+				            T_PRO_PRODUCT_PROCESS_WIP pp,
+				            T_PRO_PROCESS_INFO p,
+				            T_PLA_CUSTOMER_ORDER_ITEM i
+				        WHERE
+				            m.MAT_CODE=io.MAT_CODE
+				        AND MP.MAT_ID = M.ID
+				        AND MP.TEMPLET_DETAIL_ID = D.ID
+				        AND io.PRODUCT_PROCESS_ID=pp.ID
+				        AND pp.PROCESS_CODE=p.CODE
+				        AND pp.PRODUCT_CRAFTS_ID=i.CRAFTS_ID
+				        AND io.IN_OR_OUT='IN'
+				        AND p.SECTION_SEQ=#{section, jdbcType=VARCHAR}
+				        <if test="orderItemIds != null and (orderItemIds instanceof java.util.ArrayList) and orderItemIds.size() > 0">
+							AND i.ID IN
+							<foreach collection="orderItemIds" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+						</if>
+				        ORDER BY
+				            D.PROP_NAME,
+				            MP.PROP_TARGET_VALUE ) TMP
+				GROUP BY
+				    TMP.MAT_CODE,
+				    TMP.MAT_NAME
+				ORDER BY
+				    MAT_CODE DESC
+		        ) mat
+		LEFT JOIN
+		    (
+		        SELECT
+		            SUM(i.QUANTITY)        AS QUANTITY,
+		            SUM(i.LOCKED_QUANTITY) AS LOCKED_QUANTITY,
+		            MAX(i.UNIT)            AS UNIT,
+		            i.MATERIAL_CODE        AS MATERIAL_CODE,
+		            WMSYS.WM_CONCAT(distinct w.WAREHOUSE_NAME || '-' || l.LOCATION_NAME || '-' || l.LOCATION_X || '-' || l.LOCATION_Y || '-' || l.LOCATION_Z || ':' || i.QUANTITY || ' ' || i.UNIT) AS DESCRIPTION,
+		            M.COLOR,
+		            MAX('') AS disk_number
+		        FROM
+		            T_INV_INVENTORY I,
+		            T_INV_MAT_WIP M,
+		            T_INV_LOCATION L,
+                    T_INV_WAREHOUSE W
+		        WHERE
+		            I.MATERIAL_CODE=M.MAT_CODE
+		        AND I.LOCATION_ID=L.ID
+                AND I.WAREHOUSE_ID=W.ID
+		        AND M.MAT_TYPE='MATERIALS'
+		        AND I.BAR_CODE IS NULL
+		        GROUP BY
+		            I.MATERIAL_CODE, M.COLOR
+		        <if test="workOrderNo != null and workOrderNo != ''">
+		        UNION ALL    
+		        SELECT
+            SUM(t4.report_length)   AS quantity,
+            SUM(t2.locked_quantity) AS locked_quantity,
+            MAX(t2.unit)            AS unit,
+            t4.mat_code             AS material_code,
+            WMSYS.WM_CONCAT(t5.WAREHOUSE_NAME || '-' || t3.location_name || '-' || t4.report_length
+            || ' ' || t2.unit) AS DESCRIPTION,
+            t4.color,
+           WMSYS.WM_CONCAT(t4.disk_number) AS disk_number
+        FROM
+            T_WIP_REPORT t1,
+            T_INV_INVENTORY t2,
+            T_INV_LOCATION t3,
+            T_WIP_REPORT_TASK t4,
+            T_INV_WAREHOUSE t5
+        WHERE
+            t1.serial_num = t2.bar_code
+        AND t2.location_id = t3.id
+        AND t3.WAREHOUSE_ID = t5.id
+        AND t1.id = t4.report_id
+        AND t1.work_order_no =#{workOrderNo, jdbcType=VARCHAR}
+        GROUP BY
+            t4.mat_code,
+            t4.color </if>
+		    ) INVENTORY
+		ON
+		    mat.MAT_CODE = INVENTORY.MATERIAL_CODE
+    -->
+    <select id="getMaterialsInventory" parameterType="map" resultType="map">
+		SELECT t4.mat_code AS MATERIALCODE,
+		       WMSYS.WM_CONCAT(t5.WAREHOUSE_NAME || '-' || t3.location_name || '-' ||
+		                       t4.report_length || ' ' || t2.unit) AS DESCRIPTION,
+		       t4.COLOR,
+           	   WMSYS.WM_CONCAT(t4.disk_number) AS DISKNUMBER
+		  FROM T_WIP_REPORT      t1,
+		       T_INV_INVENTORY   t2,
+		       T_INV_LOCATION    t3,
+		       T_WIP_REPORT_TASK t4,
+		       T_INV_WAREHOUSE   t5
+		 WHERE t1.serial_num = t2.bar_code
+		   AND t2.location_id = t3.id
+		   AND t3.WAREHOUSE_ID = t5.id
+		   AND t1.id = t4.report_id
+		   AND t1.work_order_no = #{workOrderNo, jdbcType = VARCHAR}
+		 GROUP BY t4.mat_code, t4.color
+
+    </select>
+    
+</mapper>

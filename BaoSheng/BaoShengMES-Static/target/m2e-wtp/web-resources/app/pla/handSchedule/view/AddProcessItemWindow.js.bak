@@ -1,0 +1,162 @@
+/**
+ * 订单明细固定设备
+ */
+Ext.define('bsmes.view.AddProcessItemWindow', {
+			extend : 'Ext.window.Window',
+			alias : 'widget.addProcessItemWindow',
+			title : '添加工序',
+			width : 610,
+			height : 470,
+			layout : 'fit',
+			modal : true,
+			plain : true,
+
+			initComponent : function() {
+				var me = this;
+
+				var preProcessStore = Ext.ComponentQuery.query('mergeProcessGrid')[0].getStore({}); // 上道工序下拉框
+
+				me.items = [{
+							xtype : 'form',
+							autoScroll : true,
+							bodyPadding : '10 10',
+							items : [{
+										xtype : 'fieldset',
+										title : '选择上道工序',
+										anchor : '100%',
+										items : [{
+													xtype : 'combobox',
+													allowBlank : false,
+													fieldLabel : '上道工序',
+													store : preProcessStore,
+													displayField : 'processName',
+													valueField : 'processCode',
+													labelWidth : 80,
+													mode : "local",
+													itemId:"lastProcessCode",
+													width : 350,
+													listeners : {
+														change : function(combo, newValue, oldValue, eOpts){
+															var me = this;
+															Ext.Ajax.request({     
+															       url:'handSchedule/queryProcessIn',  
+															       async: false,
+															       params:{processId: newValue},  
+															        success: function(resp,opts) {  
+															        	var bz=Ext.decode(resp.responseText);
+															        	var name=Ext.ComponentQuery.query('addProcessItemWindow #inHalfProductName')[0];
+															        	var code=Ext.ComponentQuery.query('addProcessItemWindow #inHalfProductCode')[0];
+															        	name.setValue(bz.matName);
+															        	code.setValue(bz.matCode);
+											                         },   
+												                     failure: function(resp,opts) {   
+												                    	 Ext.Msg.alert("错误信息","发生错误，请重新选择！")
+												                     }     
+															      })
+														}
+													}
+												}]
+									}, {
+										xtype : 'fieldset',
+										title : '新增工序信息',
+										anchor : '100%',
+										items : [{
+													xtype : 'combobox',
+													allowBlank : false,
+													fieldLabel : '选择工序',
+													store : 'ItemProcessBzStore',
+													displayField : 'name',
+													valueField : 'code',
+													labelWidth : 80,
+													width : 350,
+													itemId:"currentProcessCode"
+												}]
+									}, {
+										xtype : 'fieldset',
+										title : '投入',
+										anchor : '100%',
+										itemId : 'processIn',
+										items : [{
+													text : '添加',
+													xtype : 'button',
+													iconCls : 'icon_add',
+													itemId : 'addProcessInItem'
+												}, {
+													xtype : 'container',
+													anchor : '100%',
+													layout : 'hbox',
+													disable : false,
+													padding : '0 0 10 0',
+													items : [{
+																fieldLabel : '半成品名称',
+																xtype : 'textfield',
+																labelWidth : 80,
+																itemId:"inHalfProductName"
+															}, {
+																fieldLabel : '半成品编码',
+																xtype : 'textfield',
+																labelWidth : 80,
+																margin : '0 0 0 10',
+																itemId:"inHalfProductCode"
+															}]
+												}]
+									}, {
+										xtype : 'fieldset',
+										title : '产出',
+										anchor : '100%',
+										items : [{
+													xtype : 'container',
+													anchor : '100%',
+													layout : 'hbox',
+													padding : '0 0 10 0',
+													items : [{
+																fieldLabel : '半成品名称',
+																allowBlank : false,
+																xtype : 'textfield',
+																labelWidth : 80,
+																itemId : 'lastProcessInItemName'
+															}, {
+																fieldLabel : '半成品编码',
+																allowBlank : false,
+																xtype : 'textfield',
+																labelWidth : 80,
+																margin : '0 0 0 10',
+																itemId : 'lastProcessInItemCode'
+															}]
+												}]
+									}, {
+										xtype : 'fieldset',
+										title : '选择生产线',
+										anchor : '100%',
+										items : [{
+													xtype : 'combobox',
+													multiSelect : true,
+													allowBlank : false,
+													fieldLabel : '生产线',
+													store : 'ItemEquipStore',
+													displayField : 'name',
+													valueField : 'code',
+													labelWidth : 80,
+													width : 533,
+													itemId:"equipCode"
+												}]
+									}]
+						}];
+
+				Ext.apply(me, {
+							buttons : [{
+										itemId : 'ok',
+										text : Oit.btn.ok
+									}, {
+										itemId : 'cancel',
+										text : Oit.btn.cancel,
+										scope : me,
+										handler : me.close
+									}]
+						});
+
+				this.callParent(arguments);
+
+			}
+
+		});

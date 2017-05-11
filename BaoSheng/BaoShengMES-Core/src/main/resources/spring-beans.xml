@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="cc.oit.bsmes.interfaceWebService"/>
+	
+	<!-- 这样就可以在客户端把一个WebService注入到其它的bean中了 -->
+	<bean id="mesService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
+		<property name="serviceInterface" value="cc.oit.bsmes.interfaceWebService.MesService"/>
+<!-- 		<property name="wsdlDocumentUrl" value="http://localhost:80/BaoShengMES-WS/service/ErpService.wsdl"/> -->
+		<property name="wsdlDocumentUrl" value="http://192.167.4.16:8081/erpds/mesService?wsdl"/>
+		<property name="namespaceUri" value="http://impl.webservice.erpds.cmpsoft.com/"/>
+		<property name="serviceName" value="mesService"/>
+		<property name="portName" value="MesServiceImplPort"/>
+		<!-- 使用handlerResolver属性来启用Handler,不过该属性要求其值为javax.xml.ws.handler.HandlerResolver类型 -->
+		<!-- 所以需自定义一个类来实现HandlerResolver接口,具体写法见com.jadyer.handler.HeaderHandlerResolver.java -->
+		<!-- <property name="handlerResolver" ref="headerHandlerResolver"/> -->
+		<property name="customProperties">
+			<map>
+				<entry key="com.sun.xml.ws.request.timeout" value="20000" />
+				<entry key="com.sun.xml.ws.connect.timeout" value="20000" />
+			</map>
+		</property>
+	</bean>	
+
+</beans>

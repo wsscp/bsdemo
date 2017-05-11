@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.MaterialCheckReportDetailsDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.MaterialCheckReportDetails" id="getMap">
+	</resultMap>
+
+	
+	<select id="getByStockCheckId" parameterType="string" resultType="cc.oit.bsmes.pla.model.MaterialCheckReportDetails">
+		SELECT
+		    T.SEQ,
+		    T.CHECK_DATE,
+		    T.DAILY_CHECK_QUANTITY
+		FROM
+		    T_INV_STOCK_CHECK_DT T
+		WHERE
+		    T.STOCK_CHECK_ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

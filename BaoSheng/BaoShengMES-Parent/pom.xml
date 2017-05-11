@@ -1,0 +1,569 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cc.oit</groupId>
+    <artifactId>BaoShengMES-Parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging> 
+
+    <name>BaoShengMES-Parent</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <org.springframework.version>4.0.9.RELEASE</org.springframework.version>
+        <org.spring.redis.version>1.5.0.RELEASE</org.spring.redis.version>
+        <org.apache.tiles.version>3.0.1</org.apache.tiles.version>
+        <junit.version>4.7</junit.version>
+        <mybatis.version>3.2.3</mybatis.version>
+        <oracle.version>11.2.0.3.0</oracle.version>
+        <quartz-version>1.8.6</quartz-version>
+        <mail-version>1.4.1</mail-version>
+        <datasourceDir>dev</datasourceDir>
+    </properties>
+    <profiles>
+        <profile>
+            <id>mesjob-sit1</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>mesjob-sit1</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://127.0.0.1:9083/manager/html</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcat</tomcatpassword>
+                <datasourceDir>sit</datasourceDir>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mes-sit1</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>mes-sit1</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://127.0.0.1:8083/manager/html</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcat</tomcatpassword>
+                <datasourceDir>sit</datasourceDir>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mes-sit2</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>mes-sit2</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://127.0.0.1:9083/manager/html</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcat</tomcatpassword>
+                <datasourceDir>sit</datasourceDir>
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>wwtest</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>wwtest</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://192.168.1.119:8083/manager/html</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcat</tomcatpassword>
+                <datasourceDir>wwtest</datasourceDir>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>local</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>local</value>
+                </property>
+            </activation>
+            <properties>
+                <datasourceDir>local</datasourceDir>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>uat1</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>uat1</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://192.167.29.111:8001/manager/text</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcatadmin</tomcatpassword>
+                <datasourceDir>uat</datasourceDir>
+                <tilesUrl>http://localhost/bsstatic/tiles-config_2_0.dtd</tilesUrl>
+                
+            </properties>
+        </profile>
+        
+         <profile>
+            <id>uat2</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>uat2</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://192.167.29.111:8002/manager/text</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcatadmin</tomcatpassword>
+                <datasourceDir>uat</datasourceDir>
+                <tilesUrl>http://localhost/bsstatic/tiles-config_2_0.dtd</tilesUrl>
+            </properties>
+        </profile>
+       
+           <profile>
+            <id>uatjob</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>uatjob</value>
+                </property>
+            </activation>
+            <properties>
+                <tomcaturl>http://192.167.29.111:8003/manager/text</tomcaturl>
+                <tomcatuser>tomcat</tomcatuser>
+                <tomcatpassword>tomcatadmin</tomcatpassword>
+                <datasourceDir>uat</datasourceDir>
+                 <tilesUrl>http://localhost/bsstatic/tiles-config_2_0.dtd</tilesUrl>
+            </properties>
+        </profile> 
+
+    </profiles>
+
+
+    <repositories>
+        <repository>
+            <id>oit</id>
+            <name>Orientech Uploads</name>
+            <url>http://101.231.47.126:8080/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>oit-plugin</id>
+            <name>Orientech Plugin Uploads</name>
+            <url>http://101.231.47.126:8080/nexus/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencyManagement>
+        <dependencies>
+        <!--  
+            <dependency>
+                <groupId>com.kenai.nbpwr</groupId>
+                <artifactId>org-apache-batik-all</artifactId>
+                <version>1.7-201002241055</version>
+                <type>nbm</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>fop</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xerces</artifactId>
+                <version>2.4.0</version>
+            </dependency>
+         -->
+         
+         	<dependency>
+				<groupId>cc.oit</groupId>
+				<artifactId>BaoShengMES-Core</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.5</version>
+                <scope>provided</scope>
+            </dependency>
+            
+              <dependency>
+				<groupId>com.google.zxing</groupId>
+				<artifactId>core</artifactId>
+				<version>2.2</version>
+			</dependency>
+        
+            
+            <dependency>
+                <groupId>javax.servlet.jsp</groupId>
+                <artifactId>javax.servlet.jsp-api</artifactId>
+                <version>2.3.1</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId> <!-- 代码线程安全性注解，仅作为文档没有实际作用 -->
+                <version>3.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.12.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>1.7.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.1.37</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sourceforge.jexcelapi</groupId>
+                <artifactId>jxl</artifactId>
+                <version>2.6.12</version>
+            </dependency>
+
+            <!-- 自动生成代码 -->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4</artifactId>
+                <version>4.2.2</version>
+            </dependency>
+
+            <!-- log -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.0.13</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId><!-- tiles带的版本太低报错 -->
+                <version>1.7.5</version>
+            </dependency>
+
+            <!--数据采集-->
+            <dependency>
+                <groupId>bouncycastle</groupId>
+                <artifactId>bcprov-jdk15</artifactId>
+                <version>140</version>
+            </dependency>
+            <dependency>
+                <groupId>opc</groupId>
+                <artifactId>org.openscada.opc.dcom</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>opc</groupId>
+                <artifactId>org.openscada.opc.lib</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>fakepath</groupId>
+                <artifactId>org.openscada.external.jcifs</artifactId>
+                <version>1.2.25</version>
+            </dependency>
+            <dependency>
+                <groupId>fakepath</groupId>
+                <artifactId>org.openscada.jinterop.core</artifactId>
+                <version>2.1.8</version>
+            </dependency>
+            <dependency>
+                <groupId>fakepath</groupId>
+                <artifactId>org.openscada.jinterop.deps</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+
+            <!-- Test -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${org.springframework.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+			    <groupId>javax.servlet</groupId>
+			    <artifactId>javax.servlet-api</artifactId>
+			    <version>3.0.1</version>
+			    <scope>test</scope>
+			</dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-servlet-api</artifactId>
+                <version>7.0.30</version>
+                <scope>test</scope>
+            </dependency>
+			 
+            <!-- Servlet -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>1.2</version>
+            </dependency>
+
+            <!-- Mybatis -->
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>1.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.atomikos</groupId>
+                <artifactId>transactions-jta</artifactId>
+                <version>3.9.3</version>
+            </dependency>
+            <dependency>
+                <groupId>com.atomikos</groupId>
+                <artifactId>transactions-jdbc</artifactId>
+                <version>3.9.3</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.transaction</groupId>
+                <artifactId>jta</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${oracle.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sourceforge.jtds</groupId>
+                <artifactId>jtds</artifactId>
+                <version>1.2.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.javax.persistence</groupId>
+                <artifactId>hibernate-jpa-2.1-api</artifactId>
+                <version>1.0.0.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib</artifactId>
+                <version>3.1</version>
+            </dependency>
+
+            <!-- 数据源 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+
+            <!-- org.springframework -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.collections</groupId>
+                <artifactId>google-collections</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>  
+	            <groupId>org.springframework.ws</groupId>  
+	            <artifactId>spring-ws-core</artifactId>  
+	            <version>2.2.1.RELEASE</version>
+	            <exclusions>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-core</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-aop</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-beans</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-oxm</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-expression</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-context</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-web</artifactId>
+			        </exclusion>
+			        <exclusion>
+			            <groupId>org.springframework</groupId>
+			            <artifactId>spring-webmvc</artifactId>
+			        </exclusion>
+		    	</exclusions>
+        	</dependency>
+
+            <!-- validation -->
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>5.0.1.Final</version>
+            </dependency>
+
+            <!-- tiles -->
+            <dependency>
+                <groupId>org.apache.tiles</groupId>
+                <artifactId>tiles-core</artifactId>
+                <version>${org.apache.tiles.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tiles</groupId>
+                <artifactId>tiles-jsp</artifactId>
+                <version>${org.apache.tiles.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tiles</groupId>
+                <artifactId>tiles-request-servlet</artifactId>
+                <version>1.0.1</version>
+            </dependency>
+            <!-- quartz add by zhangdongpng -->
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${mail-version}</version>
+            </dependency>
+
+            <!-- opc -->
+            <dependency>
+                <groupId>oit</groupId>
+                <artifactId>jeasyopc</artifactId>
+                <version>2.3.2</version>
+            </dependency>
+            
+            <!-- 模版导出 -->
+            <dependency>
+			  <groupId>net.sf.jxls</groupId>
+			  <artifactId>jxls-core</artifactId>
+			  <version>1.0.3</version>
+			</dependency>
+
+            <!--spring-data-redis-->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>2.4.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${org.spring.redis.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-redis</artifactId>
+                <version>${org.spring.redis.version}</version>
+            </dependency>
+
+            <!--gson-->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.3.1</version>
+            </dependency>
+
+            <!--barcode-->
+            <dependency>
+                <groupId>net.sf.barcode4j</groupId>
+                <artifactId>barcode4j</artifactId>
+                <version>2.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- compiler插件, 设定JDK版本 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <testSource>1.6</testSource>
+                        <testTarget>1.6</testTarget>
+                        <showWarnings>true</showWarnings>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>tomcat-maven-plugin</artifactId>
+                    <version>1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

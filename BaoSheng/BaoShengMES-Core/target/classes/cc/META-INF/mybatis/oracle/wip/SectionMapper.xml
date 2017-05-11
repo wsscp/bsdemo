@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.SectionDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.Section" id="getMap">
+	</resultMap>
+	
+	<sql id="sectionColumns"> 
+		s."ID",
+		s.R_ID as reportId,
+		s.ORDER_ITEM_PRO_DEC_ID,
+		s.PROCESS_PATH,
+		s.PRODUCT_LENGTH,
+		s.SECTION_LENGTH,
+		s.GOOD_LENGTH,
+		s.SECTION_TYPE,
+		s.ORG_CODE,
+		s.CREATE_USER_CODE,
+		s.CREATE_TIME,
+		s.MODIFY_USER_CODE,
+		s.MODIFY_TIME,
+		s.WORK_ORDER_NO,
+		s.SECTION_LOCAL
+	</sql>
+	
+	<select id="getByOrderItemIdAndWoNo" resultMap="getMap">
+		SELECT
+              <include refid="sectionColumns"/>
+        FROM  T_WIP_SECTION s,
+              T_PLA_CU_ORDER_ITEM_PRO_DEC p,
+              T_WIP_REPORT r
+        WHERE s.ORDER_ITEM_PRO_DEC_ID = p."ID"
+            AND p.ORDER_ITEM_DEC_ID = #{param1}
+            AND r."ID"= s.R_ID
+            AND r.WORK_ORDER_NO = #{param2}
+        ORDER BY s.GOODLENGTH
+	</select>
+
+	<select id="getByWoNo" resultMap="getMap">
+		SELECT
+		      <include refid="sectionColumns"/>,
+              d.CONTRACT_NO,
+              r.COIL_NUM
+        FROM T_WIP_SECTION s
+        LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC d ON s.ORDER_ITEM_PRO_DEC_ID = d.ID
+        LEFT JOIN T_WIP_REPORT r ON s.R_ID = r."ID"
+        WHERE s.WORK_ORDER_NO = #{workOrderNo}
+        ORDER BY s.SECTION_LOCAL DESC
+	</select>
+
+	<select id="getToReport" resultMap="getMap">
+		SELECT
+          <include refid="sectionColumns"/>
+        FROM  T_WIP_SECTION s,
+              T_WIP_REPORT r
+        WHERE r."ID"= s.R_ID
+        AND r.WORK_ORDER_NO = #{workOrderNo}
+        AND r.REPORT_TIME IS NULL
+	</select>
+
+    <select id="getLastByWoNo" parameterType="string" resultType="cc.oit.bsmes.wip.model.Section">
+        SELECT * FROM (
+            SELECT
+            <include refid="sectionColumns"/>
+            FROM T_WIP_SECTION s
+            WHERE s.WORK_ORDER_NO = #{woNo}
+            ORDER BY s.SECTION_LOCAL DESC
+        ) WHERE ROWNUM = 1
+    </select>
+
+    <select id="getByWoNoAndNotReport"  resultMap="getMap">
+        SELECT
+          <include refid="sectionColumns"/>
+        FROM T_WIP_SECTION s
+        WHERE s.WORK_ORDER_NO = #{param1}
+        AND s.SECTION_LOCAL > #{param2}
+        AND s.R_ID IS NULL
+        ORDER BY SECTION_LOCAL
+    </select>
+
+    <select id="getPrintSectionInfo" parameterType="string" resultMap="getMap">
+        SELECT
+          <include refid="sectionColumns"/>,
+          d.CONTRACT_NO
+        FROM T_WIP_SECTION s
+        LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC d ON s.ORDER_ITEM_PRO_DEC_ID = d.ID
+        WHERE s.R_ID = #{param1}
+        ORDER BY s.SECTION_LOCAL
+    </select>
+
+
+    <select id="getByReportIdForInWarehouse" parameterType="string" resultMap="getMap">
+        SELECT
+          <include refid="sectionColumns"/>
+        FROM T_WIP_SECTION s WHERE S.R_ID = #{reportId}
+        ORDER BY s.SECTION_LOCAL DESC
+    </select>
+</mapper>

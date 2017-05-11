@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.MatUsageDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.MatUsage" id="getMap">
+	</resultMap>
+	
+	<insert id="insertMatDetail" parameterType="map">
+	   INSERT INTO T_WIP_MAT_USAGE_DT VALUES(
+	   #{id},#{matUsageId},#{matCode},#{matName},#{sbjl},#{bbll},
+	   #{bbtl},#{bbjl},sysdate,#{operator},sysdate,#{operator})
+	</insert>
+	
+	<insert id="insertProAssistDetail" parameterType="map">
+	   INSERT INTO T_WIP_PRO_ASSIST_TIME_DT VALUES(
+	   #{id},#{matUsageId},(SELECT ID FROM T_WIP_ASSIST_OPTION 
+	   WHERE PROCESS_CODE=#{processCode} AND ASSIST_OPTION_ENAME=#{assistOptionEname}),
+	   #{assistTime},sysdate,#{operator},sysdate,
+	   #{operator},#{userCode},#{userName})
+	</insert>
+	
+	<insert id="insertAssistDetail" parameterType="map">
+	   INSERT INTO T_WIP_ASSIST_TIME_DT VALUES(
+	   #{id},#{matUsageId},
+	   #{assistTime},sysdate,#{operator},sysdate,
+	   #{operator},#{userCode},#{userName})
+	</insert>
+	
+	<select id="findExists" parameterType="cc.oit.bsmes.wip.model.MatUsage" resultMap="getMap">
+	    SELECT * FROM T_WIP_MAT_USAGE WHERE EQUIP_CODE=#{equipCode}
+	    AND SHIFT_NAME=#{shiftName} AND TURNOVER_MAT_DATE=#{turnoverMatDate}
+	    AND WORK_ORDER_NO=#{workOrderNo}
+	</select>
+	
+	<delete id="deleteByParam" parameterType="cc.oit.bsmes.wip.model.MatUsage">
+	    DELETE FROM T_WIP_MAT_USAGE WHERE EQUIP_CODE=#{equipCode,jdbcType=VARCHAR}
+	    AND SHIFT_NAME=#{shiftName,jdbcType=VARCHAR} AND TURNOVER_MAT_DATE=#{turnoverMatDate}
+	    AND WORK_ORDER_NO=#{workOrderNo,jdbcType=VARCHAR}
+	</delete>
+	
+</mapper>

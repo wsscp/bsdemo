@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/11614/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model
+END
+Section.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/3033/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/Section.js
+END
+CreditCard.js
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/2444/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/CreditCard.js
+END
+ProcessIn.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/8468/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/ProcessIn.js
+END
+InvLocationModel.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6665/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/InvLocationModel.js
+END
+Agreement.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/3327/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/Agreement.js
+END
+Report.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/11205/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/Report.js
+END
+ShiftRecord.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/7333/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/ShiftRecord.js
+END
+OrderOperateModel.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/5321/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/OrderOperateModel.js
+END
+RealCost.js
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/3409/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/RealCost.js
+END
+WorkOrder.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/8572/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/WorkOrder.js
+END
+Product.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/1237/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/Product.js
+END
+SparkRepair.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5209/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/SparkRepair.js
+END
+ProcessReceipt.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8341/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/ProcessReceipt.js
+END
+EquipAlarmList.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/3446/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/EquipAlarmList.js
+END
+Material.js
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/7346/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/Material.js
+END
+ProcessQA.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/3493/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/ProcessQA.js
+END
+DailyCheck.js
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/4773/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/DailyCheck.js
+END
+ProcessQc.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/5036/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/ProcessQc.js
+END
+DebugInfo.js
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/996/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/DebugInfo.js
+END
+MesClientEquipInfo.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11614/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/model/MesClientEquipInfo.js
+END

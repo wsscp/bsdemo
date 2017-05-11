@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.ReceiptDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.Receipt" id="getMap">
+	</resultMap>
+	<sql id="receiptColumns">
+		R."ID",
+		R.WORK_ORDER_ID, 
+		R.RECEIPT_ID, 
+		R.RECEIPT_CODE, 
+		R.RECEIPT_NAME, 
+		R.EQUIP_CODE, 
+		R.STATUS, 
+		R.ORG_CODE, 
+		R.CONFIRM_TIME, 
+		R.ISSUED_TIME, 
+		R.RECEIPT_TARGET_VALUE,
+		R.RECEIPT_MAX_VALUE,
+		R.RECEIPT_MIN_VALUE,
+		R.NEED_ALARM,
+		R.TYPE,
+		R.FREQUENCE,
+		R.CREATE_USER_CODE,R.CREATE_TIME,R.MODIFY_USER_CODE,R.MODIFY_TIME
+	</sql>
+	
+	<select id="find" parameterType="cc.oit.bsmes.wip.model.Receipt" resultMap="getMap">
+		SELECT S.WORK_ORDER_NO,RECEIPT_CODE,RECEIPT_NAME,R.CREATE_USER_CODE,RECEIPT_TARGET_VALUE,RECEIPT_MAX_VALUE,RECEIPT_MIN_VALUE,TYPE,ISSUED_TIME,
+				(SELECT NAME FROM T_FAC_EQIP_INFO WHERE CODE=R.EQUIP_CODE) AS EQUIP_CODE,
+				(SELECT DISTINCT PRODUCT_CODE FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO=S.WORK_ORDER_NO) AS PRODUCT_CODE
+		FROM  T_WIP_RECEIPT R,T_WIP_WORK_ORDER S
+		WHERE R.WORK_ORDER_ID=S.ID AND R.STATUS='ISSUED'
+		<include refid="getParameter"/>
+		ORDER BY S.WORK_ORDER_NO,R.EQUIP_CODE,ISSUED_TIME
+	</select>
+	
+	<select id="count" parameterType="cc.oit.bsmes.wip.model.Receipt" resultType='int'>
+		SELECT COUNT(1) 
+		FROM (
+			SELECT S.WORK_ORDER_NO
+			FROM  T_WIP_RECEIPT R,T_WIP_WORK_ORDER S
+			WHERE R.WORK_ORDER_ID=S.ID <include refid="getParameter"/>)
+	</select>
+	
+	<sql id="getParameter">
+		<if test="orgCode!=null and orgCode!=''">
+	    		AND R.ORG_CODE=#{orgCode}
+	    </if>
+	    <if test="workOrderNo!=null and workOrderNo!=''">
+	    		AND INSTR(S.WORK_ORDER_NO,#{workOrderNo})>0
+	    </if>
+	    <if test="productCode!=null and productCode!=''">
+	    	AND S.WORK_ORDER_NO IN (SELECT WORK_ORDER_NO FROM T_PLA_ORDER_TASK WHERE INSTR(PRODUCT_CODE,#{productCode})>0 )
+	    </if>
+	    <if test="type!=null and type!=''">
+	    		AND TYPE=#{type}
+	    </if>
+	    <if test="equipCode!=null and equipCode!=''">
+	    		AND R.EQUIP_CODE=#{equipCode}
+	    </if>
+	</sql>
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT 
+			<include refid="receiptColumns"/>
+		FROM T_WIP_RECEIPT R 
+		LEFT JOIN T_WIP_WORK_ORDER WO 
+		ON R.WORK_ORDER_ID = WO.ID 
+		WHERE R.STATUS != 'PIGEONHOLE' 
+		AND WO.WORK_ORDER_NO = #{param1}
+        AND R.ORG_CODE = #{param2}
+	</select>
+	
+	<select id="getByEquipCodeAndParamsCode" parameterType="string" resultType="cc.oit.bsmes.wip.model.Receipt">
+        SELECT ROWNUM,T.* FROM (
+            SELECT
+            <include refid="receiptColumns"/>,
+            WO.PROCESS_ID
+            FROM T_WIP_RECEIPT R LEFT JOIN T_WIP_WORK_ORDER WO ON R.WORK_ORDER_ID = WO.ID
+            WHERE R.RECEIPT_CODE = #{param1,jdbcType=VARCHAR}
+            AND R.EQUIP_CODE = #{param2,jdbcType=VARCHAR}
+            AND R.ORG_CODE = #{param3,jdbcType=VARCHAR}
+            ORDER BY ISSUED_TIME DESC
+        ) T WHERE ROWNUM = 1
+    </select>
+    
+    <select id="getReceiptName" parameterType="string" resultType="cc.oit.bsmes.wip.model.Receipt">
+        SELECT
+           PARM_NAME AS RECEIPT_NAME
+        FROM
+           T_INT_EQUIP_MES_WW_MAPPING
+        WHERE
+           PARM_CODE = #{receiptCode, jdbcType=VARCHAR}
+           AND EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+    </select>
+	
+	
+
+    <select id="getByTagName" parameterType="string" resultType="cc.oit.bsmes.wip.model.Receipt">
+        SELECT ROWNUM,T.* FROM (
+            SELECT
+                <include refid="receiptColumns"/>,
+                WO.PROCESS_ID
+            FROM T_WIP_RECEIPT R
+            LEFT JOIN T_WIP_WORK_ORDER WO ON R.WORK_ORDER_ID = WO.ID
+            LEFT JOIN T_INT_EQUIP_MES_WW_MAPPING WM ON WM.EQUIP_CODE = R.EQUIP_CODE AND WM.PARM_CODE = R.RECEIPT_CODE
+            WHERE WM.TAG_NAME = #{param1}
+            AND WO.STATUS = 'IN_PROGRESS'
+            AND R.STATUS = 'ISSUED'
+            AND R.ISSUED_TIME IS NOT NULL            
+            ORDER BY ISSUED_TIME DESC
+        ) T WHERE ROWNUM = 1
+    </select>
+
+    <select id="getByEquipCode" parameterType="string" resultMap="getMap">
+        SELECT 
+            DISTINCT
+            R."ID",
+		    R.PARM_NAME AS RECEIPT_NAME ,
+		    R.PARM_CODE AS RECEIPT_CODE ,
+		    R.EQUIP_CODE AS EQUIP_CODE,
+		    '' AS DATA_UNIT
+		  FROM T_INT_EQUIP_MES_WW_MAPPING R
+		 WHERE R.NEED_DA = 1
+		   AND R.EQUIP_CODE = #{param1}
+		 ORDER BY NLSSORT(R.PARM_NAME, 'NLS_SORT=SCHINESE_PINYIN_M')
+    </select>
+
+	<select id="getByProcessReceiptAndQA" parameterType="map" resultType="cc.oit.bsmes.wip.model.Receipt">
+        SELECT DISTINCT R.PARM_NAME  AS RECEIPT_NAME,
+		                R.PARM_CODE  AS RECEIPT_CODE,
+		                R.EQUIP_CODE AS EQUIP_CODE,
+		                10           as FREQUENCE
+		  FROM T_INT_EQUIP_MES_WW_MAPPING R
+		 WHERE R.NEED_DA = 1
+		   AND R.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		   and r.parm_code = #{receiptCode, jdbcType=VARCHAR}
+		 ORDER BY NLSSORT(R.PARM_NAME, 'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="getByReceiptCodeAndTime" parameterType="map" resultType="cc.oit.bsmes.wip.model.Receipt">
+		<![CDATA[
+			SELECT *
+			FROM (SELECT b.*
+					  FROM T_WIP_RECEIPT b
+					 WHERE  b.RECEIPT_CODE = #{receiptCode,jdbcType=VARCHAR}
+					   	AND b.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+					   	AND b.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+						AND STATUS = 'ISSUED'
+						AND ISSUED_TIME IS NOT NULL
+						AND ISSUED_TIME <= #{endTime,jdbcType = TIMESTAMP}
+						AND ISSUED_TIME >= #{startTime, jdbcType = TIMESTAMP}
+						union 
+						select * from (
+						SELECT b.*
+					  FROM T_WIP_RECEIPT b
+					   WHERE  b.RECEIPT_CODE = #{receiptCode,jdbcType=VARCHAR}
+					   	AND b.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+					   	AND b.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+						AND STATUS = 'ISSUED'
+						AND  rownum=1
+						AND ISSUED_TIME IS NOT NULL
+						AND ISSUED_TIME <= #{startTime,jdbcType = TIMESTAMP}
+						ORDER BY ISSUED_TIME DESC
+						)
+						 
+						)
+			ORDER BY ISSUED_TIME ASC
+		]]>
+	</select>
+
+	<select id="getLastReceipt" parameterType="map" resultType="cc.oit.bsmes.wip.model.Receipt">
+		<![CDATA[
+			SELECT *
+			FROM (SELECT b.*,row_number() over(order by ISSUED_TIME desc) rk
+					FROM T_WIP_RECEIPT b
+				 WHERE  b.RECEIPT_CODE = #{receiptCode,jdbcType=VARCHAR}
+					AND b.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+					AND b.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+					AND STATUS = 'ISSUED'
+					AND ISSUED_TIME IS NOT NULL
+					AND ISSUED_TIME <= #{startTime,jdbcType = TIMESTAMP}
+					)
+			WHERE rk =  1
+		]]>
+
+	</select>
+	
+	<!-- 获取下发参数的最新的一组数据 -->
+	<select id="getLastReceiptList" parameterType="string" resultMap="getMap">
+		<![CDATA[
+		    SELECT T2.*
+			  FROM (SELECT T1.*,
+			               ROW_NUMBER() OVER(PARTITION BY T1.RECEIPT_CODE ORDER BY T1.ISSUED_TIME DESC NULLS LAST) RN
+			          FROM T_WIP_RECEIPT T1, T_WIP_WORK_ORDER WO
+			         WHERE T1.WORK_ORDER_ID = WO.ID
+			           AND T1.STATUS = 'ISSUED'
+					   AND T1.ISSUED_TIME IS NOT NULL
+			           AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}) T2
+			 WHERE RN = 1
+		]]>
+	</select>
+	
+</mapper>

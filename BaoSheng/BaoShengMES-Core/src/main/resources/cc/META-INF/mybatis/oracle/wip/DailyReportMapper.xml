@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.DailyReportDAO">
+	<resultMap type="cc.oit.bsmes.wip.model.DailyReport" id="getMap"></resultMap>
+	
+	<select id="queryUsersHoursForDate" resultType="cc.oit.bsmes.wip.model.DailyReport">
+		SELECT 
+		    I.CODE,
+		    I.EQUIP_ALIAS,
+		    U.NAME AS USERNAME,
+		    W.SHIFT_NAME,
+		    R.SHIFT_ID,
+		    TO_CHAR(R.ON_TIME, 'yyyy-MM-dd hh24:mi') AS ON_TIME,
+		    TO_CHAR(R.OFF_TIME,'yyyy-MM-dd hh24:mi') AS OFF_TIME
+		FROM
+		    T_BAS_EMPLOYEE U,
+		    T_WIP_ONOFF_RECORD R,
+		    T_BAS_WORK_SHIFT W,
+		    T_FAC_EQIP_INFO I
+		WHERE
+		    U.USER_CODE = R.USER_CODE
+		AND R.SHIFT_ID = W.ID
+		AND I.TYPE = 'PRODUCT_LINE'
+		AND INSTR(R.EQUIP_CODES,I.CODE) > 0
+		AND (ROUND((CAST(R.OFF_TIME AS DATE) - CAST(R.ON_TIME AS DATE)) * 24, 1) > 6 OR R.OFF_TIME IS NULL)
+		<if test="yearMonthDay != null and yearMonthDay != ''">
+			AND TO_CHAR(R.ON_TIME,'yyyy-MM-dd') = #{yearMonthDay ,jdbcType=VARCHAR}
+		</if>
+		<if test="code != null and code != ''">
+			AND I.CODE = #{code ,jdbcType=VARCHAR}
+		</if>
+		<if test="userCode != null and userCode != ''">
+			AND U.USER_CODE = #{userCode ,jdbcType=VARCHAR}
+		</if>
+		<if test="shiftId != null and shiftId != ''">
+			AND R.SHIFT_ID = #{shiftId ,jdbcType=VARCHAR}
+		</if>
+		ORDER BY
+		    I.CODE,
+		    R.SHIFT_ID
+	</select>
+	
+	<select id="countDailyReportByDate" resultType="int" parameterType="map">
+		SELECT 
+		    COUNT(1)
+		FROM
+		    T_BAS_EMPLOYEE U,
+		    T_WIP_ONOFF_RECORD R,
+		    T_BAS_WORK_SHIFT W,
+		    T_FAC_EQIP_INFO I
+		WHERE
+		    U.USER_CODE = R.USER_CODE
+		AND R.SHIFT_ID = W.ID
+		AND I.TYPE = 'PRODUCT_LINE'
+		AND INSTR(R.EQUIP_CODES,I.CODE) > 0
+		AND (ROUND((CAST(R.OFF_TIME AS DATE) - CAST(R.ON_TIME AS DATE)) * 24, 1) > 6 OR R.OFF_TIME IS NULL)
+		<if test="yearMonthDay != null and yearMonthDay != ''">
+			AND TO_CHAR(R.ON_TIME,'yyyy-MM-dd') = #{yearMonthDay ,jdbcType=VARCHAR}
+		</if>
+		<if test="code != null and code != ''">
+			AND I.CODE = #{code ,jdbcType=VARCHAR}
+		</if>
+		<if test="userCode != null and userCode != ''">
+			AND U.USER_CODE = #{userCode ,jdbcType=VARCHAR}
+		</if>
+		<if test="shiftId != null and shiftId != ''">
+			AND R.SHIFT_ID = #{shiftId ,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="getDailyUsersByDate" parameterType="string" resultType="cc.oit.bsmes.wip.model.DailyReport">
+		SELECT DISTINCT
+		    R.USER_CODE AS USER_CODE,
+		    E.NAME AS USERNAME
+		FROM
+		    T_WIP_ONOFF_RECORD R,
+		    T_BAS_EMPLOYEE E
+		WHERE
+		    R.USER_CODE = E.USER_CODE
+		    <if test="yearMonthDay != null and yearMonthDay != ''">
+				AND TO_CHAR(R.ON_TIME,'yyyy-MM-dd') = #{yearMonthDay ,jdbcType=VARCHAR}
+		    </if>
+		    <if test="startDate !=null and startDate != ''">
+			  	AND R.ON_TIME >= #{startDate ,jdbcType=VARCHAR}
+			  </if>
+			  <if test="endDate !=null and endDate != ''">
+			  AND R.ON_TIME <![CDATA[<]]> #{endDate ,jdbcType=VARCHAR}
+			  </if>
+	</select>
+	
+	<select id="getDailyEquipCodeByDate" resultType="cc.oit.bsmes.wip.model.DailyReport">
+		SELECT DISTINCT
+		    I.CODE,
+		    I.EQUIP_ALIAS
+		FROM
+		    T_FAC_EQIP_INFO I,
+		    T_WIP_ONOFF_RECORD R
+		WHERE
+		    INSTR(R.EQUIP_CODES,I.CODE) >0
+		    AND TO_CHAR(R.ON_TIME,'yyyy-MM-dd') = #{yearMonthDay ,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="searchCreditCardList" parameterType="map" resultMap="getMap">
+		SELECT O.EQUIP_ALIAS as code,
+		      T.SHIFT_ID,
+		      T.USER_NAME,
+		      TO_CHAR(t.ON_TIME, 'yyyy-MM-dd hh24:mi') AS ON_TIME,
+		      TO_CHAR(t.OFF_TIME, 'yyyy-MM-dd hh24:mi') AS OFF_TIME
+		 FROM T_WIP_ONOFF_RECORD T,T_FAC_EQIP_INFO O
+		WHERE O.TYPE = 'PRODUCT_LINE'
+		  AND O.CODE = (CASE
+	        WHEN INSTR(T.EQUIP_CODES, ',', 1) > 0 THEN
+	         SUBSTR(T.EQUIP_CODES, 0, INSTR(T.EQUIP_CODES, ',', 1) - 1)
+	        WHEN INSTR(T.EQUIP_CODES, ',', 1) <![CDATA[<=]]> 0 THEN
+	         T.EQUIP_CODES
+	      END)
+	      <if test="userCode != null and userCode != ''">
+	      	AND T.USER_CODE = #{userCode,jdbcType=VARCHAR}
+	      </if>
+	      <if test="queryType == 1">
+	      	AND T.OFF_TIME IS NULL
+	      </if>
+	      <if test="queryType == 0">
+	      	AND ROUND((CAST(T.OFF_TIME AS DATE) - CAST(T.ON_TIME AS DATE)) * 24, 1) > 9.5
+	      </if>
+		  <if test="startDate !=null and startDate != ''">
+		  	AND T.ON_TIME >= #{startDate}
+		  </if>
+		  <if test="endDate !=null and endDate != ''">
+		  AND T.ON_TIME <![CDATA[<]]> #{endDate}
+		  </if>
+		  <if test="shiftId != null and shiftId != ''">
+		  AND T.SHIFT_ID = #{shiftId,jdbcType=VARCHAR}
+		  </if>
+		  ORDER BY T.ON_TIME DESC
+	</select>
+	
+	<select id="countCreditCardList" parameterType="map" resultType="int">
+	SELECT COUNT(*)
+		 FROM T_WIP_ONOFF_RECORD T,T_FAC_EQIP_INFO O
+		WHERE O.TYPE = 'PRODUCT_LINE'
+		  AND O.CODE = (CASE
+	        WHEN INSTR(T.EQUIP_CODES, ',', 1) > 0 THEN
+	         SUBSTR(T.EQUIP_CODES, 0, INSTR(T.EQUIP_CODES, ',', 1) - 1)
+	        WHEN INSTR(T.EQUIP_CODES, ',', 1) <![CDATA[<=]]> 0 THEN
+	         T.EQUIP_CODES
+	      END)
+	      <if test="userCode != null and userCode != ''">
+	      	AND T.USER_CODE = #{userCode,jdbcType=VARCHAR}
+	      </if>
+	      <if test="queryType == 1">
+	      	AND T.OFF_TIME IS NULL
+	      </if>
+	      <if test="queryType == 0">
+	      	AND ROUND((CAST(T.OFF_TIME AS DATE) - CAST(T.ON_TIME AS DATE)) * 24, 1) > 9.5
+	      </if>
+		  <if test="startDate !=null and startDate != ''">
+		  	AND T.ON_TIME >= #{startDate ,jdbcType=VARCHAR}
+		  </if>
+		  <if test="endDate !=null and endDate != ''">
+		  AND T.ON_TIME <![CDATA[<]]> #{endDate ,jdbcType=VARCHAR}
+		  </if>
+	</select>
+	
+</mapper>

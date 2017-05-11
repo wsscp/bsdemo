@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.eve.dao.EventProcesserDAO">
+ 
+	<resultMap type="EventProcesser" id="getMap">
+		<result property="name" column="NAME"/>
+	</resultMap>
+	<select id="getByEventProcessId" parameterType="string" resultMap="getMap">
+		SELECT R.ID, R.PROCESSER,R.TYPE,R.CREATE_TIME,R.MODIFY_TIME,R.EVENT_PROCESS_ID,S.CODE || '_' || S.NAME  AS NAME
+	    FROM T_EVE_EVENT_PROCESSER R LEFT JOIN T_BAS_ROLE S
+	    ON(R.PROCESSER=S.ID)
+	    WHERE  R.EVENT_PROCESS_ID=#{eventProcessId,jdbcType=VARCHAR} AND R.TYPE='ROLE'
+	 	UNION ALL
+	    SELECT R.ID,R.PROCESSER,R.TYPE,R.CREATE_TIME,R.MODIFY_TIME,R.EVENT_PROCESS_ID,S.USER_CODE || '_' || S.NAME AS NAME
+	    FROM T_EVE_EVENT_PROCESSER R LEFT JOIN T_BAS_EMPLOYEE S
+	    ON(R.PROCESSER=S.USER_CODE)
+	    WHERE  R.EVENT_PROCESS_ID=#{eventProcessId,jdbcType=VARCHAR} AND R.TYPE='USER'
+	</select>
+	<update id="update" parameterType="EventProcesser" >
+		UPDATE T_EVE_EVENT_PROCESSER 
+		<set>
+			<if test="processer!=null and processer!=''">
+				PROCESSER=#{processer,jdbcType=VARCHAR},
+			</if>
+			<if test="type!=null and type!=''">
+				TYPE=#{type,jdbcType=VARCHAR},
+			</if>
+			MODIFY_TIME=SYSDATE 
+		</set>
+		WHERE ID=#{id,jdbcType=VARCHAR}
+	</update>
+	<select id="find" parameterType="EventProcesser" resultMap="getMap">
+		SELECT PROCESSER FROM T_EVE_EVENT_PROCESSER WHERE EVENT_TYPE_ID=#{eventTypeId,jdbcType=VARCHAR} 
+		AND EVENT_PROCESS_ID=#{eventProcessId,jdbcType=VARCHAR} AND PROCESSER=#{processer,jdbcType=VARCHAR} 
+	</select>
+</mapper>

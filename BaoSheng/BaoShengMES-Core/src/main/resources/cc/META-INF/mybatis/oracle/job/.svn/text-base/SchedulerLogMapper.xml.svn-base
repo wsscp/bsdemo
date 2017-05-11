@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.job.base.dao.SchedulerLogDAO">
+
+	<resultMap type="SchedulerLog" id="getMap">
+	</resultMap>
+	
+	<delete id="deleteOldLOg">
+	  delete from T_JOB_LOG where   CREATE_TIME <![CDATA[<]]> (SYSDATE-11)
+	</delete>
+ 	<select id="find" parameterType="SchedulerLog" resultMap="getMap">
+ 		SELECT ID,JOB_NAME,JOB_DESC,HOST_NAME,HOST_ADDRESS,FLAG,PREV_START_TIME,PREV_RESULT,PREV_END_TIME,ERROR_MESSAGE 
+ 		FROM T_JOB_LOG
+ 		<where>
+ 			<if test="orgCode!=null and orgCode!=''">
+ 				AND ORG_CODE=#{orgCode}
+ 			</if>
+ 			<if test="flag!=null and flag!=''">
+ 				AND FLAG=#{flag}
+ 			</if>
+ 			<if test="hostName!=null and hostName!=''">
+ 				AND INSTR(HOST_NAME,#{hostName})>0
+ 			</if>
+ 		</where>
+ 	</select>
+ 	<select id="count"  parameterType="SchedulerLog" resultType="int">
+ 		SELECT COUNT(1)
+ 		FROM (SELECT ID FROM T_JOB_LOG
+ 		<where>
+ 			<if test="orgCode!=null and orgCode!=''">
+ 				AND ORG_CODE=#{orgCode}
+ 			</if>
+ 			<if test="flag!=null and flag!=''">
+ 				AND FLAG=#{flag}
+ 			</if>
+ 			<if test="hostName!=null and hostName!=''">
+ 				AND INSTR(HOST_NAME,#{hostName})>0
+ 			</if>
+ 		</where>)
+ 	</select>
+</mapper>

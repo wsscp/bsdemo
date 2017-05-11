@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.PropConfigDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.PropConfig" id="getMap">
+	</resultMap>
+	
+	<select id="getByPropKey" parameterType="String" resultType="PropConfig">
+	  SELECT PR.ID FROM T_BAS_PROPERTIES PR WHERE PR.KEY_K = #{key,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findByRequestMap" parameterType="map" resultType="PropConfig">
+		SELECT PR.ID,PR.KEY_K,PR.VALUE_V,PR.DESCRIPTION,PR.STATUS,PR.CREATE_USER_CODE,PR.CREATE_TIME,
+		PR.MODIFY_USER_CODE,PR.MODIFY_TIME
+		FROM T_BAS_PROPERTIES PR
+		<where>
+		  <if test="keyK != null and keyK != ''">
+				PR.KEY_K LIKE #{keyK,jdbcType=VARCHAR}
+		  </if>
+		  <if test="valueV != null and valueV != ''">
+				AND PR.VALUE_V LIKE #{valueV,jdbcType=VARCHAR}
+		  </if>
+		</where>
+		ORDER BY PR.MODIFY_TIME DESC
+	</select>
+	
+	<select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT COUNT(1)
+		FROM T_BAS_PROPERTIES PR
+		<where>
+		  <if test="keyK != null and keyK != ''">
+				PR.KEY_K LIKE #{keyK,jdbcType=VARCHAR}
+		  </if>
+		  <if test="valueV != null and valueV != ''">
+				AND PR.VALUE_V LIKE #{valueV,jdbcType=VARCHAR}
+		  </if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,16 @@
+Ext.define('bsmes.store.InitOrderProcessPropStore', {
+			extend : 'Oit.app.data.GridStore',
+			autoLoad : false,
+			fields : ['id', 'code', 'name', 'targetValue', 'newValue', 'matCode', 'matName', 'type', 'inOrOut', 'oldDesc', 'newDesc',
+					'newMatName', 'salesOrderItemId', 'processId'],
+			proxy : {
+				type : 'rest',
+				//url : 'handSchedule/getSpecialProcessIn',
+				api : {
+					create : 'handSchedule/saveOrderProp',
+					read : 'handSchedule/getSpecialProcessIn',
+					update : 'handSchedule/saveOrderProp',
+					destroy : undefined
+				}
+			}
+		});

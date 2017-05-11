@@ -1,0 +1,75 @@
+Ext.define('bsmes.view.MergeProcessWindow', {
+			extend : 'Ext.window.Window',
+			alias : 'widget.mergeProcessWindow',
+			title : '合并工序',
+			width : 860,
+			height : 480,
+			// autoScroll:true,
+			// overflowY : 'auto',
+			// modal : true,
+			// plain : true,
+			overflowY : 'auto',
+			modal : true,
+			plain : true,
+			requires : ['bsmes.view.MergeProcessGrid'],
+			isDefinedAgain : false, // 是否重新自定义
+			productCode : null,
+			processTemp:[],
+			initComponent : function(){
+				var me = this;
+
+				var store = new bsmes.store.ProcessStore({
+							proxy : {
+								type : 'rest',
+								url : 'handSchedule/processBz',
+								extraParams : {
+									productCode : me.productCode
+								}
+							}
+						});
+				store.load({
+				    scope: this,
+				    callback: function(records, operation, success) {
+				    	
+				    }
+				});
+				
+				me.items = [{
+							xtype : 'panel',
+							bodyPadding : "12 10 10",
+							items : [{
+										xtype : 'fieldset',
+										title : '工艺别名',
+										layout : 'anchor',
+										defaults : {},
+										items : [{
+													fieldLabel : '自定义工艺别名<font color=red>*</font>',
+													xtype : 'textfield',
+													allowBlank : false,
+													width : 350,
+													name : 'userDefinedCraftsName'
+												}]
+									}, {
+										xtype : 'fieldset',
+										title : '标准工序列表',
+										anchor : '100%',
+										items : [{
+													xtype : 'mergeProcessGrid',
+													store : store
+												}]
+									}]
+						}];
+				
+				Ext.apply(me, {
+							buttons : ['->', {
+										itemId : 'ok',
+										text : Oit.btn.ok
+									}, {
+										itemId : 'cancel',
+										text : Oit.btn.cancel
+									}]
+						});
+
+				this.callParent(arguments);
+			}
+		});

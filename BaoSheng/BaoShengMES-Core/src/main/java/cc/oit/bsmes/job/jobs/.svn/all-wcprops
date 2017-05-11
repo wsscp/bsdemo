@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/11625/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs
+END
+EquipEnergyMonitorJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/11625/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/EquipEnergyMonitorJob.java
+END
+EquipStatusProcessJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4983/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/EquipStatusProcessJob.java
+END
+PlanScheduleJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/PlanScheduleJob.java
+END
+AlarmProcessJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/AlarmProcessJob.java
+END
+OaScheduleJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4188/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/OaScheduleJob.java
+END
+ShortScheduleJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/ShortScheduleJob.java
+END
+MaintainScheduleJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4188/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/MaintainScheduleJob.java
+END
+PushFinshOrderToERPJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/10168/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/PushFinshOrderToERPJob.java
+END
+SOPScheduleJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4188/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/SOPScheduleJob.java
+END
+PLMDataSyncJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6366/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/PLMDataSyncJob.java
+END
+WOExtensionAlarmJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5211/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/WOExtensionAlarmJob.java
+END
+EventProcessJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/jobs/EventProcessJob.java
+END

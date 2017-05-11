@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.MesClientManEqipDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.MesClientManEqip" id="getMap">
+		<association property="mesClient" column="MES_CLIENT_ID"
+				select="cc.oit.bsmes.bas.dao.MesClientDAO.getById"></association>
+	</resultMap>
+
+	<resultMap type="cc.oit.bsmes.wip.dto.MesClientEqipInfo" id="getMesClicentEqipInfoMap"></resultMap>
+	<select id="findByRequestMap" parameterType="string" resultType="cc.oit.bsmes.bas.model.MesClientManEqip">
+		SELECT 
+				ME.ID,
+				ME.MES_CLIENT_ID,
+				MC.CLIENT_NAME AS mesClientName,
+				EI.NAME AS equipName,
+				EI.CODE AS equipCode
+		FROM T_BAS_MES_CLIENT MC
+		RIGHT JOIN T_BAS_MES_CLIENT_MAN_EQIP ME ON ME.MES_CLIENT_ID =MC.ID
+		LEFT JOIN T_FAC_EQIP_INFO EI ON  EI.ID = ME.EQIP_ID
+		WHERE MC.ID = #{mesClientId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="countByRequestMap" parameterType="String" resultType="int">
+		SELECT
+			COUNT(ID)
+		FROM T_BAS_MES_CLIENT_MAN_EQIP
+		WHERE MES_CLIENT_ID = #{mesClientId,jdbcType=VARCHAR}
+	</select>
+	
+	 
+	
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.bas.model.MesClientManEqip">
+		SELECT 
+       		ME.ID,MC.CLIENT_NAME AS MES_CLIENT_ID,EI.NAME AS EQIP_ID
+       		FROM T_BAS_MES_CLIENT MC 
+       		RIGHT JOIN T_BAS_MES_CLIENT_MAN_EQIP ME ON ME.MES_CLIENT_ID =MC.ID 
+       		LEFT JOIN T_FAC_EQIP_INFO EI ON  EI.ID = ME.EQIP_ID
+			WHERE me.ID = #{id,jdbcType=VARCHAR}
+	</select>
+	 
+	
+	
+	<select id="getInfoByMesClientMac" parameterType="string" resultType="cc.oit.bsmes.wip.dto.MesClientEqipInfo">
+		SELECT
+				me.MES_CLIENT_ID,
+				me.EQIP_ID,
+				ei.CODE AS equipCode,
+				ei.NAME AS equipName,
+				ei.EQUIP_ALIAS AS equipAlias,
+				ei.STATUS AS status,
+				ei.EQUIP_ALIAS AS equipAlias,
+				(
+					SELECT
+							 COUNT(1)
+					FROM T_WIP_WORK_ORDER WO LEFT JOIN T_WIP_WO_EQUIP_RELATION RE ON WO.ID = RE.WORK_ORDER_ID
+					WHERE RE.EQUIP_CODE = ei.CODE
+					AND WO.STATUS IN  ('TO_DO','IN_PROGRESS')
+				) AS toDoTaskNum
+		FROM T_BAS_MES_CLIENT_MAN_EQIP me,T_BAS_MES_CLIENT mc,T_FAC_EQIP_INFO ei
+		WHERE me.MES_CLIENT_ID = mc.ID
+		AND me.EQIP_ID = ei.ID
+		AND mc.CLIENT_MAC = #{param1,jdbcType=VARCHAR}
+		AND mc.CLIENT_IP  = #{param2,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAll" parameterType="string" resultType="cc.oit.bsmes.bas.model.MesClientManEqip">
+		SELECT ID, MES_CLIENT_ID, CREATE_TIME, EQIP_ID, CREATE_USER_CODE, MODIFY_USER_CODE, MODIFY_TIME
+        FROM T_BAS_MES_CLIENT_MAN_EQIP
+		</select>
+
+	<select id="getInfoByEquipCode" parameterType="string" resultType="cc.oit.bsmes.wip.dto.MesClientEqipInfo">
+		SELECT
+				ei.ID AS eqipId,
+				ei.CODE AS equipCode,
+				ei.NAME AS equipName,
+				ei.STATUS AS status
+		FROM  T_FAC_EQIP_INFO ei
+		WHERE ei.CODE = #{equipCode}
+		ORDER BY ei.TYPE, ei.CODE, NLSSORT(ei.NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="getByMesClientIdAndEqipId" parameterType="string" resultType="cc.oit.bsmes.bas.model.MesClientManEqip">
+	  SELECT ME.ID FROM T_BAS_MES_CLIENT_MAN_EQIP ME WHERE ME.MES_CLIENT_ID = #{param1,jdbcType=VARCHAR} AND ME.EQIP_ID=#{param2,jdbcType=VARCHAR}
+	</select>
+</mapper>

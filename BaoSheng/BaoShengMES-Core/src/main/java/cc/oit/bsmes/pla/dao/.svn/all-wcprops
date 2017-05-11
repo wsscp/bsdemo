@@ -1,0 +1,179 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/11925/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao
+END
+ImportProductDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/7230/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/ImportProductDAO.java
+END
+SupplementMaterialDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8266/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/SupplementMaterialDAO.java
+END
+CustomerOrderItemDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/11925/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/CustomerOrderItemDAO.java
+END
+BorrowMatDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8263/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/BorrowMatDAO.java
+END
+OrderProcessPRDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/9597/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/OrderProcessPRDAO.java
+END
+OaMrpDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/7464/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/OaMrpDAO.java
+END
+ProductClassifyDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/6930/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/ProductClassifyDAO.java
+END
+ProductDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/10683/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/ProductDAO.java
+END
+ManualManageDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/9948/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/ManualManageDAO.java
+END
+OrderStatisticsDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/11697/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/OrderStatisticsDAO.java
+END
+MaterialCheckReportDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/8123/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/MaterialCheckReportDAO.java
+END
+CustomerOrderItemDecDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/5687/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/CustomerOrderItemDecDAO.java
+END
+HighPriorityOrderItemProDecDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/2766/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/HighPriorityOrderItemProDecDAO.java
+END
+CustomerOrderItemProDecOADAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/8145/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/CustomerOrderItemProDecOADAO.java
+END
+FinishedProductDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/11768/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/FinishedProductDAO.java
+END
+MaterialRequirementPlanDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/10971/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/MaterialRequirementPlanDAO.java
+END
+OaUptempDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7825/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/OaUptempDAO.java
+END
+InvOaUseLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/3033/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/InvOaUseLogDAO.java
+END
+OrderOADAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/7700/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/OrderOADAO.java
+END
+HighPriorityOrderItemDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/831/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/HighPriorityOrderItemDAO.java
+END
+FinishedProductLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/11769/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/FinishedProductLogDAO.java
+END
+ToolsRequirementPlanDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/816/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/ToolsRequirementPlanDAO.java
+END
+CustomerOrderDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/7230/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/CustomerOrderDAO.java
+END
+MaterialCheckReportDetailsDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/7383/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/MaterialCheckReportDetailsDAO.java
+END
+OrderTaskDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10680/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/OrderTaskDAO.java
+END
+MaterialMngDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/8938/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/MaterialMngDAO.java
+END
+ProductSOPDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/1363/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/ProductSOPDAO.java
+END
+AttachFileDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/11675/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/AttachFileDAO.java
+END
+CustomerOrderItemProDecDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/10682/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/dao/CustomerOrderItemProDecDAO.java
+END

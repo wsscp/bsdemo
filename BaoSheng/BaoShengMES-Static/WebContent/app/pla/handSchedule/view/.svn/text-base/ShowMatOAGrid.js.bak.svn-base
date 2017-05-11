@@ -1,0 +1,125 @@
+/**
+ * 工序选择生成生产单
+ */
+Ext.define('bsmes.view.ShowMatOAGrid', {
+			extend : 'Oit.app.view.Grid',
+			alias : 'widget.showMatOAGrid',
+			hasPaging : false,
+			columnLines : true,
+			defaultEditingPlugin : false,
+			width : Math.floor((document.body.scrollWidth - 72) / 2 - 10),
+			minHeight : 100,
+			selModel : {
+				mode : "SINGLE" // "SINGLE"/"SIMPLE"/"MULTI"
+			},
+			store : Ext.create('Ext.data.Store', {
+						fields : ['MATNAME', 'COLOR', 'UNIT', {
+									name : 'QUANTITY',
+									type : 'double'
+								}, {
+									name : 'UNFINISHEDLENGTH',
+									type : 'double'
+								}, 'INATTRDESC', 'DISK']
+					}),
+			columns : [{
+						text : '物料名称',
+						dataIndex : 'MATNAME',
+						flex : 1.8,
+						minWidth : 90,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							return value;
+						}
+					}, {
+						text : '物料信息描述',
+						dataIndex : 'INATTRDESC',
+						flex : 2.7,
+						minWidth : 135,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							var json = Ext.decode(value);
+							var matDesc = '';
+							if (record.get('COLOR')) { // 宽度
+								matDesc += '<font color="red">颜色:' + record.get('COLOR') + '</font><br/>'
+							}
+							if (json.kuandu) { // 宽度
+								matDesc += '宽度:' + json.kuandu + '<br/>'
+							}
+							if (json.houdu) { // 厚度
+								matDesc += '厚度:' + json.houdu + '<br/>'
+							}
+							if (json.caizhi) { // 材质
+								matDesc += '材质:' + json.caizhi + '<br/>'
+							}
+							if (json.chicun) { // 尺寸
+								matDesc += '尺寸:' + json.chicun + '<br/>'
+							}
+							if (json.guige) { // 规格
+								matDesc += '规格:' + json.guige + '<br/>'
+							}
+							if (json.dansizhijing) { // 单丝直径
+								matDesc += '单丝直径:' + json.dansizhijing + '<br/>'
+							}
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							return matDesc;
+						}
+					}, {
+						text : '单位<br/>用量',
+						dataIndex : 'QUANTITY',
+						flex : 1.4,
+						minWidth : 70,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							value = value.toFixed(3) + ' ' + record.get('UNIT');
+							metaData.tdAttr = 'data-qtip="' + value + '"';
+							return value;
+						}
+					}, {
+						text : '定额<br/>总量',
+						dataIndex : 'UNFINISHEDLENGTH',
+						flex : 1.5,
+						minWidth : 75,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							value = (value * record.get('QUANTITY') / 1000).toFixed(3) + ' ' + record.get('UNIT');
+							metaData.tdAttr = 'data-qtip="' + value + '"';
+							return value;
+						}
+					}, {
+						text : '盘具要求/<br/>库位:库存',
+						dataIndex : 'INATTRDESC',
+						flex : 4,
+						minWidth : 200,
+						sortable : false,
+						menuDisabled : true,
+						renderer : function(value, metaData, record) {
+							metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+							var json = Ext.decode(value);
+							value = typeof(json.disk) == "undefined" ? '' : json.disk;
+							var wireCoil = typeof(json.wireCoil) == "undefined" ? '' : json.wireCoil;
+							var disk = record.get('DISK') == '' ? (value == '' ? [] : value.split(",")) : record
+									.get('DISK').split(",");
+							var res = (wireCoil == '' ? '' : ('<font color="red">盘具：</font>' + wireCoil)) + '<br/>';
+							if (disk.length > 0) {
+								res = res + '<font color="red">库存：</font>';
+							}
+							for (var i = 0; i < disk.length; i++) {
+								if (disk.length > 1) {
+									res = res + (i + 1) + '、' + disk[i].split(';')[0] + "<br/>";
+								} else {
+									res = res + disk[i].split(';')[0];
+								}
+							}
+							// metaData.tdAttr = 'data-qtip="' + res + '"';
+							return res;
+
+						}
+					}]
+		});

@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/12106/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl
+END
+MaintainTemplateServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/5093/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/MaintainTemplateServiceImpl.java
+END
+MaintainRecordItemServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/4007/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/MaintainRecordItemServiceImpl.java
+END
+EquipInfoServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/12106/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/EquipInfoServiceImpl.java
+END
+MaintainItemServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/3378/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/MaintainItemServiceImpl.java
+END
+MaintainRecordServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/11081/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/MaintainRecordServiceImpl.java
+END
+ProductEquipServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/4373/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/ProductEquipServiceImpl.java
+END
+EquipMaintainStateServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/4508/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/EquipMaintainStateServiceImpl.java
+END
+StatusHistoryServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/11420/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/StatusHistoryServiceImpl.java
+END
+WorkTaskServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/7478/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/WorkTaskServiceImpl.java
+END
+EquipMaintenanceServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/8447/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/service/impl/EquipMaintenanceServiceImpl.java
+END

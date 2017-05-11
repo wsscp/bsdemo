@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" >
+
+    <bean id="oaScheduleJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>OaScheduleJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.OaScheduleJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>OaScheduleJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>计划排程交期计算</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="sopScheduleJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>SOPScheduleJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.SOPScheduleJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>SOPScheduleJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>SOPScheduleJob</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="shortScheduleJobDetail" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="name">
+            <value>ShortScheduleJob</value>
+        </property>
+        <property name="jobClass">
+            <value>cc.oit.bsmes.job.jobs.ShortScheduleJob
+            </value>
+        </property>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobName">
+                    <value>ShortScheduleJob</value>
+                </entry>
+                <entry key="jobDesc">
+                    <value>精细计划排程</value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>

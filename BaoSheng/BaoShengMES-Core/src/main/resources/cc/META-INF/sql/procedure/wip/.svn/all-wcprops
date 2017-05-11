@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/9308/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/wip
+END
+WORKORDER_REPORT.sql
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/8906/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/wip/WORKORDER_REPORT.sql
+END
+SEMIFINISHEDPRODUCTS.sql
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/7745/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/wip/SEMIFINISHEDPRODUCTS.sql
+END
+WORKHOURS_REPORT.sql
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/8906/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/wip/WORKHOURS_REPORT.sql
+END
+CALCULATE_WORKHOURS.sql
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/9308/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/wip/CALCULATE_WORKHOURS.sql
+END

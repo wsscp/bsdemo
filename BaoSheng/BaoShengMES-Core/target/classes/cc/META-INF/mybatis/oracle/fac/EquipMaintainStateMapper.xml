@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.EquipMaintainStateDAO">
+    <resultMap type="cc.oit.bsmes.fac.model.EquipMaintainState" id="getMap">
+    </resultMap>
+    <sql id="queryColumns">
+        a.MODIFY_TIME,
+        a.CREATE_TIME,
+        a.EQUIP_CODE,
+        a.EQUIP_NAME,
+        a.CREATE_USER_CODE,
+        a.MODIFY_USER_CODE,
+        a.START_DATE,
+        a.TIME_NEEDED,
+        a.TRIGGER_CYCLE,
+        a.ID,
+        a.MAINTAIN_TYPE,
+        a.EVENT_INFO_ID,
+        a.MAINTAINER,
+        a.LAST_MAINTAIN_DATE,
+        a.ORG_CODE,
+        a.COMPLETED
+    </sql>
+</mapper>

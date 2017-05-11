@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/11948/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service
+END
+ProcessService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/10503/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/ProcessService.java
+END
+ModService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/8401/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/ModService.java
+END
+JpgfileService.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/8660/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/JpgfileService.java
+END
+CanShuKuService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/5603/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/CanShuKuService.java
+END
+EquipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4641/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/EquipService.java
+END
+BzgfService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4838/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/BzgfService.java
+END
+MachObjofService.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/4641/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/MachObjofService.java
+END
+PLMProductService.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/8734/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/PLMProductService.java
+END
+JiantuService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/8543/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/JiantuService.java
+END
+ScxService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/6684/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/ScxService.java
+END
+MpartInOutService.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/10503/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/MpartInOutService.java
+END
+Desf2Service.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4379/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/Desf2Service.java
+END
+MachService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4642/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/MachService.java
+END
+BZProcessService.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/4632/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/BZProcessService.java
+END
+PrcvService.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/10503/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/PrcvService.java
+END
+ScxObjofService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4641/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/service/ScxObjofService.java
+END

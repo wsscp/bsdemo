@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductProcessBzDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProductProcessBz" id="getMap">
+	</resultMap>
+	<sql id="queryColumns">
+		p.PROCESS_CODE,
+		p.NEXT_PROCESS_ID,
+		p.PROCESS_NAME,
+		p.MODIFY_TIME,
+		p.IS_DEFAULT_SKIP,
+		p.SAME_PRODUCT_LINE,
+		p.CREATE_TIME,
+		p.SEQ,
+		p.SET_UP_TIME,
+		p.CREATE_USER_CODE,
+		p.MODIFY_USER_CODE,
+		p.FULL_PATH,
+		p.IS_OPTION,
+		p.SHUT_DOWN_TIME,
+		p."ID",
+		p.PROCESS_TIME,
+		p.PRODUCT_CRAFTS_ID
+	</sql>
+	
+	<sql id="findByCraftsIdAndParamCondition">
+		FROM T_PRO_PRODUCT_PROCESS_BZ P
+		INNER JOIN T_PRO_PRODUCT_CRAFTS_BZ C ON P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN T_PRO_PRODUCT_PROCESS_BZ NEXT ON P.NEXT_PROCESS_ID = NEXT.ID
+		<where>
+			<if test="processCode != null and processCode != '' ">
+				AND P.PROCESS_CODE LIKE  #{processCode}
+			</if>
+			<if test="processName != null and processName != '' ">
+				AND P.PROCESS_NAME LIKE  #{processName}
+			</if>
+			<if test="productCraftsId != null and productCraftsId != '' ">
+				AND C.ID = #{productCraftsId}
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 获取产品的标准工序流程  -->
+	<select id="getByProductCode" parameterType="string" resultMap="getMap" >
+		SELECT
+		    P."ID",
+		    P.PROCESS_CODE,
+		    P.PROCESS_NAME,
+		    P.SEQ,
+		    P.SAME_PRODUCT_LINE,
+		    NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME,
+		    (SELECT  WMSYS.WM_CONCAT(t.EQUIP_CODE) FROM (SELECT * FROM T_PRO_EQIP_LIST_BZ l WHERE l.IS_DEFAULT='1' ORDER BY l.EQUIP_CODE ) t WHERE t.PROCESS_ID=P.ID) AS EQUIP_CODE_ARRAY , 
+		    (SELECT  WMSYS.WM_CONCAT(t.NAME || '[' || t.CODE || ']') FROM (SELECT e.*,l.PROCESS_ID FROM T_PRO_EQIP_LIST_BZ l, T_FAC_EQIP_INFO E WHERE l.EQUIP_CODE=E.CODE AND l.IS_DEFAULT='1' ORDER BY l.equip_code) t WHERE t.PROCESS_ID=P.ID)  AS EQUIP_NAME_ARRAY
+		FROM
+		    T_PRO_PRODUCT_PROCESS_BZ P
+		INNER JOIN
+		    T_PRO_PRODUCT_CRAFTS_BZ C
+		ON
+		    P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN
+		    T_PRO_PRODUCT_PROCESS_BZ NEXT
+		ON
+		    P.NEXT_PROCESS_ID = NEXT.ID
+		WHERE
+		    C.PRODUCT_CODE = #{productCode, jdbcType=VARCHAR}
+		ORDER BY
+		    TO_CHAR(P.SEQ) ASC
+	</select>
+    
+    <!-- 查看工艺流程详情 -->
+	<select id="getByProductCraftsIdAsc" parameterType="string" resultMap="getMap">
+		SELECT <include refid="queryColumns"/>,  
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME,
+			(SELECT  WMSYS.WM_CONCAT(t.EQUIP_CODE) FROM (SELECT * FROM T_PRO_EQIP_LIST l WHERE l.IS_DEFAULT='1' ORDER BY l.EQUIP_CODE ) t WHERE t.PROCESS_ID=P.ID) AS EQUIP_CODE_ARRAY , 
+		    (SELECT  WMSYS.WM_CONCAT(t.NAME || '[' || t.CODE || ']') FROM (SELECT e.*,l.PROCESS_ID FROM T_PRO_EQIP_LIST l, T_FAC_EQIP_INFO E WHERE l.EQUIP_CODE=E.CODE AND l.IS_DEFAULT='1' ORDER BY l.equip_code) t WHERE t.PROCESS_ID=P.ID)  AS EQUIP_NAME_ARRAY 
+		FROM T_PRO_PRODUCT_PROCESS_BZ P
+		INNER JOIN
+		    T_PRO_PRODUCT_CRAFTS_BZ C
+		ON
+		    P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN
+		    T_PRO_PRODUCT_PROCESS_BZ NEXT
+		ON
+		    P.NEXT_PROCESS_ID = NEXT.ID
+		WHERE P.PRODUCT_CRAFTS_ID=#{productCraftsId,jdbcType=VARCHAR}
+		ORDER BY TO_CHAR(P.SEQ) ASC
+	</select>
+
+	<select id="getByProductCraftsBzId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="queryColumns"/>
+		FROM T_PRO_PRODUCT_PROCESS_BZ P
+		WHERE PRODUCT_CRAFTS_ID=#{craftsBzId,jdbcType=VARCHAR}
+		ORDER BY SEQ DESC
+	</select>
+    
+	<!-- 获取标准工艺的最后一道工序  -->
+	<select id="getLastProcessList" parameterType="string" resultMap="getMap" >
+		SELECT
+		<include refid="queryColumns"/> 
+		FROM
+		    T_PRO_PRODUCT_PROCESS_BZ P
+		WHERE
+		    P.PRODUCT_CRAFTS_ID = #{craftsBzId, jdbcType=VARCHAR}
+	        AND P.NEXT_PROCESS_ID = '-1'
+		ORDER BY
+		    P.SEQ ASC
+	</select>
+    
+	<!-- 获取标准库上一道工序列表  -->
+	<select id="getPrvProcessList" parameterType="string" resultMap="getMap" >
+		SELECT
+		<include refid="queryColumns"/>
+		FROM
+		    T_PRO_PRODUCT_PROCESS_BZ P
+		WHERE
+		    P.NEXT_PROCESS_ID = #{processBzId, jdbcType=VARCHAR}
+		ORDER BY
+		    P.SEQ ASC
+	</select>
+    
+	<select id="findByCraftsIdAndParam" resultMap="getMap">
+		SELECT 
+		<include refid="queryColumns"/> ,
+			C.CRAFTS_NAME,
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+	<select id="countByCraftsIdAndParam" resultType="int">
+		SELECT 
+			COUNT(1)
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+    
+    
+</mapper>

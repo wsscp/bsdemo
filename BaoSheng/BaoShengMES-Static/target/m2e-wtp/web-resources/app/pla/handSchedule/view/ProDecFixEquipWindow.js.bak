@@ -1,0 +1,107 @@
+/**
+ * 订单明细固定设备
+ */
+Ext.define('bsmes.view.ProDecFixEquipWindow', {
+	extend : 'Ext.window.Window',
+	alias : 'widget.proDecFixEquipWindow',
+	width : 450,
+	layout : 'fit',
+	modal : true,
+	plain : true,
+	parentParentRowindex : null,
+	parentRowindex : null,
+	rowIndex : null,
+	proDecId : null,
+	store : 'MaintainerStore',
+
+	initComponent : function() {
+		var me = this;
+
+		var ds = Ext.create('Ext.data.Store', {
+					fields : [{
+								name : 'equipName',
+								convert : function(value, record) {
+									return value + '[' + record.get('equipCode') + ']';
+								}
+							}, 'equipCode'],
+					proxy : {
+						type : 'ajax',
+						url : 'handSchedule/proDecFixEquipArray',
+						extraParams : {
+							proDecId : me.proDecId
+						}
+					}
+				});
+		ds.load();
+
+		me.items = [{
+					xtype : 'form',
+					bodyPadding : '50 30',
+					url : 'handSchedule/saveProDecFixEquip',
+					items : [{
+								fieldLabel : '选择设备',
+								name : 'equipCode',
+								xtype : 'combobox',
+								labelWidth : 85,
+								width : 350,
+								queryMode : 'local',
+								displayField : 'equipName',
+								valueField : 'equipCode',
+								store : ds
+							}, {
+								xtype : 'textfield',
+								name : 'proDecId',
+								value : me.proDecId
+							}]
+				}];
+
+		Ext.apply(me, {
+					buttons : [{
+								itemId : 'ok',
+								text : Oit.btn.ok,
+								handler : function() {
+									var form = this.up('window').down('form').getForm();
+									var equipName = form.findField('equipCode').getDisplayValue();
+									form.findField('proDecId').getValue();
+
+									// 更改grid信息
+									var handScheduleList = Ext.ComponentQuery.query('handScheduleList')[0];
+									var orderProcessList = handScheduleList.query('orderProcessList')[me.parentParentRowindex];
+									console.log(me.parentParentRowindex);
+									console.log(me.parentRowindex);
+									console.log(orderProcessList);
+									// var orderProcessList =
+									// handScheduleList.query('orderProcessList')[parentRowindex];
+									// var orderItemProDecList=
+									// orderProcessList.query('orderItemProDecList')[rowIndex];
+									// var store =
+									// orderItemProDecList.getStore();
+									// var record = store.getAt(rowIndex);
+									// record.set('totalVolumes', num);
+
+									var component = Ext.ComponentQuery.query('orderItemProDecList')[0];
+									var store = component.getStore();
+									var record = store.getAt(me.rowIndex);
+									record.set('fixedEquipName', equipName);
+
+									// if (form.isValid()) {
+									// form.submit({
+									// success : function(form, action){
+									// me.close(); // 关闭验证弹出窗
+									// }
+									// });
+									// }
+									me.close();
+								}
+							}, {
+								itemId : 'cancel',
+								text : Oit.btn.cancel,
+								handler : me.close
+							}]
+				});
+
+		this.callParent(arguments);
+
+	}
+
+});

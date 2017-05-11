@@ -1,0 +1,130 @@
+//Ext.define('bsmes.view.EquipRealTimeInfoView', {
+//    extend : 'Ext.container.Container',
+//    alias : 'widget.equipRealTimeInfoView',
+//    layout : 'vbox',
+//    maximizable:true,
+//    width: document.body.scrollWidth,
+//    height: document.body.scrollHeight-66,
+//    initComponent : function() {
+//        var me = this;
+//
+//        var orderInfoNum = Ext.fly('orderInfo').getAttribute('num');
+//        if(orderInfoNum == null || orderInfoNum == ''){
+//            orderInfoNum = "无生产单";
+//        }
+//
+//        var receiptArray = [
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.productType,
+//                name: 'productType'
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.productSpec,
+//                name: 'productSpec'
+//            },{
+//                fieldLabel: Oit.msg.wip.terminal.contractNo,
+//                value:Ext.fly('orderInfo').getAttribute('contractNo')
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.processCode,
+//                name: 'currentProcess'
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.planLength,
+//                name: 'contractLength'
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.productLength,
+//                name: 'planLength'
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.remainQLength,
+//                name: 'remainQLength'
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.currentDiscLength,
+//                name: 'currentDiscLength',
+//                renderer:function(value){
+//                    return "<span style='color:red;font-weight: bold;'>"+value+"</span>";
+//                }
+//            },
+//            {
+//                fieldLabel: '可报工长度',
+//                name: 'currentReportLength',
+//                renderer:function(value){
+//                    return "<span style='color:red;font-weight: bold;'>"+value+"</span>";
+//                }
+//            },
+//            {
+//                fieldLabel: Oit.msg.wip.terminal.productColor,
+//                name: 'productColor'
+//            }
+//        ];
+//        var receipts = Ext.fly("emphShowInfo").getAttribute("data");
+//        if (receipts != null && receipts != '') {
+//            var result = Ext.decode(receipts);
+//            Ext.each(result,function(el){
+//                receiptArray.push({
+//                    fieldLabel: el.receiptName,
+//                    value:el.targetValue
+//                })
+//            });
+//        }
+//        var lines = Math.ceil(receiptArray.length/4);
+//        var formHeight = lines*30 + 40;
+//        me.items = [
+//            {
+//                xtype : 'toolbar',
+//                width : '100%',
+//                height:50,
+//                items : [ {
+//                    xtype : 'container',
+//                    contentEl : 'equipInfo'
+//                }]
+//            },
+//            {
+//                xtype : 'form',
+//                itemId : 'equipForm' + Ext.fly('equipInfo').getAttribute('equipId'),
+//                width : '100%',
+//                height:formHeight,
+//                layout: {
+//                    type: 'table',
+//                    columns: 4,
+//                    tableAttrs: {
+//                        style: {
+//                            width: '100%'
+//                        }
+//                    }
+//                },
+//                defaultType: 'displayfield',
+//                defaults:{
+//                    labelWidth:100,
+//                    labelAlign:'right'
+//                },
+//                items: receiptArray,
+//                header : {
+//                    xtype : 'toolbar',
+//                    height : 40,
+//                    items : [
+//                        "<span style='font-size:20px;line-height: 24px;color:#ffff00;font-weight: bold;'>"+Oit.msg.wip.terminal.orderInfoTitle+ '('+ orderInfoNum + ')'+"</span>"]
+//                }
+//            },{
+//                xtype : 'panel',
+//                width : '100%',
+//                itemId : 'orderDetailPanel',
+//                height:document.body.scrollHeight - formHeight - 50 - 66,
+//                items : [ {
+//                    xtype : 'tabpanel',
+//                    width : '100%',
+//                    height:document.body.scrollHeight - formHeight -50-66,
+//                    items : [ {
+//                        xtype : 'materialGrid',
+//                        woNo:Ext.fly('orderInfo').getAttribute('num')
+//                    },{
+//                        xtype:'reportDetailGrid'
+//                    }]
+//                }]
+//            }]
+//        me.callParent(arguments); // ------------call父类--------------
+//    }
+//});

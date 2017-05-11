@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BSMES/!svn/ver/11732/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model
+END
+MaintainRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4841/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/MaintainRecord.java
+END
+EquipInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/8902/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/EquipInfo.java
+END
+DailyCheck.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4841/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/DailyCheck.java
+END
+SparePart.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/9002/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/SparePart.java
+END
+StatusHistory.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/11186/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/StatusHistory.java
+END
+EquipMaintainState.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4508/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/EquipMaintainState.java
+END
+WorkTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/7296/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/WorkTask.java
+END
+LineChart.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/10392/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/LineChart.java
+END
+MaintainRecordItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/3539/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/MaintainRecordItem.java
+END
+MaintainItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/3185/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/MaintainItem.java
+END
+ProductEquip.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/2891/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/ProductEquip.java
+END
+EquipRepairRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/9431/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/EquipRepairRecord.java
+END
+EquipMaintenance.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8534/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/EquipMaintenance.java
+END
+EquipImage.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/7754/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/EquipImage.java
+END
+EquipEnergyMonitor1.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/11732/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/EquipEnergyMonitor1.java
+END
+StatusHistoryChart.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/8145/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/StatusHistoryChart.java
+END
+MaintainTemplate.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/7488/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/model/MaintainTemplate.java
+END

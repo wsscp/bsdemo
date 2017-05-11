@@ -1,0 +1,43 @@
+10
+
+dir
+12152
+http://101.231.47.126:8080/svn/BSMES/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip
+http://101.231.47.126:8080/svn/BSMES
+
+
+
+2017-03-24T03:26:52.162326Z
+12064
+xchen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cb86dc5a-27e7-f949-8907-1b6afd8e026a
+
+model
+dir
+
+service
+dir
+
+dao
+dir
+
+dto
+dir
+
+action
+dir
+

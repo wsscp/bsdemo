@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/11604/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log
+END
+LogInterceptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/2543/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/LogInterceptor.java
+END
+LogAspect.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/6336/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/LogAspect.java
+END
+LogMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/LogMetaData.java
+END

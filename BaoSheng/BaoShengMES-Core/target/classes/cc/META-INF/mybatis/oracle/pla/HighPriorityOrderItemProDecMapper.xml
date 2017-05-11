@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.HighPriorityOrderItemProDecDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.HighPriorityOrderItemProDec" id="getMap">
+	</resultMap>
+
+    <sql id="queryColumns">
+        p.ID,p.SEQ,p.EQUIP_CODE, p.CREATE_USER_CODE,p.CREATE_TIME,p.MODIFY_USER_CODE,p.MODIFY_TIME
+    </sql>
+	
+	<select id="getMaxSeqByEquipCode" parameterType="string" resultType="int">
+		SELECT CASE
+			WHEN MAX(T.SEQ) IS NULL  THEN
+			  0
+			  ELSE
+			      MAX(SEQ)
+			END  AS SEQ
+		FROM T_PLA_HIGH_PRIORITY_PRO_DEC T 
+		WHERE T.EQUIP_CODE = #{equipCode}
+	</select>
+
+    <select id="getByOrgCode" resultMap = "getMap">
+        SELECT <include refid="queryColumns"/> FROM T_PLA_HIGH_PRIORITY_PRO_DEC p, T_PLA_CU_ORDER_ITEM_PRO_DEC d
+        WHERE p.ID = d.ID AND d.ORG_CODE = #{orgCode}
+        ORDER BY p.EQUIP_CODE, p.SEQ
+    </select>
+
+    <delete id="deleteByWorkOrderNo" parameterType="string">
+	DELETE FROM T_PLA_HIGH_PRIORITY_PRO_DEC T
+	 WHERE EXISTS (SELECT 1
+	          FROM T_PLA_ORDER_TASK OT
+	         WHERE OT.ORDER_ITEM_PRO_DEC_ID = T.ID
+	           AND OT.WORK_ORDER_NO = #{workOrderNo})
+	</delete>
+	<delete id="deleteByEquipCode" parameterType="string">
+	DELETE FROM T_PLA_HIGH_PRIORITY_PRO_DEC T
+	 WHERE T.EQUIP_CODE = #{equipCode}
+	</delete>
+	
+	<insert id="insertSeqByWorkOrderNo" parameterType="map">
+		INSERT INTO T_PLA_HIGH_PRIORITY_PRO_DEC
+		  SELECT T.ORDER_ITEM_PRO_DEC_ID ID,
+		         #{equipCode,jdbcType=VARCHAR} EQUIP_CODE,
+		         #{seq,jdbcType=INTEGER} SEQ,
+		         #{user,jdbcType=VARCHAR} CREATE_USER_CODE,
+		         SYSDATE CREATE_TIME,
+		         #{user,jdbcType=VARCHAR} MODIFY_USER_CODE,
+		         SYSDATE MODIFY_TIME
+		    FROM T_PLA_ORDER_TASK T
+		   WHERE T.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+	</insert>
+</mapper>

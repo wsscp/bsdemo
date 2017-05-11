@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.RoleDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.Role" id="getMap">
+	</resultMap>
+	<select id="getByName" parameterType="string" resultMap="getMap">
+		SELECT ID,CODE,NAME FROM T_BAS_ROLE WHERE INSTR(UPPER(NAME),UPPER(#{name}))>0 OR INSTR(UPPER(CODE),UPPER(#{name}))>0
+	</select>
+	<select id="getByOrgCode" parameterType="string" resultMap="getMap">
+		SELECT ID,CODE,NAME FROM T_BAS_ROLE WHERE ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	</select>
+	<select id="find" parameterType="cc.oit.bsmes.bas.model.Role" resultType="cc.oit.bsmes.bas.model.Role">
+		SELECT  
+			br.*,
+			bo.NAME AS orgName
+		FROM T_BAS_ROLE br LEFT JOIN T_BAS_ORG bo ON br.ORG_CODE = bo.ORG_CODE
+		<where>
+			<if test="name != null and name !=''">
+				br.NAME LIKE #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode != null and orgCode !=''">
+				AND (br.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} OR bo.NAME LIKE #{orgCode,jdbcType=VARCHAR})
+			</if>
+		</where>
+		ORDER BY BR.NAME ASC
+	</select>
+	
+	<select id="count" parameterType="cc.oit.bsmes.bas.model.Role" resultType="int">
+		SELECT 
+			COUNT(br.ID)
+		FROM T_BAS_ROLE br LEFT JOIN T_BAS_ORG bo ON br.ORG_CODE = bo.ORG_CODE
+		<where>
+			<if test="name != null and name !=''">
+				br.NAME LIKE #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode != null and orgCode !=''">
+				AND (br.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR} OR bo.NAME LIKE #{orgCode,jdbcType=VARCHAR})
+			</if>
+		</where>
+	</select>
+	
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.bas.model.Role">
+		SELECT 	br.*,
+				bo.NAME AS orgName
+		FROM T_BAS_ROLE br LEFT JOIN T_BAS_ORG bo ON br.ORG_CODE = bo.ORG_CODE
+		WHERE br.ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByUserId" parameterType="string" resultType="cc.oit.bsmes.bas.model.Role">
+		SELECT R.* FROM T_BAS_ROLE R
+        <where>
+        	EXISTS (SELECT 1
+                    FROM T_BAS_USER_ROLE UR
+                   WHERE UR.USER_ID = #{userId,jdbcType=VARCHAR}
+                   AND R.ID = UR.ROLE_ID)
+        </where>
+	</select>
+	<select id="getByUserCode" parameterType="string" resultType="cc.oit.bsmes.bas.model.Role">
+		SELECT R.* FROM T_BAS_ROLE R
+        WHERE EXISTS (SELECT 1
+                    FROM T_BAS_USER_ROLE UR
+                   WHERE EXISTS (SELECT 1
+                            FROM T_BAS_USER U
+                           WHERE U.USER_CODE = #{userCode,jdbcType=VARCHAR}
+                             AND U.ID = UR.USER_ID)
+                     AND R.ID = UR.ROLE_ID)
+	</select>
+	<select id="getByCode" parameterType="string" resultType="Role">
+		SELECT ID ,CODE FROM T_BAS_ROLE WHERE CODE=#{param1} AND ORG_CODE=#{param2}
+	</select>
+</mapper>

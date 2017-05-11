@@ -1,0 +1,78 @@
+.icon_search {
+	background-image: url(icons/magnifier.png);
+}
+.icon_export {
+  background-image: url(icons/export.png);
+}
+.icon_reset {
+  background-image: url(icons/reset.png);
+}
+.icon_search_large {
+	height: 32px;
+	width: 32px;
+	margin-left: 5px;
+	background-image: url(icons/search.png);
+}
+
+.icon_detail {
+	background-image: url(icons/application-detail.png);
+}
+
+.icon_save {
+	background-image: url(icons/disk.png);
+}
+
+.icon_back {
+	background-image: url(icons/back.png);
+}
+
+.icon_add {
+	background-image: url(icons/plus.png);
+}
+
+.icon_edit {
+	background-image: url(icons/pencil.png);
+}
+
+.icon_remove {
+	background-image: url(icons/minus.png);
+}
+
+.icon_adjust {
+	background-image: url(icons/arrow-continue-090.png);
+}
+
+.icon_message {
+	background-image: url(icons/tip.png);
+}
+
+.x-form-itemselector-add {
+	background-image: url(icons/right2.gif);
+}
+
+.x-form-itemselector-remove {
+	background-image: url(icons/left2.gif);
+}
+
+.icon_warn {
+	background-image: url(icons/warning.png);
+}
+
+.x-grid-record-green {
+	background: green;
+}
+/** 选中的背景色 */
+/* .x-grid-row-selected .x-grid-td {
+    background-color: #ffefbb !important;
+} */
+.x-panel-default-outer-border-trl {
+	border-left-color: silver !important;
+	border-right-color: silver !important;
+	border-top-color: silver !important;
+}
+
+.x-panel-default-outer-border-rbl {
+	border-bottom-color: silver !important;
+	border-left-color: silver !important;
+	border-right-color: silver !important;
+}

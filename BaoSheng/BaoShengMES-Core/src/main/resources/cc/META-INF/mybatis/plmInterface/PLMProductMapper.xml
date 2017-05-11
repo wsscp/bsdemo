@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.PLMProductDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.PLMProduct"
+		id="getMap">
+		<result property="craftNo" column="CRAFT_NO" />
+	</resultMap>
+	<select id="getLastRecord" parameterType="map" resultMap="getMap">
+		SELECT A.ID,
+		       A.NO,
+		       A.NAME,
+		       A.SERIES,
+		       A.PROJNO,
+		       A.DESCRIBE,
+		       A.MONITOR,
+		       A.SROLE,
+		       SYSDATE,
+		       SYSDATE,
+		       '' AS CRAFT_NO,
+		       A.ASUSER01,
+		       CP.CATANID
+		  FROM PRODUCT A
+		  Left JOIN CR_PRODUCT CP ON A.ID = CP.Objid
+		 WHERE A.DEL = '0'
+		   AND A.WKAID <![CDATA[ <>]]> '3'
+		<if test="lastDate != null">
+			AND <![CDATA[(A.CTIME > #{lastDate} OR A.MTIME > #{lastDate})]]>
+		</if>
+	</select>
+
+	<select id="find" parameterType="cc.oit.bsmes.interfacePLM.model.PLMProduct"
+		resultMap="getMap">
+		SELECT * FROM PRODUCT
+		WHERE
+		WKAID <![CDATA[<>]]>
+		'3'
+		<if test="no!=null and no!=''">
+			AND REPLACE(NO,' ','')=#{no,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	
+	
+	<update id="updatePro" parameterType="cc.oit.bsmes.interfacePLM.model.PLMProduct">
+        UPDATE PRODUCT SET NAME = #{name,jdbcType=VARCHAR},
+        MTIME=SYSDATE
+        <if test="ename != null and ename !=''">
+            ,ENAME = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="series != null and series !=''">
+            ,SERIES = #{series,jdbcType=VARCHAR}
+        </if>
+        <if test="asuser01 != null and asuser01 !=''">
+            ,ASUSER01 = #{asuser01,jdbcType=VARCHAR}
+        </if>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+    
+    <select id="getProductsWithImage" resultMap="getMap">	
+		SELECT * FROM PRODUCT WHERE DESCRIBE='有图片'
+	</select>
+	
+	
+	<select id="getByProductName" parameterType="map" resultMap="getMap">
+		SELECT * FROM PRODUCT WHERE NAME IN
+		<foreach collection="productNames" item="item"  open="(" separator="," close=")">  
+		    #{item, jdbcType=VARCHAR}
+		</foreach>
+		AND WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<select id="getPLMProductByProductName" parameterType="String" resultMap="getMap">
+		SELECT * FROM PRODUCT WHERE NAME=#{productName,jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<update id="updateDescribeInfo" parameterType="cc.oit.bsmes.interfacePLM.model.PLMProduct">
+		UPDATE PRODUCT SET DESCRIBE='已导入' WHERE ID=#{id}
+	</update>
+	
+</mapper>

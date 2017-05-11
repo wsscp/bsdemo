@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.TurnOverMatDetailDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.TurnOverMatDetail" id="getMap">
+	</resultMap>
+	
+	<delete id="deleteByTurnOverReportId" parameterType="String">
+	    DELETE FROM T_WIP_TURNOVER_MAT_DETAIL
+	    WHERE TURNOVER_RPT_ID=#{turnoverReportId,jdbcType=VARCHAR}
+	</delete>
+	
+</mapper>

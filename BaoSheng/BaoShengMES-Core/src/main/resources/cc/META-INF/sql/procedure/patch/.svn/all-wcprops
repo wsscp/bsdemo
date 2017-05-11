@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/8070/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/patch
+END
+PATCH_DELETE_OLD_CRAFTS.sql
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/8069/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/patch/PATCH_DELETE_OLD_CRAFTS.sql
+END
+PATCH_UPDATE_WIRES_STRUCTURE.sql
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/BSMES/!svn/ver/8070/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/patch/PATCH_UPDATE_WIRES_STRUCTURE.sql
+END
+PATCH_UPDATE_WIRE_COIL.sql
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/8070/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/patch/PATCH_UPDATE_WIRE_COIL.sql
+END
+PATCH_DELETE_OLD_MAT_PROP.sql
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/8069/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/patch/PATCH_DELETE_OLD_MAT_PROP.sql
+END

@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/11968/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util
+END
+OneBarcodeUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4022/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/OneBarcodeUtil.java
+END
+DayOfWeekUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/1306/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/DayOfWeekUtils.java
+END
+BigDecimalUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/1336/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/BigDecimalUtils.java
+END
+BufferedImageLuminanceSource.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/7395/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/BufferedImageLuminanceSource.java
+END
+WebContextUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/WebContextUtils.java
+END
+SessionUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/9814/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/SessionUtils.java
+END
+ReflectUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/ReflectUtils.java
+END
+StaticDataCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/6710/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/StaticDataCache.java
+END
+MD5Utils.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4506/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/MD5Utils.java
+END
+EquipLoadCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4690/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/EquipLoadCache.java
+END
+QRCodeUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/10274/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/QRCodeUtil.java
+END
+ResourceCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/ResourceCache.java
+END
+CollectionUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/CollectionUtils.java
+END
+PrintBarCode.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4070/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/PrintBarCode.java
+END
+RangeUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/RangeUtils.java
+END
+JxlUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/5895/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/JxlUtils.java
+END
+ParseStringUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/11605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/ParseStringUtils.java
+END
+NoGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4283/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/NoGenerator.java
+END
+RangeList.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/7326/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/RangeList.java
+END
+JSONArrayUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/3640/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/JSONArrayUtils.java
+END
+JSONUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/3601/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/JSONUtils.java
+END
+CookieUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/1336/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/CookieUtils.java
+END
+GlobalVariableClass.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/5678/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/GlobalVariableClass.java
+END
+Range.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/7326/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/Range.java
+END
+DateUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/11968/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/DateUtils.java
+END
+CraftsImportUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/2900/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/CraftsImportUtils.java
+END
+CamelCaseUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/1060/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/util/CamelCaseUtils.java
+END

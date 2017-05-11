@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/BSMES/!svn/ver/2757/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/views/wip/weight
+END
+unitWeight.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/2757/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/views/wip/weight/unitWeight.jsp
+END
+productWeight.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/2757/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/views/wip/weight/productWeight.jsp
+END
+scrapWeight.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/2757/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/views/wip/weight/scrapWeight.jsp
+END

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.StatusHistoryDAO">
+
+	<resultMap type="cc.oit.bsmes.fac.model.StatusHistory" id="getMap">
+			<result property="equipCode" column="EQUIP_CODE"/>
+			<result property="equipName" column="EQUIP_NAME"/>
+	</resultMap>
+	<sql id="statusHistoryColumns">
+		S.ID,
+		S.EQUIP_ID,
+		S.STATUS,
+		S.START_TIME,
+		S.END_TIME,
+		S.CREATE_TIME,
+		S.CREATE_USER_CODE,
+		S.MODIFY_TIME,
+		S.MODIFY_USER_CODE
+	</sql>
+	<!-- 根据工序Id获取设备信息 -->
+	<select id="getByEquipIdAndNullEndTime" resultMap="getMap" parameterType="StatusHistory">
+		SELECT
+		<include refid="statusHistoryColumns" />
+		FROM T_FAC_STATUS_HISTORY S
+		WHERE S.EQUIP_ID = #{equipId,jdbcType=VARCHAR} 
+		AND S.END_TIME IS NULL
+	</select>
+	<select id="getByTimeAndStatus" resultMap="getMap" parameterType="string">
+		SELECT * 
+		FROM (
+			SELECT S.STATUS, START_TIME ,DECODE(S.END_TIME,NULL,SYSDATE,S.END_TIME)  AS END_TIME
+    		FROM T_FAC_STATUS_HISTORY S,T_FAC_EQIP_INFO R 
+    		WHERE R.ID=S.EQUIP_ID AND R.CODE=#{equipCode,jdbcType=VARCHAR}  AND R.ORG_CODE=#{orgCode,jdbcType=VARCHAR}  AND  START_TIME <![CDATA[<=]]>#{endTime,jdbcType=VARCHAR})
+    	WHERE  END_TIME>=#{startTime,jdbcType=VARCHAR}
+    	ORDER BY START_TIME ASC
+	</select>
+	
+	<select id="getEquipYield" parameterType="map" resultType="integer">
+		SELECT NVL(SUM(REPORT_LENGTH),0)
+		FROM T_WIP_REPORT 
+		WHERE EQUIP_CODE =#{equipCode,jdbcType=VARCHAR}
+		AND CREATE_TIME<![CDATA[<=]]>#{endTime,jdbcType=VARCHAR}
+		AND CREATE_TIME>=#{startTime,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 
+	SELECT S.STATUS,
+		       SUM(ROUND(TO_NUMBER(TO_DATE(TO_CHAR(DECODE(S.END_TIME,
+		                                                  NULL,
+		                                                  SYSDATE,
+		                                                  S.END_TIME),
+		                                           'YYYY-MM-DD HH24:MI:SS'),
+		                                   'YYYY-MM-DD HH24:MI:SS') -
+		                           TO_DATE(TO_CHAR(START_TIME,
+		                                           'YYYY-MM-DD HH24:MI:SS'),
+		                                   'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60)) AS TOTAL_TIME
+		  FROM T_FAC_STATUS_HISTORY S, T_FAC_EQIP_INFO R
+		 WHERE R.ID = S.EQUIP_ID
+		   AND R.CODE = #{equipCode, jdbcType=VARCHAR} 
+		   AND R.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		   AND START_TIME <![CDATA[<=]]> #{endTime, jdbcType=VARCHAR}
+		   AND END_TIME >= #{startTime, jdbcType=VARCHAR}
+		 GROUP BY S.STATUS
+	-->
+
+    <select id="getLatestEndByEquipId" resultMap="getMap">
+        SELECT * FROM (
+            SELECT
+            <include refid="statusHistoryColumns" />
+            FROM T_FAC_STATUS_HISTORY S
+            WHERE S.EQUIP_ID = #{equipId,jdbcType=VARCHAR}
+            AND S.END_TIME IS NOT NULL
+            ORDER BY START_TIME DESC
+        ) WHERE ROWNUM = 1
+    </select>
+    
+    <select id="getByLimitTime" parameterType="map" resultType="StatusHistory">
+        SELECT * 
+		FROM (
+			SELECT S.STATUS, START_TIME ,DECODE(S.END_TIME,NULL,SYSDATE,S.END_TIME)  AS END_TIME,R.CODE AS EQUIP_CODE
+    		FROM T_FAC_STATUS_HISTORY S,T_FAC_EQIP_INFO R 
+    		WHERE R.ID=S.EQUIP_ID 
+    		AND R.CODE IN
+    		<foreach collection="equipCodes" item="code"  open="(" separator="," close=")">  
+	    		#{code,jdbcType=VARCHAR} 
+	   		 </foreach>
+    		 AND  START_TIME <![CDATA[<=]]>#{endTime,jdbcType=TIMESTAMP})
+    	WHERE  END_TIME>=#{startTime,jdbcType=TIMESTAMP}
+    	ORDER BY EQUIP_CODE ASC ,START_TIME ASC
+    </select>
+    
+    <select id="findByParam"  parameterType="StatusHistory" resultMap="getMap">
+      select * from (
+       SELECT r.ID,s.CODE EQUIP_CODE,s.NAME EQUIP_NAME, r.START_TIME,r.END_TIME END_TIME,r.REASON
+	   FROM  T_FAC_STATUS_HISTORY r,T_FAC_EQIP_INFO s
+	   WHERE r.EQUIP_ID=s.ID and s.TYPE='PRODUCT_LINE'  AND r.STATUS='IDLE' AND r.END_TIME IS NOT NULL
+	   		<include refid="getParameter" />
+	   		union all
+	   SELECT r.ID,s.CODE EQUIP_CODE,s.NAME EQUIP_NAME, r.START_TIME,SYSDATE as  END_TIME,r.REASON
+	   FROM  T_FAC_STATUS_HISTORY r,T_FAC_EQIP_INFO s
+	   WHERE r.EQUIP_ID=s.ID and s.TYPE='PRODUCT_LINE'  AND r.STATUS='IDLE' AND r.END_TIME IS  NULL
+	   		<include refid="getParameter2" />
+	   		)	
+    </select>
+    
+    <select id="countByParam" parameterType="StatusHistory"  resultType="int">
+    	SELECT COUNT(1) FROM(
+	    	 
+    	 SELECT r.ID,s.CODE EQUIP_CODE,s.NAME EQUIP_NAME, r.START_TIME,r.END_TIME END_TIME,r.REASON
+	   FROM  T_FAC_STATUS_HISTORY r,T_FAC_EQIP_INFO s
+	   WHERE r.EQUIP_ID=s.ID and s.TYPE='PRODUCT_LINE'  AND r.STATUS='IDLE' AND r.END_TIME IS NOT NULL
+	   		<include refid="getParameter" />
+	   		union all
+	   SELECT r.ID,s.CODE EQUIP_CODE,s.NAME EQUIP_NAME, r.START_TIME,SYSDATE as  END_TIME,r.REASON
+	   FROM  T_FAC_STATUS_HISTORY r,T_FAC_EQIP_INFO s
+	   WHERE r.EQUIP_ID=s.ID and s.TYPE='PRODUCT_LINE'  AND r.STATUS='IDLE' AND r.END_TIME IS  NULL
+	   		<include refid="getParameter2" />
+    	 )
+	</select>
+<!--    
+    <select id="getIdleDataByEquipAndLimitTime"  parameterType="StatusHistory" resultType="StatusHistory">
+   		SELECT r.ID,START_TIME,DECODE(END_TIME,NULL,SYSDATE,END_TIME)  AS END_TIME
+   		FROM T_FAC_STATUS_HISTORY r,T_FAC_EQIP_INFO s
+   		WHERE r.EQUIP_ID=s.ID AND r.STATUS='IDLE' AND TYPE='PRODUCT_LINE'
+   			<if test="orgCode !=null and orgCode !=''">
+				AND s.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="startTime !=null and startTime !=''">
+				AND START_TIME>=#{startTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime !=null and endTime !=''">
+				AND END_TIME<![CDATA[<=]]>#{endTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="equipCode!=null and equipCode !=''">
+				AND CODE=#{equipCode,jdbcType=VARCHAR}
+			</if>
+    </select>
+-->    
+    <sql id="getParameter">
+		<if test="orgCode !=null and orgCode !=''">
+			AND s.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="equipCode !=null and equipCode !=''">
+			AND s.CODE=#{equipCode,jdbcType=VARCHAR}
+		</if>
+		<if test="startTime !=null and startTime !=''"> 
+		     AND r.END_TIME  <![CDATA[>=]]>  #{startTime,jdbcType=TIMESTAMP} 
+		</if>
+		<if test="endTime !=null and endTime !=''"> 
+			AND r.START_TIME  <![CDATA[<=]]>   #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="isCompleted !=null and isCompleted !=''">
+			 <choose> 
+			 	 <when test="isCompleted=='yes'">
+			 	 	AND r.REASON IS NOT NULL
+			 	 </when> 
+			 	 <when test="isCompleted=='no'">
+			 	 	AND r.REASON IS  NULL
+			 	 </when> 
+			 	 <otherwise></otherwise>   
+			 </choose> 
+		</if>
+	</sql>
+	
+	<sql id="getParameter2">
+		<if test="orgCode !=null and orgCode !=''">
+			AND s.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="equipCode !=null and equipCode !=''">
+			AND s.CODE=#{equipCode,jdbcType=VARCHAR}
+		</if>
+		<if test="endTime !=null and endTime !=''"> 
+			AND r.START_TIME  <![CDATA[<=]]>   #{endTime,jdbcType=TIMESTAMP}
+		</if>
+		 
+		<if test="isCompleted !=null and isCompleted !=''">
+			 <choose> 
+			 	 <when test="isCompleted=='yes'">
+			 	 	AND r.REASON IS NOT NULL
+			 	 </when> 
+			 	 <when test="isCompleted=='no'">
+			 	 	AND r.REASON IS  NULL
+			 	 </when> 
+			 	 <otherwise></otherwise>   
+			 </choose> 
+		</if>
+	</sql>
+</mapper>

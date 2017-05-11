@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	">
+    <!-- mes -->
+    <bean id="dataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>DATASOURCE</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@172.168.0.82:1521:bsmestest</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>100</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>600</value></property>
+    </bean>
+    
+    <!-- mes库的历史记录数据源 -->
+    <bean id="hisDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>hisDataSource</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@172.168.0.100:1521:bsmeshistory</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>100</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+
+    <!-- ww监控异常处理 -->
+    <bean id="wwalmdbDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:jtds:sqlserver://172.168.0.85:1433/Runtime" />
+        <property name="username" value="sa" />
+        <property name="password" value="SuperMaster@" />
+        <property name="maxActive" value="20"/>
+    </bean>
+
+    <!-- ww采集-->
+    <bean id="wwAcDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:jtds:sqlserver://172.168.0.85:1433/Runtime" />
+        <property name="username" value="sa" />
+        <property name="password" value="SuperMaster@" />
+        <property name="maxActive" value="20"/>
+    </bean>
+
+    <!-- plm -->
+    <bean id="plmDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:oracle:thin:@172.168.0.105:1521/orcl" />
+        <property name="username" value="BS" />
+        <property name="password" value="BS" />
+        <property name="maxActive" value="20"/>
+    </bean>
+
+    <!-- ww下发-->
+    <bean id="wwIsDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>WWISDATASOURCE</value></property>
+        <property name="url"><value>jdbc:jtds:sqlserver://172.168.0.85:1433/Runtime</value></property>
+        <property name="driverClassName"><value>net.sourceforge.jtds.jdbc.Driver</value></property>
+        <property name="maxPoolSize"><value>20</value></property>
+        <property name="user"><value>sa</value></property>
+        <property name="password"><value>SuperMaster@</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+    
+</beans>
+
+
+
+
+
+
+<!-- <?xml version="1.0" encoding="UTF-8"?> -->
+<!-- <beans xmlns="http://www.springframework.org/schema/beans" -->
+<!-- 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!-- 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd -->
+<!-- 	"> -->
+
+<!--     mes -->
+<!--     <bean id="dataSource" -->
+<!--           class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean"> -->
+<!--         <property name="uniqueResourceName"><value>DATASOURCE</value></property> -->
+<!--         <property name="url"><value>jdbc:oracle:thin:@192.168.0.90:1521:bsmes</value></property> -->
+<!--         <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property> -->
+<!--         <property name="maxPoolSize"><value>100</value></property> -->
+<!--         <property name="user"><value>bstl</value></property> -->
+<!--         <property name="password"><value>bstl</value></property> -->
+<!--         <property name="borrowConnectionTimeout"><value>60</value></property> -->
+<!--     </bean> -->
+    
+<!--     mes库的历史记录数据源 -->
+<!--     <bean id="hisDataSource" -->
+<!--           class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean"> -->
+<!--         <property name="uniqueResourceName"><value>hisDataSource</value></property> -->
+<!--         <property name="url"><value>jdbc:oracle:thin:@192.168.0.90:1521:bsmes</value></property> -->
+<!--         <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property> -->
+<!--         <property name="maxPoolSize"><value>100</value></property> -->
+<!--         <property name="user"><value>bstl</value></property> -->
+<!--         <property name="password"><value>bstl</value></property> -->
+<!--         <property name="borrowConnectionTimeout"><value>60</value></property> -->
+<!--     </bean> -->
+
+<!--     ww监控异常处理 -->
+<!--     <bean id="wwalmdbDataSource" class="com.alibaba.druid.pool.DruidDataSource"> -->
+<!--         <property name="url" value="jdbc:oracle:thin:@192.168.0.90:1521/bsmes" /> -->
+<!--         <property name="username" value="bstl" /> -->
+<!--         <property name="password" value="bstl" /> -->
+<!--         <property name="maxActive" value="20"/> -->
+<!--     </bean> -->
+
+<!--     ww采集 -->
+<!--     <bean id="wwAcDataSource" class="com.alibaba.druid.pool.DruidDataSource"> -->
+<!--         <property name="url" value="jdbc:oracle:thin:@192.168.0.90:1521/bsmes" /> -->
+<!--         <property name="username" value="bstl" /> -->
+<!--         <property name="password" value="bstl" /> -->
+<!--         <property name="maxActive" value="20"/> -->
+<!--     </bean> -->
+
+<!--     plm -->
+<!--     <bean id="plmDataSource" class="com.alibaba.druid.pool.DruidDataSource"> -->
+<!--         <property name="url" value="jdbc:oracle:thin:@192.168.0.90:1521/bsmes" /> -->
+<!--         <property name="username" value="bstl" /> -->
+<!--         <property name="password" value="bstl" /> -->
+<!--         <property name="maxActive" value="20"/> -->
+<!--     </bean> -->
+
+<!--     ww下发 -->
+<!--     <bean id="wwIsDataSource" -->
+<!--           class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean"> -->
+<!--         <property name="uniqueResourceName"><value>WWISDATASOURCE</value></property> -->
+<!--         <property name="url"><value>jdbc:oracle:thin:@192.168.0.90:1521:bsmes</value></property> -->
+<!--         <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property> -->
+<!--         <property name="maxPoolSize"><value>20</value></property> -->
+<!--         <property name="user"><value>bstl</value></property> -->
+<!--         <property name="password"><value>bstl</value></property> -->
+<!--         <property name="borrowConnectionTimeout"><value>60</value></property> -->
+<!--     </bean> -->
+    
+<!-- </beans> -->

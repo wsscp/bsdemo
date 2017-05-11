@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EmployeeResumeDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.EmployeeResume" id="getMap">
+	</resultMap>
+	
+	<select id="getUserResumeInfo" parameterType="string" resultType="cc.oit.bsmes.bas.model.EmployeeResume">
+		SELECT RECORD_DETAIL, USER_CODE , RECORD_DATE FROM T_BAS_USER_RE WHERE USER_CODE = #{param1}
+		ORDER BY CREATE_TIME DESC
+	</select>
+</mapper>

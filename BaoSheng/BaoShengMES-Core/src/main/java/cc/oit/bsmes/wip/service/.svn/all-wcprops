@@ -1,0 +1,197 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/12064/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service
+END
+WorkOrderService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/12064/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/WorkOrderService.java
+END
+WorkOrderEquipRelationService.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/7964/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/WorkOrderEquipRelationService.java
+END
+TurnOverReportService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/11213/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/TurnOverReportService.java
+END
+SparkRepairService.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/6878/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/SparkRepairService.java
+END
+WorkCusorderRelationService.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/7359/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/WorkCusorderRelationService.java
+END
+ApplyMatService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/10567/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ApplyMatService.java
+END
+SemiFinishedProductsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/11851/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/SemiFinishedProductsService.java
+END
+FinishOrderItemService.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/10168/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/FinishOrderItemService.java
+END
+ReceiptService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8888/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ReceiptService.java
+END
+DailyReportService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/10923/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/DailyReportService.java
+END
+WorkOrderOperateLogService.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/10452/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/WorkOrderOperateLogService.java
+END
+EventTraceService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8965/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/EventTraceService.java
+END
+UserWorkHoursService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/8194/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/UserWorkHoursService.java
+END
+SectionService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4528/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/SectionService.java
+END
+StoreManageService.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/7785/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/StoreManageService.java
+END
+ProcessBalanceChartService.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/5157/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ProcessBalanceChartService.java
+END
+TurnOverMatDetailService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/7361/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/TurnOverMatDetailService.java
+END
+ReportUserService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8815/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ReportUserService.java
+END
+MaterialTraceService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/1636/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/MaterialTraceService.java
+END
+MonthReportService.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/7282/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/MonthReportService.java
+END
+ProductStatusService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ProductStatusService.java
+END
+DebugService.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/10676/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/DebugService.java
+END
+ReportTaskService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ReportTaskService.java
+END
+ProductTraceService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/9503/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ProductTraceService.java
+END
+SpecialCraftsTraceService.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/8957/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/SpecialCraftsTraceService.java
+END
+MatUsageService.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7602/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/MatUsageService.java
+END
+OnoffRecordService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/11664/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/OnoffRecordService.java
+END
+ScrapService.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/936/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ScrapService.java
+END
+WorkOrderReportService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/7224/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/WorkOrderReportService.java
+END
+TerminalService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/10677/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/TerminalService.java
+END
+ReportService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11877/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/ReportService.java
+END
+RealCostService.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5951/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/service/RealCostService.java
+END

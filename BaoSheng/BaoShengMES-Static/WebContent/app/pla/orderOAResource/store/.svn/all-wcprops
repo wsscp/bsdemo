@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/3754/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/orderOAResource/store
+END
+ZoneStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/3754/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/orderOAResource/store/ZoneStore.js
+END
+OrderOAEventStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/3754/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/orderOAResource/store/OrderOAEventStore.js
+END
+OrderOAResourceStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/3754/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/orderOAResource/store/OrderOAResourceStore.js
+END

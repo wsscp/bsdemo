@@ -1,0 +1,219 @@
+/**
+ * 修改订单工序生产要求参数 QC和MAT属性
+ */
+Ext.define('bsmes.view.InitOrderProcessPropWindow', {
+	extend : 'Ext.window.Window',
+	alias : 'widget.initOrderProcessPropWindow',
+	title : '修改订单特殊工艺信息/质量参数',
+	width : (document.body.scrollWidth - 300) / 2,
+	height : document.body.scrollHeight - 100,
+	layout : 'vbox',
+	modal : true,
+	plain : true,
+	autoScroll : true,
+	padding : '10 10 0 10',
+	salesOrderItemId : '',
+	initComponent : function() {
+		var me = this;
+		var processId = '';
+		var propStore1 = Ext.create('bsmes.store.InitOrderProcessPropStore');
+		var propStore2 = Ext.create('bsmes.store.InitOrderProcessPropStore');
+
+		me.items = [{
+			xtype : 'hform',
+			items : [{
+						fieldLabel : '工序',
+						name : 'processId',
+						itemId : 'propProcessId',
+						xtype : 'combobox',
+						displayField : 'NAME',
+						valueField : 'ID',
+						margin : '0 0 0 10',
+						width : 350,
+						labelWidth : 60,
+						queryMode : 'local',
+						store : new Ext.data.Store({
+									fields : ['ID', 'NAME'],
+									autoLoad : true,
+									proxy : {
+										type : 'rest',
+										url : 'handSchedule/getOrderProcessByOrderId/' + me.salesOrderItemId
+									}
+								}),
+						listeners : {
+							'change' : function(me1, newValue, oldValue, eOpts) {
+								processId = newValue;
+								propStore1.getProxy().api.read = 'handSchedule/getSpecialProcessIn/' + newValue + '/' + me.salesOrderItemId;
+								propStore1.load();
+								propStore2.getProxy().api.read = 'handSchedule/getSpecialProcessQc/' + newValue + '/' + me.salesOrderItemId;
+								propStore2.reload();
+							}
+						}
+					}]
+		}, {
+			title : '修改投入原料',
+			xtype : 'fieldset',
+			anchor : '100%',
+			layout : 'fit',
+			width : (document.body.scrollWidth - 300) / 2 - 50,
+			padding : '10 10 10 10',
+			items : [{
+				xtype : 'grid',
+				store : propStore1,
+				defaultEditingPlugin : false,
+				minHeight : 100,
+				plugins : [Ext.create('Ext.grid.plugin.RowEditing', {
+							autoCancel : false,
+							listeners : {
+								edit : function(row, edit, fun) {
+									var record = edit.record;
+									var value = record.get('targetValue').split('&');
+									if (value.length != 3) {
+										return;
+									}
+									record.set('targetValue', value[0]);
+									record.set('newMatName', value[1]);
+									record.set('newDesc', value[2]);
+									record.save({
+												callback : function() {
+													propStore2.reload();
+												}
+											});
+								}
+							}
+						})],
+				columns : [{
+							text : '原物料名称',
+							dataIndex : 'matName',
+							flex : 1,
+							sortable : false,
+							renderer : function(value, metaData, record) {
+								metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+								if (record.get('oldDesc') != '') {
+									value += '[' + record.get('oldDesc') + ']';
+								}
+								metaData.tdAttr = 'data-qtip="' + value + '"';
+								return value;
+							}
+						}, {
+							text : '修改后物料名称',
+							dataIndex : 'targetValue',
+							flex : 1,
+							sortable : false,
+							menuDisabled : true,
+							renderer : function(value, metaData, record) {
+								metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+								if (value == record.get('code')) {
+									return '<font color="grey">未修改，双击修改</font>';
+								}
+								value = record.get('newMatName')
+								if (record.get('newDesc') != '') {
+									value += '[' + record.get('newDesc') + ']';
+								}
+								metaData.tdAttr = 'data-qtip="' + value + '"';
+								return value;
+							},
+							editor : new Ext.form.ComboBox({
+										store : Ext.create('Ext.data.Store', {
+													fields : [{
+														name : 'SHOW_MATCODE',
+														convert : function(value, record) {
+															return record.get('MATCODE') + '&' + record.get('MATNAME') + '&'
+																	+ record.get('MATDESC');
+														}
+													}, {
+														name : 'SHOW_MATNAME',
+														convert : function(value, record) {
+															if (record.get('MATDESC') != '') {
+																return record.get('MATNAME') + '[' + record.get('MATDESC') + ']';
+															}
+															return value;
+														}
+													}, 'MATCODE', 'MATNAME', 'MATDESC'],
+													proxy : {
+														type : 'rest',
+														url : 'materialRequirementPlan/getAllMatName'
+													}
+												}),
+										displayField : 'SHOW_MATNAME',
+										name : 'targetValue',
+										valueField : 'SHOW_MATCODE',
+										listeners : {
+											beforequery : function(e) {
+												var combo = e.combo;
+												if (!e.forceAll) {
+													var value = e.query;
+													if (value != null && value != '') {
+														combo.store.getProxy().url = 'materialRequirementPlan/getDescByMatName?matName='
+																+ value
+														combo.store.load();
+													} else {
+														combo.store.clearFilter();
+													}
+													combo.expand();
+													return false;
+												}
+											}
+										}
+									})
+						}, {
+							text : '类型',
+							dataIndex : 'type',
+							flex : 0.5,
+							sortable : false,
+							menuDisabled : true
+						}]
+			}]
+		}, {
+			title : '修改生产要求参数值',
+			xtype : 'fieldset',
+			anchor : '100%',
+			layout : 'fit',
+			width : (document.body.scrollWidth - 300) / 2 - 50,
+			padding : '10 10 10 10',
+			items : [{
+						xtype : 'grid',
+						store : propStore2,
+						defaultEditingPlugin : false,
+						minHeight : 100,
+						plugins : [Ext.create('Ext.grid.plugin.RowEditing', {
+									autoCancel : false,
+									listeners : {
+										edit : function(row, edit, fun) {
+											edit.store.sync();
+										}
+									}
+								})],
+						columns : [{
+									text : '参数名称',
+									dataIndex : 'name',
+									flex : 2,
+									sortable : false,
+									menuDisabled : true
+								}, {
+									text : '物料名称',
+									dataIndex : 'matName',
+									flex : 1,
+									sortable : false
+								}, {
+									text : '目标值',
+									dataIndex : 'targetValue',
+									flex : 1,
+									sortable : false,
+									menuDisabled : true,
+									editor : 'textfield'
+								}, {
+									text : '类型',
+									dataIndex : 'type',
+									flex : 0.5,
+									sortable : false,
+									menuDisabled : true
+								}]
+					}]
+		}
+
+		];
+
+		me.callParent(arguments);
+	}
+});

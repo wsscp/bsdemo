@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.MonthCalendarDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.MonthCalendar" id="getMap">
+	</resultMap>
+	
+	<select id="getLatestDate" resultType="MonthCalendar">
+	 	 SELECT * FROM T_BAS_MONTH_CALENDAR WHERE WORK_MONTH = (SELECT  MAX(WORK_MONTH) FROM T_BAS_MONTH_CALENDAR)
+	</select>
+	
+	<select id="queryWorkDay" parameterType="string" resultMap="getMap">
+	 	 SELECT * FROM T_BAS_MONTH_CALENDAR WHERE WORK_MONTH = #{param1,jdbcType=VARCHAR} AND ORG_CODE=#{param2,jdbcType=VARCHAR}
+	</select>
+	<select id="getByStartAndEnd" parameterType="map" resultMap="getMap">
+		SELECT * FROM T_BAS_MONTH_CALENDAR WHERE WORK_MONTH>=#{start,jdbcType=VARCHAR} AND WORK_MONTH<![CDATA[<=]]>#{end,jdbcType=VARCHAR}
+	</select>
+	<update id="updateDate" parameterType="cc.oit.bsmes.bas.model.MonthCalendar" >
+		UPDATE T_BAS_MONTH_CALENDAR H SET 
+		H.DAY1 = #{day1,jdbcType=VARCHAR},
+		H.DAY2 = #{day2,jdbcType=VARCHAR},
+		H.DAY3 = #{day3,jdbcType=VARCHAR},
+		H.DAY4 = #{day4,jdbcType=VARCHAR},
+		H.DAY5 = #{day5,jdbcType=VARCHAR},
+		H.DAY6 = #{day6,jdbcType=VARCHAR},
+		H.DAY7 = #{day7,jdbcType=VARCHAR},
+		H.DAY8 = #{day8,jdbcType=VARCHAR},
+		H.DAY9 = #{day9,jdbcType=VARCHAR},
+		H.DAY10 = #{day10,jdbcType=VARCHAR},
+		H.DAY11 = #{day11,jdbcType=VARCHAR},
+		H.DAY12 = #{day12,jdbcType=VARCHAR},
+		H.DAY13 = #{day13,jdbcType=VARCHAR},
+		H.DAY14 = #{day14,jdbcType=VARCHAR},
+		H.DAY15 = #{day15,jdbcType=VARCHAR},
+		H.DAY16 = #{day16,jdbcType=VARCHAR},
+		H.DAY17 = #{day17,jdbcType=VARCHAR},
+		H.DAY18 = #{day18,jdbcType=VARCHAR},
+		H.DAY19 = #{day19,jdbcType=VARCHAR},
+		H.DAY20 = #{day20,jdbcType=VARCHAR},
+		H.DAY21 = #{day21,jdbcType=VARCHAR},
+		H.DAY22 = #{day22,jdbcType=VARCHAR},
+		H.DAY23 = #{day23,jdbcType=VARCHAR},
+		H.DAY24 = #{day24,jdbcType=VARCHAR},
+		H.DAY25 = #{day25,jdbcType=VARCHAR},
+		H.DAY26 = #{day26,jdbcType=VARCHAR},
+		H.DAY27 = #{day27,jdbcType=VARCHAR},
+		H.DAY28 = #{day28,jdbcType=VARCHAR},
+		H.DAY29 = #{day29,jdbcType=VARCHAR},
+		H.DAY30 = #{day30,jdbcType=VARCHAR},
+		H.DAY31 = #{day31,jdbcType=VARCHAR}
+		WHERE H.WORK_MONTH=#{workMonth,jdbcType=VARCHAR}
+	</update>
+</mapper>

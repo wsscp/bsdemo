@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.InvOaUseLogDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.InvOaUseLog" id="getMap">
+		<association property="inventoryDetail" column="INVENTORY_DETAIL_ID" 
+			select="cc.oit.bsmes.inv.dao.InventoryDetailDAO.getById"></association>
+	</resultMap>
+	
+	<sql id="orderItemColumns"> 
+		   ID,MAT_CODE,INVENTORY_DETAIL_ID,MAT_BATCH_NO,USED_STOCK_LENGTH,STATUS,IS_PRODUCT,REF_ID
+	</sql>
+	
+	<select id="getByRefId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="orderItemColumns"/>
+		FROM T_PLA_INV_OA_USE_LOG
+		WHERE REF_ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+    <update id="cancelOffSet" flushCache="true">
+        CALL UPDATE_INV_OA_USE_LOG(#{param1},#{param2})
+    </update>
+    
+</mapper>

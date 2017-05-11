@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.CustomerOrderItemProDecOADAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.CustomerOrderItemProDecOA" id="getMap">
+	</resultMap>
+	
+	<sql id="queryColumns">
+	   o.ID,
+	   o.ORDER_ITEM_DEC_ID,
+	   o.CRAFTS_ID,
+	   o.PROCESS_PATH,
+	   o.PROCESS_ID,
+	   o.EQUIP_CODE,
+	   o.PROCESS_CODE,
+	   o.PROCESS_NAME,
+	   o.PLAN_WORK_HOURS,
+	   o.USE_STOCK,
+	   o.USED_STOCK_LENGTH,
+	   o.HALF_PRODUCT_CODE,
+	   o.EARLIEST_START_DATE,
+	   o.PRODUCT_CODE,
+	   o.CONTRACT_NO,
+	   o.EARLIEST_FINISH_DATE,
+	   o.LATEST_START_DATE,
+	   o.LATEST_FINISH_DATE,
+	   o.UN_FINISHED_LENGTH,
+	   o.FINISHED_LENGTH,
+	   o.IS_LOCKED,
+	   o.NEXT_ORDER_ID,
+	   o.STATUS,
+	   o.CREATE_USER_CODE,
+	   o.CREATE_TIME,
+	   o.MODIFY_USER_CODE,
+	   o.MODIFY_TIME,
+	   o.ORG_CODE, 
+	   o.OPTIONAL_EQUIP_CODE, 
+	   o.FIXED_EQUIP_CODE
+	</sql>
+	
+	<!-- 计划排成修改，因为父列变更为包含正在生产的，故此过滤正在生产的 -->
+	<select id="getByCusOrderItemDecIdForPlan" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="queryColumns"/>
+        FROM T_PLA_CU_ORDER_ITEM_PRO_DEC_OA o 
+        WHERE o.ORDER_ITEM_DEC_ID = #{id,jdbcType=VARCHAR} 
+          AND STATUS ='TO_DO'
+	</select>
+	
+	<!-- 删除PRO_DEC -->
+	<delete id="deleteByOrderItemId" parameterType="string">
+		CALL DELETE_ITEM_PRO_DEC(#{param1}, #{param2})
+	</delete>
+	
+	<!-- 根基ORDER_ITEM_ID查询PRO_DEC_OA是否已经分解，判断是否要分解 -->
+	<select id="countProDecOa" parameterType="string" resultType="int">
+      SELECT COUNT(*)
+		  FROM T_PLA_CU_ORDER_ITEM_PRO_DEC_OA O,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC  D,
+		       T_PLA_CUSTOMER_ORDER_ITEM      I
+		 WHERE O.ORDER_ITEM_DEC_ID = D.ID
+		   AND D.ORDER_ITEM_ID = I.ID
+		   AND I.ID = #{id, jdbcType = VARCHAR}
+	</select>
+	
+
+</mapper>

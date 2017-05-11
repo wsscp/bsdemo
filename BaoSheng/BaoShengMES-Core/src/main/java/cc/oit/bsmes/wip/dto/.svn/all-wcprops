@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/11303/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dto
+END
+WorkOrderSearchPageResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dto/WorkOrderSearchPageResult.java
+END
+EquipProcessTrace.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dto/EquipProcessTrace.java
+END
+SectionLength.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dto/SectionLength.java
+END
+MethodReturnDto.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8724/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dto/MethodReturnDto.java
+END
+MesClientEqipInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11303/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dto/MesClientEqipInfo.java
+END

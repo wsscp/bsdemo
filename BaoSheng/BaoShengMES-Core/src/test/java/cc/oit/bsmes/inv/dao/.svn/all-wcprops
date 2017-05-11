@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/inv/dao
+END
+InventoryDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/3226/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/inv/dao/InventoryDAOTest.java
+END
+InventoryLogDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/inv/dao/InventoryLogDAOTest.java
+END
+InventoryDetailDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/inv/dao/InventoryDetailDAOTest.java
+END
+MatDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5788/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/inv/dao/MatDAOTest.java
+END
+LocationTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/inv/dao/LocationTest.java
+END

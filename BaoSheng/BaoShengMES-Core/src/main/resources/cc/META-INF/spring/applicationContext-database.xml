@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	">
+
+    <!-- mes -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="configLocation" value="classpath:/cc/META-INF/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:/cc/META-INF/mybatis/oracle/**/*.xml" />
+        <property name="configurationProperties">
+            <props>
+                <prop key="dialect">oracle</prop>
+            </props>
+        </property>
+        <property name="typeAliasesPackage" ref="modelPackage" />
+        <property name="plugins" ref="plugins" />
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" ref="daoPackage"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+    
+    <!-- mes库的历史记录数据-->
+    <bean id="hisSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="hisDataSource" />
+        <property name="configLocation" value="classpath:/cc/META-INF/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:/cc/META-INF/mybatis/his/**/*.xml" />
+        <property name="typeAliasesPackage" ref="hisModelPackage" />
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" ref="hisDaoPackage"/>
+        <property name="sqlSessionFactoryBeanName" value="hisSqlSessionFactory" />
+    </bean>
+
+    <!-- ww下发-->
+    <bean id="wwIsSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="wwIsDataSource" />
+        <property name="configLocation" value="classpath:/cc/META-INF/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:/cc/META-INF/mybatis/wwIs/*.xml" />
+        <property name="typeAliasesPackage" value="cc.oit.bsmes.interfaceWWIs.model" />
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cc.oit.bsmes.interfaceWWIs.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="wwIsSqlSessionFactory" />
+    </bean>
+
+    <!-- ww监控异常处理 -->
+    <bean id="wwalmdbSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="wwalmdbDataSource" />
+        <property name="configLocation" value="classpath:/cc/META-INF/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:/cc/META-INF/mybatis/wwalmdb/*.xml" />
+        <property name="typeAliasesPackage" value="cc.oit.bsmes.wwalmdb.model" />
+    </bean>
+   	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cc.oit.bsmes.wwalmdb.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="wwalmdbSqlSessionFactory" />
+    </bean>
+    
+    <!-- ww采集-->
+    <bean id="wwAcSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="wwAcDataSource" />
+        <property name="configLocation" value="classpath:/cc/META-INF/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:/cc/META-INF/mybatis/wwAc/*.xml" />
+        <property name="typeAliasesPackage" value="cc.oit.bsmes.interfaceWWAc.model" />
+    </bean>
+   	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cc.oit.bsmes.interfaceWWAc.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="wwAcSqlSessionFactory" />
+    </bean>
+
+    <!-- PLM 数据接口 -->
+    <bean id="plmInterfaceSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="plmDataSource" />
+        <property name="configLocation" value="classpath:/cc/META-INF/mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:/cc/META-INF/mybatis/plmInterface/*.xml" />
+        <property name="typeAliasesPackage" value="cc.oit.bsmes.interfacePLM.model" />
+    </bean>
+   	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cc.oit.bsmes.interfacePLM.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="plmInterfaceSqlSessionFactory" />
+    </bean>
+
+</beans>

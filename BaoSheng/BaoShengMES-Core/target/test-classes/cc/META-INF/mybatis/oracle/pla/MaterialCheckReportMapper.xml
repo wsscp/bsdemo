@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.MaterialCheckReportDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.MaterialCheckReport" id="getMap">
+		<result property="id" column="ID"/>
+		<result property="manuName" column="MANU_NAME"/>
+		<result property="matName" column="MAT_NAME"/>
+		<result property="warehouseNo" column="WAREHOUSE_NO"/>
+		<result property="manuDate" column="MANU_DATE"/>
+		<result property="matColor" column="MAT_COLOR"/>
+		<result property="stockComment" column="STOCK_COMMENT"/>
+		<result property="checkMonth" column="CHECK_MONTH"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="spec" column="SPEC"/>
+		<result property="sectionName" column="SECTION_NAME"/>
+	</resultMap>
+
+	<insert id="importMaterialCheckReport" parameterType="cc.oit.bsmes.pla.model.MaterialCheckReport">
+		INSERT
+			INTO
+			    T_INV_STOCK_CHECK VALUES(#{id},#{manuName},#{matName},#{wareHouseNo},#{manuDate},#{matColor},#{stockComment},#{checkMonth},#{createTime},#{spec},#{sectionName})
+	</insert>
+	
+	<select id="getCheckDays" parameterType="string" resultType="cc.oit.bsmes.pla.model.MaterialCheckReport">
+		SELECT
+		   DISTINCT TO_CHAR(T.CHECK_DATE,'MM-dd') AS CHECKDAY
+		FROM
+		    T_INV_STOCK_CHECK_DT T,
+		    T_INV_STOCK_CHECK C
+		WHERE
+		    T.STOCK_CHECK_ID = C.ID
+		AND TO_CHAR(C.CHECK_MONTH,'yyyy-MM') = #{yearMonth,jdbcType=VARCHAR}
+		ORDER BY CHECKDAY
+	</select>
+	
+	<select id="getByCheckMonth" parameterType="string" resultType="cc.oit.bsmes.pla.model.MaterialCheckReport">
+		SELECT
+			K.ID,
+		    K.MANU_NAME,
+		    K.MAT_NAME,
+		    K.WAREHOUSE_NO,
+		    K.STOCK_COMMENT,
+		    K.SPEC,
+		    K.MANU_DATE
+		FROM
+		    T_INV_STOCK_CHECK K
+		WHERE
+		    TO_CHAR(K.CHECK_MONTH,'yyyy-MM') =  #{yearMonth,jdbcType=VARCHAR}
+		    <if test="warehouseNo != null and warehouseNo != ''">
+				AND K.WAREHOUSE_NO = #{warehouseNo ,jdbcType=VARCHAR}
+			</if>
+		    <if test="matName != null and matName != ''">
+				AND K.MAT_NAME = #{matName ,jdbcType=VARCHAR}
+			</if>
+		    <if test="sectionName != null and sectionName != ''">
+				AND K.SECTION_NAME = #{sectionName ,jdbcType=VARCHAR}
+			</if>
+	</select>
+	
+	<select id="countMaterialStockByMonth" parameterType="string" resultType="java.lang.Integer">
+		SELECT
+			COUNT(K.ID)
+		FROM
+		    T_INV_STOCK_CHECK K
+		WHERE
+		    TO_CHAR(K.CHECK_MONTH,'yyyy-MM') =  #{yearMonth,jdbcType=VARCHAR}
+		    <if test="warehouseNo != null and warehouseNo != ''">
+				AND K.WAREHOUSE_NO = #{warehouseNo ,jdbcType=VARCHAR}
+			</if>
+		    <if test="matName != null and matName != ''">
+				AND K.MAT_NAME = #{matName ,jdbcType=VARCHAR}
+			</if>
+		    <if test="sectionName != null and sectionName != ''">
+				AND K.SECTION_NAME = #{sectionName ,jdbcType=VARCHAR}
+			</if>
+	</select>
+	
+	<select id="getCheckMonth" resultType="string">
+		SELECT
+			DISTINCT TO_CHAR(CHECK_MONTH,'yyyy-MM')
+		FROM
+		    T_INV_STOCK_CHECK
+	</select>
+	
+	<select id="getCheckSectionByMonth" parameterType="string" resultType="string">
+		SELECT
+		    DISTINCT SECTION_NAME 
+		FROM
+		    T_INV_STOCK_CHECK
+		WHERE TO_CHAR(CHECK_MONTH,'yyyy-MM')=#{yearMonth ,jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EquipEnergyMonthMonitorDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.EquipEnergyMonthMonitor" id="getMap">
+	</resultMap>
+	
+	<select id="getEquipEnergyMonthLoad" parameterType="map" resultType="map">
+		SELECT DISTINCT EQUIP_NAME,SUMTO,
+		TO_CHAR(CREATE_TIME,'yyyy-MM') AS ENERGY_MODIFY_TIME,
+		PI,PE,FL,VA 
+		FROM T_BAS_MONTH_EQUIPENERGY,(select max(MODIFY_TIME) AS crTime FROM T_BAS_MONTH_EQUIPENERGY group by EQUIP_NAME) R
+		WHERE  MODIFY_TIME = R.crTime
+	</select>
+	
+	<update id="updateMonthPowerData">
+		UPDATE T_BAS_MONTH_EQUIPENERGY SET 
+		MAX_POWER=(CASE WHEN MAX_POWER<![CDATA[<]]>#{maxPower, jdbcType=VARCHAR} OR MAX_POWER IS NULL THEN #{maxPower, jdbcType=VARCHAR} ELSE MAX_POWER END),
+		MIN_POWER=(CASE WHEN MIN_POWER<![CDATA[<]]>#{minPower, jdbcType=VARCHAR} OR MIN_POWER IS NULL THEN #{minPower, jdbcType=VARCHAR} ELSE MIN_POWER END),
+		AVG_POWER=(CASE WHEN AVG_POWER<![CDATA[<]]>#{avgPower, jdbcType=VARCHAR} OR AVG_POWER IS NULL THEN #{avgPower, jdbcType=VARCHAR} ELSE AVG_POWER END),
+		DIFR=(CASE WHEN DIFR<![CDATA[<]]>#{difr, jdbcType=VARCHAR} OR DIFR IS NULL THEN #{difr, jdbcType=VARCHAR} ELSE DIFR END),
+		AVGR=(CASE WHEN AVGR<![CDATA[<]]>#{avgr, jdbcType=VARCHAR} OR AVGR IS NULL THEN #{avgr, jdbcType=VARCHAR} ELSE AVGR END)
+		WHERE EQUIP_NAME=#{equipName, jdbcType=VARCHAR} 
+		AND CREATE_TIME=TO_DATE(to_char(#{createTime}, 'yyyy-MM'), 'yyyy-MM')
+	</update>
+	
+	<select id="getEnergyMonthQuantity" parameterType="map" resultType="map">
+		SELECT DISTINCT EQUIP_NAME,
+		TO_CHAR(CREATE_TIME,'yyyy-MM') AS ENERGY_MODIFY_TIME,
+		MAX_POWER,MIN_POWER,AVG_POWER,DIFR,AVGR
+		FROM T_BAS_MONTH_EQUIPENERGY
+		WHERE TO_DATE(TO_CHAR(MODIFY_TIME,'yyyy-MM-dd'),'yyyy-MM-dd') = TO_DATE(#{createDate,jdbcType=VARCHAR},'yyyy-MM-dd')
+		AND MAX_POWER IS NOT NULL
+	</select>
+	
+</mapper>

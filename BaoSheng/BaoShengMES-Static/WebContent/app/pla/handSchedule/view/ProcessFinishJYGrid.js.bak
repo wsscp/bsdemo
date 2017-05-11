@@ -1,0 +1,48 @@
+Ext.define('bsmes.view.ProcessFinishJYGrid', {
+			extend : 'Oit.app.view.Grid',
+			alias : 'widget.processFinishJYGrid',
+			hasPaging : false,
+			columnLines : true,
+			defaultEditingPlugin : false,
+			selModel : {
+				mode : "SINGLE" // "SINGLE"/"SIMPLE"/"MULTI"
+			},
+			/*
+			 * store : Ext.create('Ext.data.Store', { fields : [ 'color', {
+			 * name:'taskLength', type:'double' }, 'finishedLength',
+			 * 'finishedPercent', 'unFinishedLength'] }),
+			 */
+			columns : [{
+						text : '颜色',
+						dataIndex : 'color',
+						flex : 0.5,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '任务长度',
+						dataIndex : 'taskLength',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '已完成长度',
+						dataIndex : 'finishedLength',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '已完成百分比',
+						dataIndex : 'finishedPercent',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '未完成长度',
+						dataIndex : 'unFinishedLength',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}]
+//					,
+//			tbar : []
+		});

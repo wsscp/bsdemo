@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	">
+
+    <!-- mes -->
+    <bean id="dataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>DATASOURCE</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@172.168.0.100:1521:bsmes</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>150</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+        <property name="reapTimeout"><value>60</value></property>
+        <property name="maxLifetime"><value>60</value></property>
+        <property name="maxIdleTime"><value>60</value></property>
+        <property name="testQuery"><value>select 1 from dual</value></property>
+    </bean>
+    
+    <!-- mes库的历史记录数据源 -->
+    <bean id="hisDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>hisDataSource</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@172.168.0.100:1521:bsmeshistory</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>100</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+
+    <!-- ww监控异常处理 -->
+    <bean id="wwalmdbDataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>WWALMDBDATASOURCE</value></property>
+        <property name="url"><value>jdbc:jtds:sqlserver://172.168.0.84:1433/interface</value></property>
+        <property name="driverClassName"><value>net.sourceforge.jtds.jdbc.Driver</value></property>
+        <property name="maxPoolSize"><value>50</value></property>
+        <property name="user"><value>interface</value></property>
+        <property name="password"><value>interface</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+
+    <!-- ww采集-->
+    <bean id="wwAcDataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>WWACDATASOURCE</value></property>
+        <property name="url"><value>jdbc:jtds:sqlserver://172.168.0.85:1433/Runtime</value></property>
+        <property name="driverClassName"><value>net.sourceforge.jtds.jdbc.Driver</value></property>
+        <property name="maxPoolSize"><value>50</value></property>
+        <property name="user"><value>sa</value></property>
+        <property name="password"><value>SuperMaster@</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+
+    <!-- plm -->
+    <bean id="plmDataSource" class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>PLMDATASOURCE</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@172.168.0.105:1521/orcl</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>50</value></property>
+        <property name="user"><value>BS</value></property>
+        <property name="password"><value>BS</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+
+    <!-- ww下发-->
+    <bean id="wwIsDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>WWISDATASOURCE</value></property>
+        <property name="url"><value>jdbc:jtds:sqlserver://172.168.0.85:1433/Runtime</value></property>
+        <property name="driverClassName"><value>net.sourceforge.jtds.jdbc.Driver</value></property>
+        <property name="maxPoolSize"><value>50</value></property>
+        <property name="user"><value>sa</value></property>
+        <property name="password"><value>SuperMaster@</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+    
+</beans>

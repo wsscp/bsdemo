@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.history.wip.dao.HisProductTraceDAO">
+	
+	<!-- 获取订单的所有状态不是channel的生产单信息 -->
+	<select id="getWorkOrderByCusOrderId" parameterType="string" resultType="map">
+		SELECT WO.WORK_ORDER_NO, WO.PROCESS_NAME,WO.IS_OLD_LINE,WO.IS_SKIPED
+		  FROM T_WIP_WORK_ORDER WO, T_WIP_WO_CUSORDER_RELATION CR
+		 WHERE WO.ID = CR.WORK_ORDER_ID
+		   AND WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		   AND CR.CUS_ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR}
+		 ORDER BY WO.CREATE_TIME ASC
+	</select>
+	
+	<!-- 获取生产单所有的报工信息：包括报工设备、报工人、报工长度 
+	 || '-' || EQ.NAME
+	-->
+	<select id="getReportByCusOrderId" parameterType="string" resultType="map">
+		SELECT R.ID,
+		       WO.WORK_ORDER_NO,
+		       WO.PROCESS_NAME,
+		       R.EQUIP_CODE,
+		       R.COIL_NUM,
+		       EQ.EQUIP_ALIAS ||'[' || EQ.CODE || ']' AS EQUIP_NAME,
+		       R.REPORT_LENGTH,
+		       TO_CHAR(R.CREATE_TIME, 'MM-DD HH24:MI') AS CREATE_TIME,
+		       E.NAME AS USER_NAME
+		  FROM T_WIP_WORK_ORDER           WO,
+		       T_WIP_REPORT               R,
+		       T_WIP_REPORT_USER          RU,
+		       T_WIP_ONOFF_RECORD         OO,
+		       T_BAS_EMPLOYEE             E,
+		       T_WIP_WO_CUSORDER_RELATION CR,
+		       T_FAC_EQIP_INFO            EQ
+		 WHERE WO.WORK_ORDER_NO = R.WORK_ORDER_NO
+		   AND R.ID = RU.REPORT_ID
+		   AND RU.ONOFF_ID = OO.ID
+		   AND OO.USER_CODE = E.USER_CODE
+		   AND WO.ID = CR.WORK_ORDER_ID
+		   AND R.EQUIP_CODE = EQ.CODE
+		   AND WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		   AND CR.CUS_ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR}
+		 ORDER BY R.COIL_NUM
+		<!--
+		
+		 WMSYS.WM_CONCAT(E.NAME) AS USER_NAME
+		 
+		 GROUP BY R.ID,
+		          WO.WORK_ORDER_NO,
+		          WO.PROCESS_NAME,
+		          R.EQUIP_CODE,
+		          R.REPORT_LENGTH
+		 -->
+	</select>
+	
+	<!-- 获取生产单所有的质检信息 -->
+	<select id="getQCByCusOrderId" parameterType="string" resultType="map">
+		SELECT QCV.WORK_ORDER_NO,
+		       QCV.PROCESS_NAME,
+		       QCV.CHECK_ITEM_NAME,
+		       QCV.COIL_NUM,
+		       QCV.TYPE,
+		       QCV.QC_RESULT,
+		       QCV.EQIP_CODE,
+		       QCV.EQUIP_NAME
+		  FROM T_WIP_WO_CUSORDER_RELATION CR,
+		       T_PRO_PROCESS_QC_VALUE     QCV
+		 WHERE CR.WORK_ORDER_NO = QCV.WORK_ORDER_NO
+		   AND CR.CUS_ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 获取设备采集映射参数信息 -->
+	<select id="getMesWWMapByCusOrderId" parameterType="string" resultType="map">
+		SELECT R.PARM_NAME  AS RECEIPT_NAME,
+		       R.PARM_CODE  AS RECEIPT_CODE,
+		       R.EQUIP_CODE
+		  FROM T_INT_EQUIP_MES_WW_MAPPING R
+		 WHERE R.NEED_DA = 1
+		   AND R.EQUIP_CODE IN
+		       (SELECT DISTINCT R.EQUIP_CODE || '_EQUIP'
+		          FROM T_WIP_WORK_ORDER           WO,
+		               T_WIP_REPORT               R,
+		               T_WIP_WO_CUSORDER_RELATION CR
+		         WHERE WO.WORK_ORDER_NO = R.WORK_ORDER_NO
+		           AND WO.ID = CR.WORK_ORDER_ID
+		           AND WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		           AND CR.CUS_ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR})
+		 ORDER BY NLSSORT(R.PARM_NAME, 'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<!-- 获取生产单该设备上的加工时间段 -->
+	<select id="getOrderProcessTime" parameterType="string" resultType="map">
+		SELECT L.START_TIME, L.END_TIME
+		  FROM T_WIP_WORK_ORDER_OPERATE_LOG L
+		 WHERE L.WORK_ORDER_NO = #{param1}
+		   AND L.EQUIP_CODE = #{param2}
+		   AND L.STATUS = 'IN_PROGRESS'
+	</select>
+	
+</mapper>

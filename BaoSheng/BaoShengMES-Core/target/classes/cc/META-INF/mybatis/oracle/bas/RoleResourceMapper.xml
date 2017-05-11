@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.RoleResourceDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.RoleResource" id="getMap">
+	</resultMap>
+	
+	<delete id="deleteByResourceId" parameterType="string" flushCache="true">
+		DELETE FROM T_BAS_ROLE_RESOURCE T WHERE T.RESOURCE_ID = #{resourceId,jdbcType=VARCHAR}
+	</delete>
+	<delete id="deleteByRoleId" parameterType="string" flushCache="true">
+		DELETE FROM T_BAS_ROLE_RESOURCE T WHERE T.ROLE_ID = #{roleId,jdbcType=VARCHAR}
+	</delete>
+</mapper>

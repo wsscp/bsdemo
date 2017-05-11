@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.MaterialRequirementPlanDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.MaterialRequirementPlan" id="getMap">
+	</resultMap>
+
+	<select id="find" parameterType="cc.oit.bsmes.pla.model.MaterialRequirementPlan"
+		resultMap="getMap">
+		SELECT 
+			MAX(S.WORK_ORDER_NO) AS WORK_ORDER_NO,
+			R.MAT_CODE,
+			(SELECT NAME FROM T_PRO_PROCESS_INFO WHERE CODE=R.PROCESS_CODE) AS PROCESS_NAME,
+			R.PROCESS_CODE,
+			R.PLAN_DATE ,
+			S.EQUIP_NAME AS EQUIP_CODE,
+			(SUM(R.QUANTITY) || MAX(R.UNIT)) AS WEIGHT,
+       		SUM(R.UN_FINISHED_LENGTH) AS UN_FINISHED_LENGTH,
+            MAX(MAT.MAT_NAME) AS MAT_NAME,
+            MAX(MAT.COLOR) AS COLOR ,
+            (SELECT P.PROP_TARGET_VALUE FROM T_INV_MAT_PROP P, T_INV_TEMPLET_DETAIL D WHERE P.MAT_ID = MAT.ID
+			   AND P.TEMPLET_DETAIL_ID = D.ID AND D.PROP_NAME = '尺寸' AND ROWNUM <![CDATA[ <= ]]> 1) AS MAT_SIZE,
+            (SELECT P.PROP_TARGET_VALUE FROM  T_INV_MAT_PROP P, T_INV_TEMPLET_DETAIL D WHERE P.MAT_ID = MAT.ID
+			   AND P.TEMPLET_DETAIL_ID = D.ID AND D.PROP_NAME = '规格' AND ROWNUM <![CDATA[ <= ]]> 1) AS MAT_SPEC,
+            MAX(R.STATUS) AS STATUS
+		FROM T_PLA_MRP R, T_WIP_WORK_ORDER S, T_INV_MAT MAT
+		WHERE R.WORK_ORDER_ID=S.ID
+		AND MAT.MAT_CODE=R.MAT_CODE
+		AND MAT.MAT_TYPE = 'MATERIALS'
+		 <include refid="getParameter"/>
+		GROUP BY R.PLAN_DATE,R.MAT_CODE,S.EQUIP_NAME,R.PROCESS_CODE,R.UNIT,MAT.ID
+	</select>
+	<select id="count" parameterType="cc.oit.bsmes.pla.model.MaterialRequirementPlan"
+		resultType="int">
+		SELECT COUNT(1)
+		FROM (SELECT r.PROCESS_CODE
+		FROM T_PLA_MRP r, T_WIP_WORK_ORDER s, T_INV_MAT mat
+		WHERE r.WORK_ORDER_ID=s.ID
+		AND mat.MAT_CODE=r.MAT_CODE
+		AND MAT.MAT_TYPE = 'MATERIALS'
+		 <include refid="getParameter"/>
+		GROUP BY r.PLAN_DATE,r.MAT_CODE,s.EQUIP_CODE,r.PROCESS_CODE,r.UNIT)
+	</select>
+	
+	<select id="findSum" parameterType="String"
+		resultMap="getMap">
+		SELECT t3.MAT_NAME AS MAT_NAME,max(t3.COLOR) AS COLOR,sum(t2.QUANTITY) || max(t2.UNIT) AS WEIGHT
+        FROM T_WIP_WORK_ORDER T1, T_PLA_MRP T2,T_INV_MAT t3
+        WHERE T1.ID = T2.WORK_ORDER_ID
+        AND TO_CHAR(t2.PLAN_DATE,'yyyy-mm-dd')=#{planDate,jdbcType=VARCHAR}
+        AND t2.MAT_CODE = t3.MAT_CODE
+        AND t3.MAT_TYPE = 'MATERIALS'
+        GROUP BY t3.MAT_NAME
+	</select>
+	<select id="countSum" parameterType="String"
+		resultType="int">
+		SELECT COUNT(1)
+		FROM (SELECT DISTINCT t3.mat_name
+  		FROM T_WIP_WORK_ORDER T1, T_PLA_MRP T2,T_INV_MAT t3
+ 		WHERE T1.ID = T2.WORK_ORDER_ID
+   		AND TO_CHAR(t2.PLAN_DATE,'yyyy-mm-dd')=#{planDate,jdbcType=VARCHAR}
+  		AND t2.mat_code = t3.mat_code
+   		AND t3.MAT_TYPE = 'MATERIALS')
+	</select>
+	
+	<select id="getMaterialInfo" resultMap="getMap">
+	    SELECT 
+		    T1.MAT_CODE,
+		    MAX(T2.MAT_NAME) AS MAT_NAME,
+		    SUM(T1.QUANTITY*(T1.UN_FINISHED_LENGTH/1000)) AS PLAN_AMOUNT,
+		    NVL(SUM(T1.DEMAND_QUANTITY),0) AS DEMAND_QUANTITY
+		FROM
+		    T_PLA_MRP T1,
+		    T_INV_MAT T2
+		WHERE
+		    EXISTS
+		    (
+		        SELECT
+		            1
+		        FROM
+		            T_WIP_WORK_ORDER T2
+		        WHERE
+		            T2.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+		        AND T2.ID = T1.WORK_ORDER_ID
+		        AND T1.MAT_CODE IN 
+		        <foreach collection="matCodeArr" item="item"  open="(" separator="," close=")">  
+				    	#{item, jdbcType=VARCHAR}
+				</foreach>
+		         )
+		         AND T1.MAT_CODE = T2.MAT_CODE
+		GROUP BY T1.MAT_CODE
+	</select>
+	
+	<insert id="insertMoreMaterial" parameterType="Map">
+	    INSERT INTO T_INV_BORROW_MAT
+	    (
+	    ID,
+	    WORK_ORDER_NO,
+	    USER_CODE,
+	    MAT_CODE,
+	    EQUIP_CODE,
+	    MAT_QUANTITY,
+	    CREATE_TIME,
+	    STATUS,
+	    DEMAND_QUANTITY,
+	    MODIFY_TIME,
+	    CREATE_USER_CODE,
+	    MODIFY_USER_CODE
+	    )
+	    VALUES
+	    (
+	    GET_UUID(),
+	    #{workOrderNo,jdbcType=VARCHAR},
+	    #{userCode,jdbcType=VARCHAR},
+	    #{moreLengthCodeArr,jdbcType=VARCHAR},
+	    #{equipCode,jdbcType=VARCHAR},
+	    #{planAmountArr,jdbcType=VARCHAR},
+	    SYSDATE,
+	    'MAT_BORROW',
+	    #{moreLengthArr,jdbcType=VARCHAR},
+	    SYSDATE,
+	    #{sysuserCode,jdbcType=VARCHAR},
+	    #{sysuserCode,jdbcType=VARCHAR}
+	    )
+	</insert>
+	
+	<select id="getworkorderNo" parameterType="map" resultMap="getMap">
+	SELECT * FROM
+        (SELECT DISTINCT
+            WO.WORK_ORDER_NO,
+            WO.CREATE_TIME
+            FROM T_PLA_MRP TPM, T_WIP_WORK_ORDER WO, T_INV_MAT MAT
+            WHERE WO.ID = TPM.WORK_ORDER_ID
+            AND MAT.MAT_CODE=TPM.MAT_CODE
+			AND MAT.MAT_TYPE = 'MATERIALS'
+            AND WO.WORK_ORDER_NO like #{workOrderNo,jdbcType=VARCHAR}
+            ORDER BY CREATE_TIME DESC)
+	WHERE ROWNUM <![CDATA[ <= ]]> 20
+	</select>
+	<select id="findByOrgCode" parameterType="string" resultMap="getMap">
+		SELECT 
+		    DISTINCT P.NAME AS PROCESS_NAME, R.PROCESS_CODE 
+		FROM 
+		    T_PLA_MRP R, T_PRO_PROCESS_INFO P 
+		WHERE 
+		    R.PROCESS_CODE = P.CODE
+		    AND R.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT R.ID,R.MAT_CODE,R.QUANTITY, R.UNIT, mat.MAT_NAME
+		FROM T_PLA_MRP R, T_INV_MAT mat
+		WHERE 
+		mat.MAT_CODE=R.MAT_CODE AND
+		EXISTS ( SELECT 1 FROM T_WIP_WORK_ORDER T WHERE R.WORK_ORDER_ID =
+		T.ID AND T.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR})
+	</select>
+	<sql id="getParameter">
+		<if test="orgCode !=null and orgCode !=''">
+			AND r.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="planDate!=null and planDate!=''">
+			AND TO_CHAR(r.PLAN_DATE,'yyyy-mm-dd')=TO_CHAR(#{planDate,jdbcType=DATE},'yyyy-mm-dd')
+		</if>
+		<if test="processCode!=null and processCode!='' ">
+			AND r.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+		</if>
+		<if test="equipCode !=null and equipCode !=''">
+			AND s.EQUIP_NAME LIKE '%' || #{equipCode,jdbcType=VARCHAR} || '%'
+		</if>
+		<if test="matName !=null and matName !=''">
+			AND mat.MAT_NAME=#{matName,jdbcType=VARCHAR}
+		</if>
+		<if test="statusCode !=null and statusCode !=''">
+			AND r.STATUS=#{statusCode,jdbcType=VARCHAR}
+		</if>
+		<if test="workOrderNo !=null and workOrderNo !=''">
+			AND S.WORK_ORDER_NO=#{workOrderNo,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 重新计算更新物料需求计划 -->
+	<update id="updateForCalculatorOA" parameterType="cc.oit.bsmes.pla.model.MaterialRequirementPlan">
+        UPDATE 
+          T_PLA_MRP R 
+        SET 
+          R.PLAN_DATE=#{planDate, jdbcType=DATE}
+        WHERE 
+	      R.WORK_ORDER_ID = #{workOrderId, jdbcType=VARCHAR}
+	      AND R.PROCESS_CODE = #{processCode, jdbcType=VARCHAR}
+	      AND R.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getByWorkOrderNoId" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_PLA_MRP MRP WHERE MRP.WORK_ORDER_ID = #{param1}
+	</select>
+
+	<!-- 终端查询设备的物料需求 
+	WITH MAT_CONTRACT AS
+		 (SELECT MAT.MAT_NAME,
+		         R.Color,
+		         (WMSYS.WM_CONCAT(DISTINCT SUBSTR(REGEXP_REPLACE(OT.CONTRACT_NO,
+		                                                '[[:alpha:]]',
+		                                                '',
+		                                                1,
+		                                                0),
+		                                 LENGTH(REGEXP_REPLACE(OT.CONTRACT_NO,
+		                                                       '[[:alpha:]]',
+		                                                       '',
+		                                                       1,
+		                                                       0)) - 4,
+		                                 LENGTH(REGEXP_REPLACE(OT.CONTRACT_NO,
+		                                                       '[[:alpha:]]',
+		                                                       '',
+		                                                       1,
+		                                                       0))))) AS CONTRACT_NO
+		    FROM T_PLA_MRP               R,
+		         T_INV_MAT               MAT,
+		         T_WIP_WORK_ORDER        S,
+		         T_PLA_ORDER_TASK        OT,
+		         T_WIP_WO_EQUIP_RELATION RE
+		   WHERE R.WORK_ORDER_ID = S.ID
+		     AND MAT.MAT_CODE = R.MAT_CODE
+		     AND OT.WORK_ORDER_NO = S.WORK_ORDER_NO
+		     AND RE.WORK_ORDER_ID = R.WORK_ORDER_ID
+		     AND S.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		     AND RE.EQUIP_CODE = #{param1, jdbcType=VARCHAR}
+		   GROUP BY MAT.MAT_NAME, R.Color)
+		SELECT *
+		  FROM (SELECT T1.*, T2.CONTRACT_NO
+		          FROM (SELECT WMSYS.WM_CONCAT(R.MAT_CODE) AS MAT_CODE,
+		                       SUM(R.UN_FINISHED_LENGTH * R.QUANTITY) AS UN_FINISHED_LENGTH,
+		                       MAX(IN_ATTR_DESC) AS IN_ATTR_DESC,
+		                       MAX(R.UNIT) AS UNIT,
+		                       MAT.MAT_NAME AS MAT_NAME,
+		                       WMSYS.WM_CONCAT(S.WORK_ORDER_NO) AS WORK_ORDER_NO,
+		                       R.COLOR
+		                  FROM T_PLA_MRP               R,
+		                       T_WIP_WORK_ORDER        S,
+		                       T_INV_MAT               MAT,
+		                       T_WIP_WO_EQUIP_RELATION RE
+		                 WHERE R.WORK_ORDER_ID = S.ID
+		                   AND MAT.MAT_CODE = R.MAT_CODE
+		                   AND RE.WORK_ORDER_ID = R.WORK_ORDER_ID
+		                   AND S.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		                   AND RE.EQUIP_CODE = #{param1, jdbcType=VARCHAR}
+		                 GROUP BY MAT.MAT_NAME, R.COLOR) T1,
+		               MAT_CONTRACT T2
+		         WHERE T1.MAT_NAME = T2.MAT_NAME
+		           AND T1.COLOR = T2.COLOR
+		           AND T1.COLOR IS NOT NULL
+		           AND T2.COLOR IS NOT NULL
+		        UNION ALL
+		        SELECT T1.*, T2.CONTRACT_NO
+		          FROM (SELECT WMSYS.WM_CONCAT(R.MAT_CODE) AS MAT_CODE,
+		                       SUM(R.UN_FINISHED_LENGTH * R.QUANTITY) AS UN_FINISHED_LENGTH,
+		                       MAX(IN_ATTR_DESC) AS IN_ATTR_DESC,
+		                       MAX(R.UNIT) AS UNIT,
+		                       MAT.MAT_NAME AS MAT_NAME,
+		                       WMSYS.WM_CONCAT(S.WORK_ORDER_NO) AS WORK_ORDER_NO,
+		                       R.COLOR
+		                  FROM T_PLA_MRP               R,
+		                       T_WIP_WORK_ORDER        S,
+		                       T_INV_MAT               MAT,
+		                       T_WIP_WO_EQUIP_RELATION RE
+		                 WHERE R.WORK_ORDER_ID = S.ID
+		                   AND MAT.MAT_CODE = R.MAT_CODE
+		                   AND RE.WORK_ORDER_ID = R.WORK_ORDER_ID
+		                   AND S.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		                   AND RE.EQUIP_CODE = #{param1, jdbcType=VARCHAR}
+		                 GROUP BY MAT.MAT_NAME, R.COLOR) T1,
+		               MAT_CONTRACT T2
+		         WHERE T1.MAT_NAME = T2.MAT_NAME
+		           AND T1.COLOR IS NULL
+		           AND T2.COLOR IS NULL) T
+		 ORDER BY T.MAT_NAME, T.COLOR
+	
+	
+	-->
+	<select id="getMapRByEquipCode" parameterType="string" resultMap="getMap">
+		<![CDATA[
+		WITH MAT_CONTRACT AS
+		 (SELECT MAT.MAT_NAME,
+		         R.Color,
+		         (WMSYS.WM_CONCAT(DISTINCT SUBSTR(REGEXP_REPLACE(OT.CONTRACT_NO,
+		                                                '[[:alpha:]]',
+		                                                '',
+		                                                1,
+		                                                0),
+		                                 LENGTH(REGEXP_REPLACE(OT.CONTRACT_NO,
+		                                                       '[[:alpha:]]',
+		                                                       '',
+		                                                       1,
+		                                                       0)) - 4,
+		                                 LENGTH(REGEXP_REPLACE(OT.CONTRACT_NO,
+		                                                       '[[:alpha:]]',
+		                                                       '',
+		                                                       1,
+		                                                       0))))) AS CONTRACT_NO
+		    FROM T_PLA_MRP               R,
+		         T_INV_MAT_WIP               MAT,
+		         T_WIP_WORK_ORDER        S,
+		         T_PLA_ORDER_TASK        OT,
+		         T_WIP_WO_EQUIP_RELATION RE
+		   WHERE R.WORK_ORDER_ID = S.ID
+		     AND MAT.MAT_CODE = R.MAT_CODE
+		     AND OT.WORK_ORDER_NO = S.WORK_ORDER_NO
+		     AND RE.WORK_ORDER_ID = R.WORK_ORDER_ID
+		     AND S.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		     AND MAT.PROCESS_IN_OUT_WIP_ID IN(SELECT DISTINCT PIO.ID FROM T_PRO_PROCESS_IN_OUT_WIP PIO WHERE PIO.PRODUCT_PROCESS_ID = OT.PROCESS_ID)
+		     AND RE.EQUIP_CODE = #{param1, jdbcType=VARCHAR}
+		   GROUP BY MAT.MAT_NAME, R.Color)
+		SELECT *
+		  FROM (SELECT T1.*, T2.CONTRACT_NO
+		          FROM (SELECT '' AS MAT_CODE,
+		                       SUM(R.UN_FINISHED_LENGTH * R.QUANTITY) AS UN_FINISHED_LENGTH,
+		                       MAX(IN_ATTR_DESC) AS IN_ATTR_DESC,
+		                       MAX(R.UNIT) AS UNIT,
+		                       MAT.MAT_NAME AS MAT_NAME,
+		                       '' AS WORK_ORDER_NO,
+		                       R.COLOR
+		                  FROM T_PLA_MRP               R,
+		                       T_WIP_WORK_ORDER        S,
+		                       T_INV_MAT_WIP               MAT,
+		                       T_WIP_WO_EQUIP_RELATION RE
+		                 WHERE R.WORK_ORDER_ID = S.ID
+		                   AND MAT.MAT_CODE = R.MAT_CODE
+		                   AND RE.WORK_ORDER_ID = R.WORK_ORDER_ID
+		                   AND MAT.PROCESS_IN_OUT_WIP_ID IN(
+		                   SELECT DISTINCT PIO.ID FROM T_PRO_PROCESS_IN_OUT_WIP PIO WHERE EXISTS(
+		                   SELECT 1 FROM T_PLA_ORDER_TASK POT WHERE POT.PROCESS_ID = PIO.PRODUCT_PROCESS_ID
+		                   AND POT.WORK_ORDER_NO = S.WORK_ORDER_NO
+		                   )
+		                   )
+		                   AND S.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		                   AND RE.EQUIP_CODE = #{param1, jdbcType=VARCHAR}
+		                 GROUP BY MAT.MAT_NAME, R.COLOR) T1,
+		               MAT_CONTRACT T2
+		         WHERE T1.MAT_NAME = T2.MAT_NAME
+		           AND T1.COLOR = T2.COLOR
+		           AND T1.COLOR IS NOT NULL
+		           AND T2.COLOR IS NOT NULL
+		        UNION ALL
+		        SELECT T1.*, T2.CONTRACT_NO
+		          FROM (SELECT '' AS MAT_CODE,
+		                       SUM(R.UN_FINISHED_LENGTH * R.QUANTITY) AS UN_FINISHED_LENGTH,
+		                       MAX(IN_ATTR_DESC) AS IN_ATTR_DESC,
+		                       MAX(R.UNIT) AS UNIT,
+		                       MAT.MAT_NAME AS MAT_NAME,
+		                      '' AS WORK_ORDER_NO,
+		                       R.COLOR
+		                  FROM T_PLA_MRP               R,
+		                       T_WIP_WORK_ORDER        S,
+		                       T_INV_MAT_WIP               MAT,
+		                       T_WIP_WO_EQUIP_RELATION RE
+		                 WHERE R.WORK_ORDER_ID = S.ID
+		                   AND MAT.MAT_CODE = R.MAT_CODE
+		                   AND RE.WORK_ORDER_ID = R.WORK_ORDER_ID
+		                   AND MAT.PROCESS_IN_OUT_WIP_ID IN(
+		                   SELECT DISTINCT PIO.ID FROM T_PRO_PROCESS_IN_OUT_WIP PIO WHERE EXISTS(
+		                   SELECT 1 FROM T_PLA_ORDER_TASK POT WHERE POT.PROCESS_ID = PIO.PRODUCT_PROCESS_ID
+		                   AND POT.WORK_ORDER_NO = S.WORK_ORDER_NO
+		                   )
+		                   )
+		                   AND S.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		                   AND RE.EQUIP_CODE = #{param1, jdbcType=VARCHAR}
+		                 GROUP BY MAT.MAT_NAME, R.COLOR) T1,
+		               MAT_CONTRACT T2
+		         WHERE T1.MAT_NAME = T2.MAT_NAME
+		           AND T1.COLOR IS NULL
+		           AND T2.COLOR IS NULL) T
+		 ORDER BY T.MAT_NAME, T.COLOR
+		]]>
+	</select>
+	
+	<!-- 根据生产单ID查看生产单明细 - 关于物料的 -->
+	<select id="showWorkOrderDetailMat" parameterType="string" resultType="map">
+		WITH MAT_INVENTORY_TEMP AS
+		 (SELECT SUM(I.QUANTITY) AS QUANTITY,
+		         SUM(I.LOCKED_QUANTITY) AS LOCKED_QUANTITY,
+		         MAX(I.UNIT) AS UNIT,
+		         I.MATERIAL_CODE AS MATERIAL_CODE,
+		         WMSYS.WM_CONCAT(W.WAREHOUSE_NAME || '-' || L.LOCATION_NAME || '-' ||
+		                         L.LOCATION_X || '-' || L.LOCATION_Y || '-' ||
+		                         L.LOCATION_Z || ':' || I.QUANTITY || ' ' || I.UNIT) AS DESCRIPTION
+		    FROM T_INV_INVENTORY I, T_INV_MAT M, T_INV_LOCATION L, T_INV_WAREHOUSE W
+		   WHERE I.MATERIAL_CODE = M.MAT_CODE
+		     AND I.LOCATION_ID = L.ID
+		     AND I.WAREHOUSE_ID = W.ID
+		     AND M.MAT_TYPE = 'MATERIALS'
+		     AND I.BAR_CODE IS NULL
+		   GROUP BY I.MATERIAL_CODE
+		  UNION ALL
+		  SELECT SUM(I.QUANTITY) AS QUANTITY,
+		         SUM(I.LOCKED_QUANTITY) AS LOCKED_QUANTITY,
+		         MAX(I.UNIT) AS UNIT,
+		         I.MATERIAL_CODE AS MATERIAL_CODE,
+		         WMSYS.WM_CONCAT(W.WAREHOUSE_NAME || '-' || L.LOCATION_NAME || '-' ||
+		                         L.LOCATION_X || '-' || L.LOCATION_Y || '-' ||
+		                         L.LOCATION_Z || ':' || I.QUANTITY || ' ' || I.UNIT) AS DESCRIPTION
+		    FROM T_INV_INVENTORY I,
+		         T_INV_MAT       M,
+		         T_INV_LOCATION  L,
+		         T_INV_WAREHOUSE W,
+		         T_WIP_REPORT    R,
+                 T_WIP_WORK_ORDER WO
+		   WHERE i.MATERIAL_CODE = m.MAT_CODE
+		     AND i.LOCATION_ID = l.ID
+		     AND i.WAREHOUSE_ID = w.ID
+		     AND R.SERIAL_NUM = I.BAR_CODE
+		     AND R.WORK_ORDER_NO = WO.PROCESS_GROUP_RESPOOL
+             AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		     AND m.MAT_TYPE = 'SEMI_FINISHED_PRODUCT'
+		     AND I.BAR_CODE IS NOT NULL
+		   GROUP BY I.MATERIAL_CODE)
+		SELECT T.*, TEMP.DESCRIPTION AS DISK
+		  FROM (SELECT IM.MAT_NAME AS MATNAME,
+		               IM.MAT_CODE AS MATCODE,
+		               PM.COLOR,
+		               PM.QUANTITY,
+		               PM.UNIT,
+		               PM.UN_FINISHED_LENGTH AS UNFINISHEDLENGTH,
+		               PM.IN_ATTR_DESC AS INATTRDESC,
+		               (CASE
+		                 WHEN REGEXP_LIKE((SUBSTR(PM.COLOR,
+		                                          0,
+		                                          INSTR(PM.COLOR, '#') - 1)),
+		                                  '(^[+-]?\d{0,}\.?\d{0,}$)') THEN
+		                  TO_NUMBER(SUBSTR(PM.COLOR, 0, INSTR(PM.COLOR, '#') - 1))
+		                 ELSE
+		                  0
+		               END) AS ORDERSEQ,
+		               IM.MAT_TYPE
+		          FROM T_INV_MAT IM, T_PLA_MRP PM, T_WIP_WORK_ORDER WO
+		         WHERE PM.MAT_CODE = IM.MAT_CODE
+		           AND WO.ID = PM.WORK_ORDER_ID
+		           AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}) t
+		  LEFT JOIN MAT_INVENTORY_TEMP TEMP
+		    ON T.MATCODE = TEMP.MATERIAL_CODE
+		 ORDER BY T.MAT_TYPE DESC, T.ORDERSEQ
+	</select>
+	
+	
+	<!-- 投入物料的数据补充，查询物料需求的物料明细 -->
+	<select id="getPatchInAttrDesc" parameterType="map" resultType="map">
+		WITH MATERIALTEMP AS
+		 (SELECT DISTINCT M.MAT_CODE, M.MAT_NAME, D.PROP_NAME, P.PROP_TARGET_VALUE
+		    FROM T_INV_MAT M, T_INV_MAT_PROP P, T_INV_TEMPLET_DETAIL D
+		   WHERE P.MAT_ID = M.ID
+		     AND P.TEMPLET_DETAIL_ID = D.ID
+		     AND (D.PROP_NAME = '宽度' OR D.PROP_NAME = '厚度' OR D.PROP_NAME = '材质' OR
+		         D.PROP_NAME = '尺寸' OR D.PROP_NAME = '规格')
+		     AND M.MAT_CODE = #{matCode, jdbcType=VARCHAR})
+		SELECT PM.ID,
+		       M.MAT_NAME AS MATNAME,
+		       M.MAT_CODE AS MATCODE,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE M.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '宽度'
+		           AND ROWNUM = 1) AS KUANDU,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE M.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '厚度'
+		           AND ROWNUM = 1) AS HOUDU,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE M.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '材质'
+		           AND ROWNUM = 1) AS CAIZHI,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE M.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '尺寸'
+		           AND ROWNUM = 1) AS CHICUN,
+		       (SELECT TEMP.PROP_TARGET_VALUE
+		          FROM MATERIALTEMP TEMP
+		         WHERE M.MAT_CODE = TEMP.MAT_CODE
+		           AND TEMP.PROP_NAME = '规格'
+		           AND ROWNUM = 1) AS GUIGE
+		  FROM T_INV_MAT M, T_PLA_MRP PM
+		 WHERE PM.MAT_CODE = M.MAT_CODE
+		   AND PM.MAT_CODE = #{matCode, jdbcType=VARCHAR}
+		   AND PM.ID = #{id, jdbcType=VARCHAR}
+	</select>
+</mapper>

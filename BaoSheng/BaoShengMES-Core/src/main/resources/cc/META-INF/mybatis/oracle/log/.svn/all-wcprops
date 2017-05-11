@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/928/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/log
+END
+ActionLogMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/928/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/log/ActionLogMapper.xml
+END
+BizInfoMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/928/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/log/BizInfoMapper.xml
+END
+BizLogMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/928/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/log/BizLogMapper.xml
+END
+EntityInfoMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/928/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/log/EntityInfoMapper.xml
+END

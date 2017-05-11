@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/BSMES/!svn/ver/845/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/context
+END
+ContextUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/845/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/context/ContextUtils.java
+END
+ApplicationContextRegister.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/context/ApplicationContextRegister.java
+END

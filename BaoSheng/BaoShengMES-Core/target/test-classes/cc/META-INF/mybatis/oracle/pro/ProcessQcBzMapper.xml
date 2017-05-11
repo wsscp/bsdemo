@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessQcBzDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessQcBz" id="getMap">
+	</resultMap>
+	<sql id="queryColumns">
+		p.DATA_STATUS,
+		p.PROCESS_ID,
+		p.MODIFY_TIME,
+		p.CREATE_TIME,
+		p.MARKS,
+		p.FREQUENCE,
+		p.ID,
+		p.NEED_IN_CHECK,
+		p.CHECK_ITEM_NAME,
+		p.VALUE_DOMAIN,
+		p.NEED_IS,
+		p.DATA_TYPE,
+		p.ITEM_MIN_VALUE,
+		p.NEED_ALARM,
+		p.NEED_FIRST_CHECK,
+		p.CHECK_ITEM_CODE,
+		p.CREATE_USER_CODE,
+		p.NEED_SHOW,
+		p.NEED_MIDDLE_CHECK,
+		p.ITEM_MAX_VALUE,
+		p.NEED_DA,
+		p.MODIFY_USER_CODE,
+		p.DATA_UNIT,
+		p.ITEM_TARGET_VALUE,
+		p.NEED_OUT_CHECK,
+		p.HAS_PIC
+	</sql>
+	
+	<!-- 更新状态 -->
+	<update id="updateProcessQcBzStatue" parameterType="map">
+		UPDATE T_PRO_PROCESS_QC_BZ QC SET QC.DATA_STATUS= #{status,jdbcType=VARCHAR} WHERE QC.PROCESS_ID = #{processId,jdbcType=VARCHAR} AND QC.ID NOT IN 
+		<foreach collection="idArray" item="id" open="(" separator="," close=")">
+		  #{id,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+	<!-- PLM同步： 更新单位 -->
+	<update id="updateProcessQcBzDataUnit" parameterType="cc.oit.bsmes.pro.model.ProcessQcBz">
+		UPDATE T_PRO_PROCESS_QC_BZ QC SET QC.DATA_UNIT = #{itemTargetValue,jdbcType=VARCHAR} 
+		WHERE QC.PROCESS_ID = #{processId,jdbcType=VARCHAR} 
+		  AND QC.CHECK_ITEM_CODE LIKE #{checkItemCode,jdbcType=VARCHAR} 
+		  AND QC.CHECK_ITEM_NAME = #{checkItemName,jdbcType=VARCHAR} 
+	</update>
+	
+	<select id="getByProcessBzId" parameterType="string" resultMap="getMap">
+	   SELECT * FROM T_PRO_PROCESS_QC_BZ BZ WHERE BZ.PROCESS_ID=#{processId,jdbcType=VARCHAR} 
+	</select>
+	
+	<delete id="deleteProcessQCbzByProcessId" parameterType="string">
+	  DELETE FROM T_PRO_PROCESS_QC_BZ ppqb WHERE ppqb.PROCESS_ID=#{processId,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="batchInsertProcessQcBz" parameterType="ArrayList">
+		INSERT INTO T_PRO_PROCESS_QC_BZ
+		  (ID,
+		   PROCESS_ID,
+		   CHECK_ITEM_CODE,
+		   CHECK_ITEM_NAME,
+		   FREQUENCE,
+		   NEED_DA,
+		   NEED_IS,
+		   ITEM_TARGET_VALUE,
+		   ITEM_MAX_VALUE,
+		   ITEM_MIN_VALUE,
+		   DATA_UNIT,
+		   MARKS,
+		   CREATE_TIME,
+		   CREATE_USER_CODE,
+		   MODIFY_TIME,
+		   MODIFY_USER_CODE,
+		   HAS_PIC,
+		   NEED_SHOW,
+		   NEED_FIRST_CHECK,
+		   NEED_MIDDLE_CHECK,
+		   NEED_IN_CHECK,
+		   NEED_OUT_CHECK,
+		   NEED_ALARM,
+		   VALUE_DOMAIN,
+		   DATA_STATUS)
+		   (
+		<foreach collection="processQcBzs" item="item" index="index" separator="union all">
+			   SELECT 
+				   get_uuid(),
+				   #{item.processId,jdbcType=VARCHAR},
+				   #{item.checkItemCode,jdbcType=VARCHAR},
+				   #{item.checkItemName,jdbcType=VARCHAR},
+				   #{item.frequence,jdbcType=DECIMAL},
+				   #{item.needDa,jdbcType=BOOLEAN},
+				   #{item.needIs,jdbcType=BOOLEAN},
+				   #{item.itemTargetValue,jdbcType=VARCHAR},
+				   #{item.itemMaxValue,jdbcType=VARCHAR},
+				   #{item.itemMinValue,jdbcType=VARCHAR},
+				   #{item.dataUnit,jdbcType=VARCHAR},
+				   #{item.marks,jdbcType=VARCHAR},
+				   SYSDATE,
+				   'admin',
+				   SYSDATE,
+				   'admin',
+				   #{item.hasPic,jdbcType=VARCHAR},
+				   #{item.needShow,jdbcType=VARCHAR},
+				   #{item.needFirstCheck,jdbcType=VARCHAR},
+				   #{item.needMiddleCheck,jdbcType=VARCHAR},
+				   #{item.needInCheck,jdbcType=VARCHAR},
+				   #{item.needOutCheck,jdbcType=VARCHAR},
+				   #{item.needAlarm,jdbcType=VARCHAR},
+				   #{item.valueDomain,jdbcType=VARCHAR},
+				   #{item.dataStatus,jdbcType=VARCHAR}
+				   FROM dual
+	   </foreach>
+	   )
+	</insert>
+</mapper>

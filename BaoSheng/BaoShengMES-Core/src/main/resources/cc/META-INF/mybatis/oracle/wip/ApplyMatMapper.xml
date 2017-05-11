@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.ApplyMatDAO">
+	<resultMap type="cc.oit.bsmes.wip.model.ApplyMat" id="getMap"></resultMap>
+	
+	<select id="getMaterials" parameterType="string" resultMap="getMap">
+		SELECT
+		    NAME AS MATERIAL
+		FROM
+		    T_BAS_DATA_DICT T
+		WHERE
+		    T.TERMS_CODE = 'APPLY_MAT_PROCESS_TYPE'
+		AND T.MARKS LIKE '%' || #{param1} || '%'
+	</select>
+	
+	<select id="findInfo" parameterType="cc.oit.bsmes.wip.model.ApplyMat" resultMap="getMap">
+		SELECT I.EQUIP_ALIAS || '[' || MAT.EQUIP_CODE || ']' AS EQUIP_CODE,
+		       E.NAME AS USER_NAME,
+		       MAT.MAT_NAME,
+		       MAT.APPLY_QUNTITY,
+		       MAT.ISSUE_QUNTITY,
+		       MAT.STATUS,
+		       MAT.CREATE_TIME,
+		       MAT.ID
+		  FROM T_WIP_APPLY_MAT MAT, T_BAS_EMPLOYEE E, T_FAC_EQIP_INFO I
+		 WHERE MAT.USER_CODE = E.USER_CODE
+		   AND MAT.EQUIP_CODE = I.CODE
+		   <if test="equipCode != null and equipCode != ''">
+		   		AND MAT.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+		   </if>
+		   <if test="status != null and status != ''">
+		   		AND MAT.STATUS = #{status,jdbcType=VARCHAR}
+		   </if>
+		   <if test="matName != null and matName != ''">
+		   		AND MAT.MAT_NAME = #{matName,jdbcType=VARCHAR}
+		   </if>
+		   order by mat.status,mat.create_time desc
+	</select>
+	
+	<select id="getMatName" resultMap="getMap">
+		SELECT D.CODE AS MAT_NAME
+		  FROM T_BAS_DATA_DICT D
+		 WHERE D.TERMS_CODE = 'APPLY_MAT_PROCESS_TYPE'
+	</select>
+		
+</mapper>

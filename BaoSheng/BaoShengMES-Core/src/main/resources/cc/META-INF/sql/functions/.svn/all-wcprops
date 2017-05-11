@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/10735/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/functions
+END
+EQUIP_WW_TARGETVALUE.sql
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/10735/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/functions/EQUIP_WW_TARGETVALUE.sql
+END
+SPLITSTR.sql
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/8304/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/functions/SPLITSTR.sql
+END
+GET_UUID.sql
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/8304/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/functions/GET_UUID.sql
+END
+GETCOLORSTR.sql
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/functions/GETCOLORSTR.sql
+END
+VALIDATEPRODUCTCRAFTS.sql
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/9339/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/functions/VALIDATEPRODUCTCRAFTS.sql
+END

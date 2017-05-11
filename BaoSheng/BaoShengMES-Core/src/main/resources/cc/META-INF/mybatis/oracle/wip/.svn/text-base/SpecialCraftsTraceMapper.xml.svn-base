@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.SpecialCraftsTraceDAO">
+<resultMap type="cc.oit.bsmes.wip.model.SpecialCraftsTrace" id="getMap"></resultMap>
+
+
+	<select id="getAllHistoryTrace" parameterType="map" resultMap="getMap">
+		<![CDATA[				
+		WITH TEMP_MAT AS(
+		SELECT MAT_CODE AS CODE,MAT_NAME AS NAME,
+ 		WMSYS.WM_CONCAT(DISTINCT D.PROP_NAME || ':' || P.PROP_TARGET_VALUE) AS MATDESC
+ 		FROM T_INV_MAT_WIP M, T_INV_MAT_PROP_WIP P, T_INV_TEMPLET_DETAIL D
+		WHERE P.MAT_ID = M.ID
+		AND P.TEMPLET_DETAIL_ID = D.ID
+		AND (D.PROP_NAME LIKE '%颜色%' OR D.PROP_NAME IN ('宽度',
+					                        '厚度',
+					                        '尺寸',
+					                        '规格',
+					                        '单丝直径',
+					                        '单丝标准直径',
+					                        '结构')) 
+		AND M.MAT_TYPE='MATERIALS'
+		AND P.PROP_TARGET_VALUE IS NOT NULL
+		GROUP BY M.MAT_CODE,M.MAT_NAME),
+
+		TEMP AS(					                        
+		SELECT PR.ID,PR.SALES_ORDER_ITEM_ID,PR.PROCESS_ID,
+		PR.CODE,PR.NAME,PR.TARGET_VALUE,
+		(CASE WHEN PR.TYPE='物料属性' OR PR.TYPE='质量参数' THEN  PR.TARGET_VALUE
+		WHEN PR.TYPE='投入原料' THEN  (CASE WHEN (SELECT NAME|| '[' || MATDESC || ']' FROM TEMP_MAT WHERE CODE=PR.CODE ) IS NULL
+		THEN PR.NAME ELSE (SELECT NAME|| '[' || MATDESC || ']' FROM TEMP_MAT WHERE CODE=PR.CODE ) END)
+		|| '&' || TEMP_MAT.NAME|| '[' || TEMP_MAT.MATDESC || ']'
+		END) AS MODIFY_VALUE,
+		PR.CREATE_USER_CODE,PR.CREATE_TIME,PR.MODIFY_USER_CODE,PR.MODIFY_TIME,PR.TYPE,PR.MAT_CODE
+		FROM T_PLA_ORDER_PROCESS_PR PR
+		LEFT JOIN TEMP_MAT ON (PR.TARGET_VALUE=TEMP_MAT.CODE)
+		WHERE PR.TARGET_VALUE IS NOT NULL ),
+		
+		R AS(
+		SELECT TEMP.ID,TEMP.SALES_ORDER_ITEM_ID,TEMP.PROCESS_ID,
+		TEMP.CODE,TEMP.NAME,TEMP.TARGET_VALUE,
+		(CASE WHEN TEMP.TYPE='投入原料' THEN TEMP.MODIFY_VALUE
+		WHEN TEMP.TYPE='物料属性' THEN
+ 		(SELECT DISTINCT '[ ' || T2.MAT_NAME || ']' || T3.PROP_NAME || ':' ||
+                           T4.PROP_TARGET_VALUE
+             FROM T_INV_MAT_WIP T2,T_INV_TEMPLET_DETAIL T3,T_INV_MAT_PROP_WIP T4
+            WHERE T2.MAT_CODE = TEMP.MAT_CODE
+              AND T2.PROCESS_WIP_ID = TEMP.PROCESS_ID
+              AND T2.TEMPLET_ID = T3.TEMPLET_ID
+              AND T3.PROP_CODE = TEMP.CODE
+              AND T3.ID = T4.TEMPLET_DETAIL_ID
+              AND T4.MAT_ID = T2.ID and rownum = 1) || '&' ||  TEMP.MODIFY_VALUE  
+		ELSE TEMP.NAME || ':' ||  (SELECT ITEM_TARGET_VALUE FROM T_PRO_PROCESS_QC_WIP WHERE PROCESS_ID=TEMP.PROCESS_ID
+		AND CHECK_ITEM_CODE=TEMP.CODE) || '&' || TEMP.MODIFY_VALUE END  ) AS MODIFY_VALUE,TEMP.TYPE,
+		TEMP.CREATE_USER_CODE,TEMP.CREATE_TIME,TEMP.MODIFY_USER_CODE,TEMP.MODIFY_TIME,TEMP.MAT_CODE,
+		PC.ID AS CRAFTS_ID,PC.CRAFTS_CODE,PP.PROCESS_NAME,OI.PRODUCT_TYPE|| '-' || OI.PRODUCT_SPEC AS PRODUCT_INFO, 
+		OI.PRODUCT_TYPE,OI.PRODUCT_SPEC,SO.CONTRACT_NO,
+		OI.SALEORDER_LENGTH,SO.CUSTOMER_COMPANY,SO.OPERATOR FROM TEMP
+		INNER JOIN T_PRO_PRODUCT_PROCESS_WIP PP ON(TEMP.PROCESS_ID=PP.ID)
+		INNER JOIN T_PRO_PRODUCT_CRAFTS_WIP PC ON(PC.ID=PP.PRODUCT_CRAFTS_ID)
+		INNER JOIN T_ORD_SALES_ORDER_ITEM OI ON (OI.ID=TEMP.SALES_ORDER_ITEM_ID)
+		INNER JOIN T_ORD_SALES_ORDER SO ON(SO.ID=OI.SALES_ORDER_ID)
+		]]>
+		WHERE SO.CONTRACT_NO IS NOT NULL
+		<include refid= "getAllHistoryTraceWhere" />
+		)
+		
+		SELECT * FROM (SELECT R.*,ROWNUM ROWNUM_ FROM R)		
+		WHERE ROWNUM_ <![CDATA[>]]> #{start, jdbcType=INTEGER} 
+		AND ROWNUM_ <![CDATA[<=]]> #{end, jdbcType=INTEGER}		
+		
+		ORDER BY MODIFY_TIME DESC
+	</select>
+	
+	<select id="countHistoryTrace"  parameterType="map" resultType="int">
+		SELECT COUNT(PR.ID) FROM T_PLA_ORDER_PROCESS_PR PR
+		INNER JOIN T_ORD_SALES_ORDER_ITEM OI ON(OI.ID=PR.SALES_ORDER_ITEM_ID)
+		INNER JOIN T_ORD_SALES_ORDER SO ON(SO.ID=OI.SALES_ORDER_ID)
+		WHERE PR.TARGET_VALUE IS NOT NULL
+		<include refid= "getAllHistoryTraceWhere" />
+	</select>
+	
+	<select id="searchContractNo" parameterType="String" resultMap="getMap">
+		SELECT DISTINCT SO.CONTRACT_NO FROM T_PLA_ORDER_PROCESS_PR PR
+		INNER JOIN T_ORD_SALES_ORDER_ITEM OI ON(OI.ID=PR.SALES_ORDER_ITEM_ID)
+		INNER JOIN T_ORD_SALES_ORDER SO ON(SO.ID=OI.SALES_ORDER_ID)
+		WHERE SO.CONTRACT_NO like '%'||#{param1,jdbcType=VARCHAR}||'%'	
+	</select>
+	
+	<select id="searchProductType" parameterType="String" resultType="map">
+		SELECT DISTINCT PRODUCT_TYPE FROM T_PLA_ORDER_PROCESS_PR PR
+		INNER JOIN T_ORD_SALES_ORDER_ITEM OI ON(OI.ID=PR.SALES_ORDER_ITEM_ID) 
+		WHERE PRODUCT_TYPE LIKE '%'||#{productType,jdbcType=VARCHAR}||'%'	
+	</select>
+	
+	<select id="searchProductSpec" parameterType="map" resultType="map">
+		SELECT DISTINCT PRODUCT_SPEC FROM T_PLA_ORDER_PROCESS_PR PR
+		INNER JOIN T_ORD_SALES_ORDER_ITEM OI ON(OI.ID=PR.SALES_ORDER_ITEM_ID) 
+		WHERE PRODUCT_SPEC LIKE '%'||#{productSpec,jdbcType=VARCHAR}||'%'
+		<if test="productType!=null and productType!=''">
+			AND PRODUCT_TYPE=#{productType,jdbcType=VARCHAR}
+		</if>	
+	</select>
+	
+	<sql id="getAllHistoryTraceWhere">
+		<if test="contractNo != null and contractNo.size() > 0">
+			AND SO.CONTRACT_NO IN 
+			<foreach collection="contractNo" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="productType != null and productType.size() > 0">
+			AND OI.PRODUCT_TYPE IN 
+			<foreach collection="productType" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="productSpec != null and productSpec.size() > 0">
+			AND OI.PRODUCT_SPEC IN 
+			<foreach collection="productSpec" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+	</sql>
+	
+</mapper>

@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.EquipInfoDAO">
+
+	<resultMap type="cc.oit.bsmes.fac.model.EquipInfo" id="getMap">
+		<result property="id" column="ID" />
+		<result property="code" column="CODE" />
+		<!--
+			 <collection property="equipCalendar" column="CODE" javaType="ArrayList"
+				   ofType="EqipCalendar" select="cc.oit.bsmes.bas.dao.EquipCalendarDAO.getByEquipCode" />-->
+		<collection property="workTasks" column="CODE" javaType="java.util.ArrayList"
+			ofType="cc.oit.bsmes.fac.model.WorkTask" select="cc.oit.bsmes.fac.dao.WorkTaskDAO.getByEquipCode" ></collection>
+		<collection property="orderTasks" column="CODE" javaType="java.util.ArrayList"
+			ofType="cc.oit.bsmes.pla.model.OrderTask" select="cc.oit.bsmes.pla.dao.OrderTaskDAO.getByEquipCode" ></collection>
+		<collection property="equipLists" column="CODE" javaType="java.util.ArrayList"
+			ofType="cc.oit.bsmes.pro.model.EquipList" select="cc.oit.bsmes.pro.dao.EquipListDAO.getByEquipCode" ></collection>
+	</resultMap>
+	<resultMap type="cc.oit.bsmes.fac.model.EquipInfo" id="getResultMap">
+		<result property="id" column="ID" />
+		<result property="code" column="CODE" />
+		<result property="name" column="NAME" />
+		<result property="type" column="TYPE" />
+		<result property="status" column="STATUS" />
+		<result property="total" column="TOTAL" />
+		<result property="model" column="MODEL" />
+		<result property="equipCategory" column="EQUIP_CATEGORY" />
+		<result property="equipPrice" column="EQUIP_PRICE" />
+		<result property="equipFact" column="EQUIP_FACT" />
+		<result property="equipPurtime" column="EQUIP_PURTIME" />
+	</resultMap>
+	
+	<sql id="columnsSql">
+           A."ID",
+           A.CODE,
+           A."NAME" ,
+           A."EQUIP_ALIAS",
+           A.STATUS,
+           A."TYPE",
+           A.CREATE_TIME,
+           A.CREATE_USER_CODE,
+           A.MODIFY_TIME ,
+           A.MODIFY_USER_CODE,
+           A.ORG_CODE,
+           A.SPECS,
+           A.ENAME,
+           A.BNUM,
+           A.MODEL,
+           A.CENTER,
+           A.USEPRICES,
+           A.FACTORY,
+           A.MAINTAINER,
+           A.MAINTAIN_DATE,
+           A.NEXT_MAINTAIN_DATE,
+           A.MAINTAIN_DATE_FIRST,
+           A.NEXT_MAINTAIN_DATE_FIRST,
+           A.MAINTAIN_DATE_SECOND,
+           A.NEXT_MAINTAIN_DATE_SECOND,
+           A.MAINTAIN_DATE_OVERHAUL,
+           A.NEXT_MAINTAIN_DATE_OVERHAUL,
+           A.EQUIP_CATEGORY,
+           A.EQUIP_PRICE,
+           A.EQUIP_FACT,
+           A.EQUIP_PURTIME,
+           A.STATUS_BASIS_WW,
+           A.SECTION,
+           A.PROCESS_CODE
+	</sql>
+    
+    <select id="getWorkOrderDetailEquip" resultMap="getResultMap">
+    	SELECT LINE.CODE, LINE.NAME, LINE.EQUIP_ALIAS, ecode
+		  FROM T_FAC_EQIP_INFO LINE
+		 WHERE EXISTS (SELECT *
+		          FROM T_FAC_EQIP_INFO EQUIP, T_FAC_PRODUCT_EQIP PE
+		         WHERE EQUIP.TYPE = 'MAIN_EQUIPMENT'
+		           AND EQUIP.ID = PE.EQUIP_ID
+		           AND PE.PRODUCT_LINE_ID = LINE.ID
+		           <if test="orgCode!=null and orgCode!=''">
+				     AND EQUIP.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+				   </if>
+				   <if test="processName!=null and processName!=''">
+				     AND INSTR(',' || EQUIP.PROCESS_CODE || ',',
+		                     ',' || #{processName, jdbcType=VARCHAR} || ',') > 0
+				   </if>
+		    )
+		 ORDER BY LINE.NAME
+    </select>
+    
+	<select id="getByRoleId" parameterType="EquipInfo" resultMap="getResultMap">
+    	SELECT S.ID,R.NAME,R.CODE
+		FROM T_FAC_EQIP_INFO R,T_BAS_ROLE_EQIP S
+		WHERE R.ID=S.EQIP_INFO_ID AND R.ORG_CODE=#{orgCode, jdbcType=VARCHAR}  AND S.ROLE_ID=#{roleId, jdbcType=VARCHAR} 
+	</select>
+	<select id="countByRoleId" parameterType="EquipInfo"  resultType="int">
+    	SELECT COUNT(1) FROM(SELECT R.ID,R.NAME,R.CODE
+		FROM T_FAC_EQIP_INFO R,T_BAS_ROLE_EQIP S
+		WHERE R.ID=S.EQIP_INFO_ID AND R.ORG_CODE=#{orgCode, jdbcType=VARCHAR}  AND S.ROLE_ID=#{roleId, jdbcType=VARCHAR})
+	</select>
+	<select id="getTotalByStatus" parameterType="map" resultMap="getResultMap">
+    	SELECT STATUS,COUNT(STATUS) AS TOTAL FROM T_FAC_EQIP_INFO WHERE ORG_CODE=#{orgCode,jdbcType=VARCHAR}  AND TYPE='PRODUCT_LINE'
+		<if test="equipStatus!=null and equipStatus!=''">
+			 AND STATUS IN
+			<foreach collection="equipStatus" item="status" open="(" separator="," close=")">
+		 	 	#{status, jdbcType=VARCHAR} 
+			</foreach>
+		</if>
+    	 GROUP BY STATUS 
+	</select>
+	
+	<sql id="columnsSqlEquipAndLine">
+           EQUIP.CREATE_TIME,
+           EQUIP.CREATE_USER_CODE,
+           EQUIP.MODIFY_TIME ,
+           EQUIP.MODIFY_USER_CODE,
+           EQUIP.ORG_CODE,
+           EQUIP.SPECS,
+           EQUIP.ENAME,
+           EQUIP.BNUM,
+           EQUIP.MODEL,
+           EQUIP.CENTER,
+           EQUIP.USEPRICES,
+           EQUIP.FACTORY,
+           EQUIP.MAINTAINER,
+           EQUIP.MAINTAIN_DATE,
+           EQUIP.NEXT_MAINTAIN_DATE,
+           EQUIP.MAINTAIN_DATE_FIRST,
+           EQUIP.NEXT_MAINTAIN_DATE_FIRST,
+           EQUIP.MAINTAIN_DATE_SECOND,
+           EQUIP.NEXT_MAINTAIN_DATE_SECOND,
+           EQUIP.MAINTAIN_DATE_OVERHAUL,
+           EQUIP.NEXT_MAINTAIN_DATE_OVERHAUL,
+           EQUIP.STATUS_BASIS_WW
+	</sql>
+	<!-- 获取设备生产线列表 -->
+	<select id="getEquipLine" parameterType="map" resultMap="getResultMap">
+		SELECT <include refid="columnsSql"/>, EQUIP.CODE AS ECODE, EQUIP.NAME AS ENAME, EQUIP.EQUIP_ALIAS
+		    FROM T_FAC_EQIP_INFO A, T_FAC_PRODUCT_EQIP PE, T_FAC_EQIP_INFO EQUIP
+		WHERE A.ID = PE.PRODUCT_LINE_ID
+		    AND PE.EQUIP_ID = EQUIP.ID
+		    AND A.TYPE = 'PRODUCT_LINE'
+			<if test="equipStatus!=null and equipStatus!=''">
+		        AND A.STATUS IN
+				<foreach collection="equipStatus" item="status" open="(" separator="," close=")">
+			 	 	#{status, jdbcType=VARCHAR} 
+				</foreach>
+			</if>
+			<if test="codeOrName!=null and codeOrName!=''">
+ 		 		AND (UPPER(A.CODE) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}) OR UPPER(A.NAME) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}))
+			</if>
+			<if test="orgCode != null and orgCode !=''">
+ 		 		AND A.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		    	AND EQUIP.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="processName!=null and processName!=''">
+		        AND INSTR(',' || EQUIP.PROCESS_CODE || ',',
+                     ',' || #{processName, jdbcType=VARCHAR} || ',') > 0
+		    </if>
+ 		 ORDER BY A.CODE, NLSSORT(A.NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+
+	<!-- 根据工序Id获取设备信息 -->
+	<select id="getEquipInfosByWipProcessId" resultMap="getMap" parameterType="string" useCache="true">
+		SELECT O.CODE, L.EQUIP_CODE, O.NAME, O.STATUS, O.TYPE, L.EQUIP_CAPACITY, L.SET_UP_TIME, L.SHUT_DOWN_TIME
+		  FROM T_FAC_EQIP_INFO O
+		 INNER JOIN T_PRO_EQIP_LIST_WIP L
+		    ON O.CODE = L.EQUIP_CODE
+		 WHERE L.PROCESS_ID = #{processId,jdbcType=VARCHAR}
+	</select>
+	<select id="find" parameterType="EquipInfo" resultMap="getResultMap">
+		SELECT <include refid="columnsSql"/>,(SELECT NAME FROM T_FAC_EQIP_INFO a WHERE a.ID=s.PRODUCT_LINE_ID) AS BELONG_LINE,A.SUB_TYPE
+		FROM T_FAC_EQIP_INFO A LEFT JOIN T_FAC_PRODUCT_EQIP s ON(A.ID=s.EQUIP_ID)
+		<where>
+			<if test="code != null and code != ''">
+				INSTR(A.CODE,#{code})>0
+			</if>
+			<if test="type != null and type != ''">
+				AND TYPE=#{type,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				AND A.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="equipAlias != null and equipAlias != ''">
+				AND A.EQUIP_ALIAS=#{equipAlias,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY A.TYPE, A.CODE, NLSSORT(A.NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="count" parameterType="EquipInfo" resultType="int">
+		SELECT COUNT(1)
+		FROM (SELECT ID FROM T_FAC_EQIP_INFO
+		<where>
+			<if test="code != null and code != ''">
+				INSTR(CODE,#{code})>0
+			</if>
+			<if test="type != null and type != ''">
+				AND TYPE=#{type,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+		</where>)
+	</select>
+	
+	<select id="findByName" resultMap="getMap" parameterType="string">
+		 SELECT O.CODE,O.NAME,O.STATUS,O.TYPE,O.ID 
+ 		 FROM T_FAC_EQIP_INFO O 
+ 		 WHERE O.NAME=#{name,jdbcType=VARCHAR}
+ 		 ORDER BY O.TYPE, O.CODE, NLSSORT(O.NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="initEquipLoad" parameterType="string" statementType="CALLABLE">
+		 CALL INIT_ORDERTASK(#{orgCode})
+	</select>
+	<select id="getEquipNameByProcessIdAndOrderItemProDecId" parameterType="map" resultType="string">
+		SELECT NAME 
+		FROM T_FAC_EQIP_INFO 
+		WHERE CODE=(SELECT EQUIP_CODE FROM T_FAC_WORK_TASKS WHERE ORDER_ITEM_PRO_DEC_ID=#{orderItemProDecId,jdbcType=VARCHAR}
+					AND EQUIP_CODE IN (SELECT EQUIP_CODE FROM T_PRO_EQIP_LIST WHERE PROCESS_ID=#{processId,jdbcType=VARCHAR} ))
+	</select>
+	<select id="getEqipName" resultMap="getMap">
+		SELECT * FROM T_FAC_EQIP_INFO WHERE NAME IS NOT NULL
+	</select>
+	<select id="findByProcessId" parameterType="string" resultMap="getMap">
+		SELECT ID,CODE,NAME
+		FROM T_FAC_EQIP_INFO
+		WHERE CODE IN (SELECT EQUIP_CODE FROM T_PRO_EQIP_LIST WHERE PROCESS_ID=#{processId,jdbcType=VARCHAR})
+	</select>
+
+	<select id="getMainEquipByEquipLine" parameterType="string" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+        SELECT
+		<include refid="columnsSql"/>
+        FROM T_FAC_EQIP_INFO A
+        WHERE EXISTS (
+            SELECT
+                B."ID"
+            FROM T_FAC_PRODUCT_EQIP B LEFT JOIN T_FAC_EQIP_INFO C ON B.PRODUCT_LINE_ID = C.ID
+            WHERE C.CODE = #{equipLineCode}
+            AND A.ID = B.EQUIP_ID
+            AND B.IS_MAIN = '1' --主设备
+        )
+        AND ROWNUM = 1
+	</select>
+
+	<select id="getEquipLineByEquip" parameterType="map" resultMap="getMap">
+		SELECT <include refid="columnsSql"/>
+		  FROM T_FAC_EQIP_INFO A, T_FAC_PRODUCT_EQIP PE, T_FAC_EQIP_INFO EQUIP
+		 WHERE A.ID = PE.PRODUCT_LINE_ID
+		   AND PE.EQUIP_ID = EQUIP.ID
+		   AND A.TYPE = 'PRODUCT_LINE'
+		   AND A.CODE = #{equipCode, jdbcType=VARCHAR}
+		   <if test="orgCode != null and orgCode != ''">
+    			AND A.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+    			AND EQUIP.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		   </if>
+		   AND ROWNUM = 1
+	</select>
+
+	<select id="getEquipInfoByProcessId" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="columnsSql"/>
+          FROM T_FAC_EQIP_INFO A
+          LEFT JOIN T_FAC_PRODUCT_EQIP B ON A.ID = B.EQUIP_ID
+          LEFT JOIN T_FAC_EQIP_INFO C ON B.PRODUCT_LINE_ID = C.ID
+          LEFT JOIN T_PRO_EQIP_LIST D ON C.CODE = D.EQUIP_CODE
+        WHERE D.PROCESS_ID = #{processId}
+          AND A.TYPE = 'MAIN_EQUIPMENT'
+        UNION
+        SELECT
+		<include refid="columnsSql"/>
+        FROM T_FAC_EQIP_INFO A
+          LEFT JOIN T_PRO_EQIP_LIST B ON A.CODE = B.EQUIP_CODE
+        WHERE B.PROCESS_ID =#{processId}
+          AND A.TYPE = 'MAIN_EQUIPMENT'
+	</select>
+	<select id="getByNameOrCode" resultMap="getMap" parameterType="map">
+    	SELECT ID,CODE,NAME FROM T_FAC_EQIP_INFO 
+		<where>
+			<if test="code!=null and code!=''">
+    			AND (INSTR(CODE,#{code})>0 OR INSTR(NAME,#{code})>0)
+			</if>
+			<if test="orgCode!=null and orgCode!=''">
+    			AND ORG_CODE=#{orgCode}
+			</if>
+			<if test="type!=null and type!=''">
+    			AND TYPE=#{type}
+			</if>
+		</where>
+	</select>
+
+	<select id="findForDataUpdate" parameterType="string" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+        SELECT
+           A."ID",
+           A.CODE,
+           A."NAME" ,
+           A.STATUS,
+           A."TYPE",
+           A.CREATE_TIME,
+           A.CREATE_USER_CODE,
+           A.MODIFY_TIME ,
+           A.MODIFY_USER_CODE,
+           A.ORG_CODE,
+           A.SPECS,
+           A.ENAME,
+           A.BNUM,
+           A.MODEL,
+           A.CENTER,
+           A.USEPRICES,
+           A.FACTORY
+        FROM T_FAC_EQIP_INFO A
+        WHERE A.CODE = #{param1}
+            AND A."TYPE" = #{param2}
+	</select>
+
+	<select id="findForVF" parameterType="map" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+        SELECT
+            STATUS,
+            CODE,
+            NAME
+        FROM T_FAC_EQIP_INFO WHERE ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		<if test="equipCodes!=null and equipCodes!=''">
+            AND CODE IN
+			<foreach collection="equipCodes" item="equipCode" open="(" separator="," close=")">
+                #{equipCode, jdbcType=VARCHAR}
+			</foreach>
+		</if>
+	</select>
+    
+	<select id="findEquipByUser" parameterType="string" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+        SELECT
+          A.NAME,
+          A.CODE
+        FROM T_FAC_EQIP_INFO A,
+              T_BAS_ROLE_EQIP RE,
+              T_BAS_USER_ROLE UR,
+              T_BAS_USER US
+        WHERE A.ID = RE.EQIP_INFO_ID
+          AND RE.ROLE_ID = UR.ROLE_ID
+          AND UR.USER_ID = US.ID
+          AND US.USER_CODE = #{param1}
+	</select>
+    
+	<select id="getMergeEquipByProcessCode" parameterType="string" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+    	
+    	SELECT DISTINCT r.CODE AS CODE,u.NAME
+		FROM T_FAC_EQIP_INFO r,T_PRO_EQIP_LIST s,T_PRO_PRODUCT_PROCESS t,T_FAC_PRODUCT_EQIP v, T_FAC_EQIP_INFO u
+		WHERE r.CODE=s.EQUIP_CODE AND s.PROCESS_ID=t.ID AND r.ID= v.PRODUCT_LINE_ID AND v.EQUIP_ID=u.ID 
+			  AND t.PROCESS_CODE=#{param1} AND u.ORG_CODE=#{param2}
+	</select>
+	
+	<select id="getEquipBySection" parameterType="string" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+    	SELECT DISTINCT
+    		PI.NAME AS PROCESSCODE,
+    		FI.NAME,
+    		SUBSTR(FI.CODE,0,instr(FI.CODE,'_')-1) AS CODE,
+    		FI.EQUIP_ALIAS 
+    	FROM T_FAC_EQIP_INFO FI, 
+    		T_PRO_PROCESS_INFO PI 
+        WHERE INSTR(','||FI.PROCESS_CODE||',',','||PI.CODE||',')>0
+        <if test="param1 != null and param1!=''">
+        	 AND PI.SECTION=#{param1}
+        </if>    
+        AND FI.TYPE='MAIN_EQUIPMENT' 
+        AND FI.ORG_CODE=#{param2}
+        ORDER BY FI.NAME
+	</select>
+    
+	<!-- 获取工段可选设备 : 排生产单(包含工序) -->
+	<select id="getEquipByProcessSection" parameterType="map" resultMap="getMap">
+		SELECT DISTINCT EI.CODE,
+		       NVL(EQUIP.EQUIP_ALIAS, EI.NAME) || '[' || EI.CODE || ']' AS NAME,
+		       P.CODE AS PROCESS_CODE
+		  FROM T_FAC_EQIP_INFO    EI,
+		       T_FAC_PRODUCT_EQIP PE,
+		       T_FAC_EQIP_INFO    EQUIP,
+		       T_PRO_PROCESS_INFO P
+		 WHERE EI.ID = PE.PRODUCT_LINE_ID
+		   AND PE.EQUIP_ID = EQUIP.ID
+		   <!-- 
+		   AND INSTR(EQUIP.PROCESS_CODE, P.CODE) > 0
+		   -->
+		   AND INSTR(',' || EQUIP.PROCESS_CODE || ',', ',' || P.CODE || ',') > 0
+        <if test="section != null and section!=''">
+		   AND P.SECTION_SEQ = #{section, jdbcType=VARCHAR} 
+		</if>
+		   AND EI.ORG_CODE = #{orgCode, jdbcType=VARCHAR} 
+		   AND EQUIP.ORG_CODE = #{orgCode, jdbcType=VARCHAR} 
+		 ORDER BY NAME
+	</select>
+
+   <!-- 获取工段可选设备 : 排生产单(不包含工序) -->
+	<select id="getEquipByProcessSectionN" parameterType="map" resultMap="getMap">
+		SELECT DISTINCT EI.CODE,
+		       NVL(EQUIP.EQUIP_ALIAS, EI.NAME) || '[' || EI.CODE || ']' AS NAME
+		  FROM T_FAC_EQIP_INFO    EI,
+		       T_FAC_PRODUCT_EQIP PE,
+		       T_FAC_EQIP_INFO    EQUIP,
+		       T_PRO_PROCESS_INFO P
+		 WHERE EI.ID = PE.PRODUCT_LINE_ID
+		   AND PE.EQUIP_ID = EQUIP.ID
+		   <!-- 
+		   AND INSTR(EQUIP.PROCESS_CODE, P.CODE) > 0
+		   -->
+		   AND INSTR(',' || EQUIP.PROCESS_CODE || ',', ',' || P.CODE || ',') > 0
+        <if test="section != null and section!=''">
+		   AND P.SECTION_SEQ = #{section, jdbcType=VARCHAR} 
+		</if>
+		   AND EI.ORG_CODE = #{orgCode, jdbcType=VARCHAR} 
+		   AND EQUIP.ORG_CODE = #{orgCode, jdbcType=VARCHAR} 
+		 ORDER BY NAME
+	</select>
+	
+	<!-- 获取工段可选设备 : 生产单切换设备 -->
+	<select id="getEquipForChangeOrderEquip" parameterType="map" resultType="map">
+		SELECT TMP.EQUIPCODE, TMP.EQUIPNAME, TMP.EQUIPALIAS, TMP2.CODE
+		  FROM (SELECT DISTINCT EI.CODE           AS EQUIPCODE,
+		                        EQUIP.EQUIP_ALIAS AS EQUIPALIAS,
+		                        EI.NAME           AS EQUIPNAME
+		          FROM T_FAC_EQIP_INFO    EI,
+		               T_FAC_PRODUCT_EQIP PE,
+		               T_FAC_EQIP_INFO    EQUIP,
+		               T_PRO_PROCESS_INFO P
+		         WHERE EI.ID = PE.PRODUCT_LINE_ID
+		           AND PE.EQUIP_ID = EQUIP.ID
+		           <!-- 
+				   AND INSTR(EQUIP.PROCESS_CODE, P.CODE) > 0
+				   -->
+				   AND INSTR(',' || EQUIP.PROCESS_CODE || ',', ',' || P.CODE || ',') > 0
+		           AND P.SECTION IN 
+					(SELECT SECTION
+	                  FROM T_PRO_PROCESS_INFO
+	                 WHERE CODE =
+	                       (SELECT PROCESS_CODE
+	                          FROM T_WIP_WORK_ORDER
+	                         WHERE WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}))
+				   AND EI.ORG_CODE = #{orgCode, jdbcType=VARCHAR} 
+				   AND EQUIP.ORG_CODE = #{orgCode, jdbcType=VARCHAR} 
+		         ORDER BY EQUIPNAME) TMP
+		  LEFT JOIN (SELECT WER.EQUIP_CODE AS CODE
+		               FROM T_WIP_WORK_ORDER WO, T_WIP_WO_EQUIP_RELATION WER
+		              WHERE WO.ID = WER.WORK_ORDER_ID
+		                AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}) TMP2
+		    ON TMP.EQUIPCODE = TMP2.CODE
+		 ORDER BY NLSSORT(EQUIPALIAS, 'NLS_SORT=SCHINESE_PINYIN_M')
+
+	</select>
+
+	<!-- 
+		<select id="getEquipLine" parameterType="EquipInfo" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+			SELECT ID,NAME FROM T_FAC_EQIP_INFO WHERE NAME=#{name} AND TYPE=#{type} AND ORG_CODE=#{orgCode}
+		</select>
+	-->
+
+	<update id="updateEquipStatus" parameterType="string" flushCache="true">
+		CALL CHANGE_EQUIP_STATUS(#{param1},#{param2},#{param3})
+	</update>
+	
+	<select id="findInfo" parameterType="string" resultType="cc.oit.bsmes.fac.model.EquipInfo">
+		WITH TEMP AS
+		 (SELECT CODE FROM T_PRO_PROCESS_INFO WHERE SECTION = #{param1})
+		SELECT DISTINCT <include refid="columnsSql"/>
+		  FROM T_FAC_EQIP_INFO A, TEMP
+		 WHERE INSTR(',' || A.PROCESS_CODE || ',', ',' || TEMP.CODE || ',') > 0
+		 ORDER BY A.CODE,A.EQUIP_ALIAS 
+	</select>
+	
+	<select id="countInfo" parameterType="string" resultType="int">
+		WITH TEMP AS
+		 (SELECT CODE FROM T_PRO_PROCESS_INFO WHERE SECTION = #{param1})
+		SELECT COUNT(DISTINCT A.ID)
+		  FROM T_FAC_EQIP_INFO A, TEMP
+		 WHERE INSTR(',' || A.PROCESS_CODE || ',', ',' || TEMP.CODE || ',') > 0
+	</select>
+	
+	<select id="getSpecificEquip" parameterType="map" resultMap="getMap">
+		SELECT CODE AS EQUIP_CODE,EQUIP_ALIAS FROM T_FAC_EQIP_INFO WHERE CODE IN
+		(SELECT DISTINCT EQUIP_CODE FROM T_EVE_EVENT_INFO EL, T_PRO_PRODUCT_PROCESS PP
+		WHERE PP.ID=EL.PROCESS_ID 
+		<if test="processCode != null">
+			AND PP.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+		</if>)
+	</select>
+	
+	<!-- 
+	<insert id="insertEquipEnergyMonitorInfo" parameterType="cc.oit.bsmes.fac.model.EquipEnergyMonitor" >
+		INSERT INTO T_BAS_EQUIPENERGY(ID, EQUIP_NAME, ELE_FA,PI,PE, FL, VA, CREATE_TIME,EQUIPCODE,POW_AT)
+		VALUES(#{id,jdbcType=VARCHAR},#{equipName,jdbcType=VARCHAR},#{eleFa,jdbcType=VARCHAR},#{pi,jdbcType=VARCHAR},#{pe,jdbcType=VARCHAR},
+			   #{fl,jdbcType=VARCHAR},#{va,jdbcType=VARCHAR},TO_DATE(#{createTime,jdbcType=VARCHAR},'yyyy-mm-dd hh24:mi'),#{equipcode,jdbcType=VARCHAR},#{powat,jdbcType=VARCHAR})
+			   
+	</insert>
+	-->
+	
+	<!-- 
+	<select id="getEquipEnergyMonitor" parameterType="map" resultType="map">
+		SELECT * FROM (SELECT  DISTINCT EQUIP_NAME AS EQUIP_NAME,TO_CHAR(CREATE_TIME,'yyyy-MM-dd') AS ENERGY_MODIFY_TIME,
+		PI,PE,FL,VA,EQUIPCODE,
+		(SELECT SUM(BE.ELE_FA)
+			FROM T_BAS_EQUIPENERGY BE
+			WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+			AND CREATE_TIME >=TO_DATE(#{mShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{aShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')) AS MSHIFT_ENERGY,
+		(SELECT SUM(BE.ELE_FA)
+			FROM T_BAS_EQUIPENERGY BE
+			WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+			AND CREATE_TIME >=TO_DATE(#{aShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{eShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')) AS ASHIFT_ENERGY,
+		(SELECT SUM(BE.ELE_FA)
+			FROM T_BAS_EQUIPENERGY BE
+			WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+			AND CREATE_TIME >=TO_DATE(#{eShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{currentTime,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')) AS ESHIFT_ENERGY
+		FROM T_BAS_EQUIPENERGY 
+		WHERE EQUIP_NAME = #{name,jdbcType=VARCHAR}
+		AND TO_CHAR(CREATE_TIME,'yyyy-MM-dd') = #{demandTime,jdbcType=VARCHAR}  ORDER BY TO_NUMBER(PE) DESC) WHERE ROWNUM=1
+	</select>
+	-->
+	<!-- 
+	<select id="countEquipEnergyMonitor" parameterType="string" resultType="int">
+		SELECT SUM(BE.ELE_FA)
+		FROM T_BAS_EQUIPENERGY BE
+		WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+	</select>
+	-->
+	<select id="getByWorkOrder" parameterType="map" resultType="map">
+	 <![CDATA[  
+	SELECT DISTINCT L.EQUIP_CODE,
+	I.NAME,I.EQUIP_ALIAS,
+	TO_CHAR(R.PRE_START_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_START_TIME,
+	TO_CHAR(R.PRE_END_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_END_TIME,
+	TO_CHAR(WMSYS.WM_CONCAT(TO_CHAR(L.START_TIME,'yyyy-MM-dd hh24:mi:ss') || 'T' || TO_CHAR(L.END_TIME,
+    'yyyy-MM-dd hh24:mi:ss'))) AS WORK_TIME
+	  FROM T_WIP_WORK_ORDER R, T_WIP_WORK_ORDER_OPERATE_LOG L,T_FAC_EQIP_INFO I
+	 WHERE R.WORK_ORDER_NO = L.WORK_ORDER_NO
+	   AND L.STATUS = 'IN_PROGRESS'
+	   AND L.EQUIP_CODE = I.CODE
+	   AND R.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+	   AND L.START_TIME between #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+	   GROUP BY L.EQUIP_CODE,I.NAME,I.EQUIP_ALIAS,R.PRE_START_TIME,R.PRE_END_TIME
+	   union
+	   SELECT DISTINCT L.EQUIP_CODE,
+	I.NAME,I.EQUIP_ALIAS,
+	TO_CHAR(R.PRE_START_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_START_TIME,
+	TO_CHAR(R.PRE_END_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_END_TIME,
+	TO_CHAR(WMSYS.WM_CONCAT(TO_CHAR(L.START_TIME,'yyyy-MM-dd hh24:mi:ss') || 'T' || TO_CHAR(L.END_TIME,
+    'yyyy-MM-dd hh24:mi:ss'))) AS WORK_TIME
+	  FROM T_WIP_WORK_ORDER R, T_WIP_WORK_ORDER_OPERATE_LOG L,T_FAC_EQIP_INFO I
+	 WHERE R.WORK_ORDER_NO = L.WORK_ORDER_NO
+	   AND L.STATUS = 'IN_PROGRESS'
+	   AND L.EQUIP_CODE = I.CODE
+	   AND R.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+	   AND L.END_TIME between #{startDate,jdbcType=TIMESTAMP} and #{endDate,jdbcType=TIMESTAMP}
+	   GROUP BY L.EQUIP_CODE,I.NAME,I.EQUIP_ALIAS,R.PRE_START_TIME,R.PRE_END_TIME
+	   union
+	   SELECT DISTINCT L.EQUIP_CODE,
+	I.NAME,I.EQUIP_ALIAS,
+	TO_CHAR(R.PRE_START_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_START_TIME,
+	TO_CHAR(R.PRE_END_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_END_TIME,
+	TO_CHAR(WMSYS.WM_CONCAT(TO_CHAR(L.START_TIME,'yyyy-MM-dd hh24:mi:ss') || 'T' || TO_CHAR(L.END_TIME,
+    'yyyy-MM-dd hh24:mi:ss'))) AS WORK_TIME
+	  FROM T_WIP_WORK_ORDER R, T_WIP_WORK_ORDER_OPERATE_LOG L,T_FAC_EQIP_INFO I
+	 WHERE R.WORK_ORDER_NO = L.WORK_ORDER_NO
+	   AND L.STATUS = 'IN_PROGRESS'
+	   AND L.EQUIP_CODE = I.CODE
+	   AND R.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+	   AND L.END_TIME <= #{startDate,jdbcType=TIMESTAMP} 
+	   and L.END_TIME >= #{endDate,jdbcType=TIMESTAMP}
+	   GROUP BY L.EQUIP_CODE,I.NAME,I.EQUIP_ALIAS,R.PRE_START_TIME,R.PRE_END_TIME
+	   union
+	   SELECT DISTINCT L.EQUIP_CODE,
+	I.NAME,I.EQUIP_ALIAS,
+	TO_CHAR(R.PRE_START_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_START_TIME,
+	TO_CHAR(R.PRE_END_TIME,'yyyy-MM-dd hh24:mi:ss') AS PRE_END_TIME,
+	TO_CHAR(WMSYS.WM_CONCAT(TO_CHAR(L.START_TIME,'yyyy-MM-dd hh24:mi:ss') || 'T' || TO_CHAR(L.END_TIME,
+    'yyyy-MM-dd hh24:mi:ss'))) AS WORK_TIME
+	  FROM T_WIP_WORK_ORDER R, T_WIP_WORK_ORDER_OPERATE_LOG L,T_FAC_EQIP_INFO I
+	 WHERE R.WORK_ORDER_NO = L.WORK_ORDER_NO
+	   AND L.STATUS = 'IN_PROGRESS'
+	   AND L.EQUIP_CODE = I.CODE
+	   AND R.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+	   AND L.END_TIME <= #{startDate,jdbcType=TIMESTAMP} 
+	   and L.END_TIME is null
+	   GROUP BY L.EQUIP_CODE,I.NAME,I.EQUIP_ALIAS,R.PRE_START_TIME,R.PRE_END_TIME]]>
+	</select>
+	<select id="getEquipParamByCode" parameterType="string" resultType="string">
+	SELECT TO_CHAR(WMSYS.WM_CONCAT(TAG_NAME)) AS TAG_NAME FROM T_INT_EQUIP_MES_WW_MAPPING WHERE EQUIP_CODE = #{param1} AND NEED_GW = '1' GROUP BY EQUIP_CODE
+	</select>
+	<select id="getEquipParams" resultType="map">
+		SELECT REPLACE(M.EQUIP_CODE, '_EQUIP', '') AS EQUIPCODE,
+		       TO_CHAR(WMSYS.WM_CONCAT(M.TAG_NAME)) AS TAG_NAME,
+		       TO_CHAR(SYSDATE,'yyyy-MM-dd hh24:mi:ss') AS SERCHTIME
+		  FROM T_INT_EQUIP_MES_WW_MAPPING M
+		  WHERE M.NEED_GW = '1'
+		 GROUP BY M.EQUIP_CODE
+	</select>
+	
+</mapper>

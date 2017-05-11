@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/7626/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/job
+END
+SchedulerSettingMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/7626/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/job/SchedulerSettingMapper.xml
+END
+SchedulerLogMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/6421/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/job/SchedulerLogMapper.xml
+END

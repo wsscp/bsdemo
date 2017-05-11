@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/wip/dao
+END
+OrderTaskDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/5745/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/wip/dao/OrderTaskDAOTest.java
+END
+WorkOrderDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/wip/dao/WorkOrderDAOTest.java
+END
+OnoffRecordDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/wip/dao/OnoffRecordDAOTest.java
+END

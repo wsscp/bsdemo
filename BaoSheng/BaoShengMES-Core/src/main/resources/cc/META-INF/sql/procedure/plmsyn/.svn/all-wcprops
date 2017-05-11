@@ -1,0 +1,11 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/8015/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/plmsyn
+END
+SP_UPDATE_ORDER_CRAFTSID.sql
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/8015/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/plmsyn/SP_UPDATE_ORDER_CRAFTSID.sql
+END

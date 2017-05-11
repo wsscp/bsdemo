@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.ord.dao.SalesOrderItemDAO">
+
+	<resultMap type="cc.oit.bsmes.ord.model.SalesOrderItem" id="getMap">
+	</resultMap>
+
+	<sql id="orderItemColumns">
+		i."ID",
+		i.SALES_ORDER_ID,
+		i.CUST_PRODUCT_TYPE,
+		i.CUST_PRODUCT_SPEC,
+		i.PRODUCT_CODE,
+		i.PRODUCT_TYPE,
+		i.PRODUCT_SPEC,
+		i.NUMBER_OF_WIRES,
+		i.SECTION,
+		i.WIRES_STRUCTURE,
+		i.WIRES_LENGTH,
+		i.STANDARD_LENGTH,
+		i.MIN_LENGTH,
+		i.CONTRACT_AMOUNT,
+		i.SALEORDER_LENGTH,
+		i.STATUS,i.REMARKS,
+		i.CRAFTS_CODE,
+		i.CRAFTS_VERSION,
+		i.LENGTH_CONSTRAINTS,
+		i.CONTRACT_LENGTH,
+		i.ORG_CODE,
+		i.CREATE_USER_CODE,
+		i.CREATE_TIME,
+		i.MODIFY_USER_CODE,
+		i.MODIFY_TIME
+	</sql>
+
+    <select id="getById" parameterType="string" resultType="cc.oit.bsmes.ord.model.SalesOrderItem">
+        SELECT
+          <include refid="orderItemColumns"/>
+        FROM T_ORD_SALES_ORDER_ITEM i WHERE i.ID = #{id}
+    </select>
+
+	<select id="getByCustomerOrderItemId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="orderItemColumns"/> FROM T_ORD_SALES_ORDER_ITEM i 
+			JOIN T_PLA_CUSTOMER_ORDER_ITEM c 
+			ON i.ID = c.SALES_ORDER_ITEM_ID 
+		WHERE c.ID = #{customerOrderItemId7}
+	</select>
+
+	<select id="getByWorkOrder" parameterType="string" resultMap="getMap">
+		SELECT
+			<include refid="orderItemColumns"/>
+		FROM T_ORD_SALES_ORDER_ITEM i
+		WHERE exists (
+			SELECT 1 FROM T_PLA_CUSTOMER_ORDER_ITEM  OI WHERE OI.SALES_ORDER_ITEM_ID = i.ID
+	        AND EXISTS (
+				SELECT 1 FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC OID WHERE OID.ORDER_ITEM_ID = OI.ID
+				AND EXISTS (
+					SELECT 1 FROM T_PLA_CU_ORDER_ITEM_PRO_DEC IPD LEFT JOIN T_PLA_ORDER_TASK OT ON
+					OT.ORDER_ITEM_PRO_DEC_ID = IPD.ID
+					WHERE OT.WORK_ORDER_NO = #{param1}
+					AND OID.ID = IPD.ORDER_ITEM_DEC_ID
+				)
+			)
+		)
+	</select>
+	
+	<select id="getLastProcessCode" parameterType="string" resultType="string">
+	SELECT B.PROCESS_CODE
+	 FROM T_PRO_PRODUCT_CRAFTS_WIP A, T_PRO_PRODUCT_PROCESS_WIP B
+	WHERE A.ID = B.PRODUCT_CRAFTS_ID
+	  AND B.NEXT_PROCESS_ID = '-1'
+	  AND A.SALES_ORDER_ITEM_ID = #{param1}
+	</select>
+	
+	<select id="getJJInfo" parameterType="string" resultType="map">
+		SELECT REPORT_LENGTH AS JJSL, JJRID, JJR
+  FROM (SELECT ROW_.*, ROWNUM ROWNUM_
+          FROM (SELECT T6.REPORT_LENGTH,
+                       T6.CREATE_USER_CODE AS JJRID,
+                       T8.NAME             AS JJR
+                  FROM T_WIP_WORK_ORDER              T1,
+                       T_PLA_CU_ORDER_ITEM_PRO_DEC   T3,
+                       T_PLA_ORDER_TASK              T4,
+                       T_WIP_REPORT_TASK             T6,
+                       T_PLA_CUSTOMER_ORDER_ITEM_DEC T7,
+                       T_BAS_EMPLOYEE                T8
+                 WHERE T1.WORK_ORDER_NO = T4.WORK_ORDER_NO
+                   AND T3.ID = T4.ORDER_ITEM_PRO_DEC_ID
+                   AND T7.ID = T3.ORDER_ITEM_DEC_ID
+                   AND T4.ID = T6.ORDER_TASK_ID
+                   AND T1.NEXT_SECTION = '99'
+                   AND T8.USER_CODE = T6.CREATE_USER_CODE
+                   AND T7.ORDER_ITEM_ID = #{param1}
+                 ORDER BY T6.REPORT_LENGTH DESC) ROW_)
+ WHERE ROWNUM_ = 1
+	</select>
+	
+	<select id="getByCompanyGW" resultMap="getMap">
+	
+	</select>
+	
+	<select id="getFinishedGWData" parameterType="map" resultType="map">
+	<![CDATA[
+	SELECT DISTINCT TO_CHAR(WMSYS.WM_CONCAT(T.WORK_ORDER_NO)) AS WORK_ORDER_NO,
+                TO_CHAR(WMSYS.WM_CONCAT(T.PROCESS_NAME)) AS PROCESS_NAME,
+                I.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID,
+                TO_CHAR(WMSYS.WM_CONCAT(O.CONTRACT_NO)) AS CONTRACT_NO
+		  FROM T_WIP_WORK_ORDER           T,
+		       T_WIP_WO_CUSORDER_RELATION R,
+		       T_PLA_CUSTOMER_ORDER_ITEM  I,
+		       T_ORD_SALES_ORDER_ITEM     OI,
+		       T_ORD_SALES_ORDER          O
+		 WHERE T.REAL_START_TIME BETWEEN #{startDate,jdbcType = TIMESTAMP}
+		   AND #{endDate,jdbcType = TIMESTAMP}
+		   AND R.WORK_ORDER_ID = T.ID
+		   AND R.CUS_ORDER_ITEM_ID = I.ID
+		   AND I.SALES_ORDER_ITEM_ID = OI.ID
+		   AND OI.SALES_ORDER_ID = O.ID
+		   AND O.CONTRACT_NO LIKE '%GW%'
+		 GROUP BY I.SALES_ORDER_ITEM_ID
+		UNION 
+		SELECT DISTINCT TO_CHAR(WMSYS.WM_CONCAT(T.WORK_ORDER_NO)) AS WORK_ORDER_NO,
+		                TO_CHAR(WMSYS.WM_CONCAT(T.PROCESS_NAME)) AS PROCESS_NAME,
+		                I.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID,
+		                TO_CHAR(WMSYS.WM_CONCAT(O.CONTRACT_NO)) AS CONTRACT_NO
+		  FROM T_WIP_WORK_ORDER           T,
+		       T_WIP_WO_CUSORDER_RELATION R,
+		       T_PLA_CUSTOMER_ORDER_ITEM  I,
+		       T_ORD_SALES_ORDER_ITEM     OI,
+		       T_ORD_SALES_ORDER          O
+		 WHERE T.REAL_END_TIME BETWEEN #{startDate,jdbcType = TIMESTAMP}
+		   AND #{endDate,jdbcType = TIMESTAMP}
+		   AND R.WORK_ORDER_ID = T.ID
+		   AND R.CUS_ORDER_ITEM_ID = I.ID
+		   AND I.SALES_ORDER_ITEM_ID = OI.ID
+		   AND OI.SALES_ORDER_ID = O.ID
+		   AND O.CONTRACT_NO LIKE '%GW%'
+		 GROUP BY I.SALES_ORDER_ITEM_ID
+		UNION 
+		SELECT DISTINCT TO_CHAR(WMSYS.WM_CONCAT(T.WORK_ORDER_NO)) AS WORK_ORDER_NO,
+		                TO_CHAR(WMSYS.WM_CONCAT(T.PROCESS_NAME)) AS PROCESS_NAME,
+		                I.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID,
+		                TO_CHAR(WMSYS.WM_CONCAT(O.CONTRACT_NO)) AS CONTRACT_NO
+		  FROM T_WIP_WORK_ORDER           T,
+		       T_WIP_WO_CUSORDER_RELATION R,
+		       T_PLA_CUSTOMER_ORDER_ITEM  I,
+		       T_ORD_SALES_ORDER_ITEM     OI,
+		       T_ORD_SALES_ORDER          O
+		 WHERE T.REAL_START_TIME <= #{startDate,jdbcType = TIMESTAMP}
+		   AND T.REAL_END_TIME >= #{endDate,jdbcType = TIMESTAMP}
+		   AND R.WORK_ORDER_ID = T.ID
+		   AND R.CUS_ORDER_ITEM_ID = I.ID
+		   AND I.SALES_ORDER_ITEM_ID = OI.ID
+		   AND OI.SALES_ORDER_ID = O.ID
+		   AND O.CONTRACT_NO LIKE '%GW%'
+		 GROUP BY I.SALES_ORDER_ITEM_ID
+		 UNION 
+		SELECT DISTINCT TO_CHAR(WMSYS.WM_CONCAT(T.WORK_ORDER_NO)) AS WORK_ORDER_NO,
+		                TO_CHAR(WMSYS.WM_CONCAT(T.PROCESS_NAME)) AS PROCESS_NAME,
+		                I.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID,
+		                TO_CHAR(WMSYS.WM_CONCAT(O.CONTRACT_NO)) AS CONTRACT_NO
+		  FROM T_WIP_WORK_ORDER           T,
+		       T_WIP_WO_CUSORDER_RELATION R,
+		       T_PLA_CUSTOMER_ORDER_ITEM  I,
+		       T_ORD_SALES_ORDER_ITEM     OI,
+		       T_ORD_SALES_ORDER          O
+		 WHERE T.REAL_START_TIME <= #{startDate,jdbcType = TIMESTAMP}
+		   AND T.REAL_END_TIME IS NULL
+		   AND R.WORK_ORDER_ID = T.ID
+		   AND R.CUS_ORDER_ITEM_ID = I.ID
+		   AND I.SALES_ORDER_ITEM_ID = OI.ID
+		   AND OI.SALES_ORDER_ID = O.ID
+		   AND O.CONTRACT_NO LIKE '%GW%'
+		 GROUP BY I.SALES_ORDER_ITEM_ID]]>
+	</select>
+	
+</mapper>

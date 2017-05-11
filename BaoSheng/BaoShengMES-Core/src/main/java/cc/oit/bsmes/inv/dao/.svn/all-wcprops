@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/10952/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao
+END
+InventoryDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/7964/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/InventoryDAO.java
+END
+TempletDetailDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/5265/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/TempletDetailDAO.java
+END
+InventoryLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/1153/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/InventoryLogDAO.java
+END
+InventoryDetailDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4244/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/InventoryDetailDAO.java
+END
+MatDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/10952/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/MatDAO.java
+END
+MatWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/MatWipDAO.java
+END
+MatPropDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/9252/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/MatPropDAO.java
+END
+MatPropWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/9339/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/MatPropWipDAO.java
+END
+WarehouseDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/5969/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/WarehouseDAO.java
+END
+LocationDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/LocationDAO.java
+END
+TempletDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/dao/TempletDAO.java
+END

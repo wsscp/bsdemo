@@ -1,0 +1,14 @@
+Ext.define('bsmes.model.InventoryInfo',{
+	extend:'Ext.data.Model',
+	fields:[
+            'materialCode',
+            'materialName',
+            'quantity',
+            'lockedQuantity',
+            'warehouseName',
+            'locationName',
+            'locationX',
+            'locationY',
+            'locationZ',
+	        ]
+});

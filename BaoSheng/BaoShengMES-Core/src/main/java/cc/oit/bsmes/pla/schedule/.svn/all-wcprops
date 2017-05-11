@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/5641/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule
+END
+IEquipMatcher.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4655/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/IEquipMatcher.java
+END
+AbstractEquipMatcher.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/5309/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/AbstractEquipMatcher.java
+END
+ScheduleUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4185/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/ScheduleUtils.java
+END
+Scheduler.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4666/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/schedule/Scheduler.java
+END

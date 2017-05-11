@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/9331/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/service
+END
+ActionLogService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/880/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/service/ActionLogService.java
+END
+BizLogService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/880/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/service/BizLogService.java
+END
+SaleLogService.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/9331/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/service/SaleLogService.java
+END

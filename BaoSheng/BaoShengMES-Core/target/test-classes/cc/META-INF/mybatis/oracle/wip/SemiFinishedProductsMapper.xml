@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.SemiFinishedProductsDAO">
+	<resultMap type="cc.oit.bsmes.wip.model.SemiFinishedProducts"
+		id="getMap">
+	</resultMap>
+
+	<select id="findResult" resultMap='getMap'>
+		SELECT * FROM T_WIP_CHECK TC
+		<where>
+			<if test="processName!=null and processName!=''">
+				AND TC.PROCESS_NAME = #{processName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="semiFinishedProductsCount" parameterType="map"
+		resultType="int">
+		SELECT COUNT(*) FROM T_WIP_CHECK TC
+		<where>
+			<if test="processName!=null and processName!=''">
+				AND TC.PROCESS_NAME = #{processName,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="useProcedure" parameterType="map" resultMap="getMap">
+		SELECT RT.*,
+		(CASE WHEN (SELECT DISTINCT MP.PROP_TARGET_VALUE FROM
+		T_INV_MAT
+		MAT,T_INV_MAT_PROP MP,T_INV_TEMPLET_DETAIL TD
+		WHERE
+		MAT.MAT_CODE=RT.MAT_CODE
+		AND MAT.ID=MP.MAT_ID AND
+		TD.ID=MP.TEMPLET_DETAIL_ID
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID
+		AND
+		TD.PROP_CODE='BJY-001-001') IS NOT NULL THEN
+		RT.MAT_CODE || '(' ||
+		(SELECT DISTINCT MP.PROP_TARGET_VALUE FROM T_INV_MAT
+		MAT,T_INV_MAT_PROP MP,T_INV_TEMPLET_DETAIL TD
+		WHERE
+		MAT.MAT_CODE=RT.MAT_CODE
+		AND MAT.ID=MP.MAT_ID AND
+		TD.ID=MP.TEMPLET_DETAIL_ID
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID
+		AND
+		TD.PROP_CODE='BJY-001-001') || ')'
+		ELSE RT.MAT_CODE END) AS MAT_CODE
+		FROM
+		(
+		SELECT T.*,ROWNUM ROWNUM_ FROM(
+		SELECT RT.ID,RT.MAT_CODE,
+		(SELECT MAT.MAT_NAME FROM
+		T_INV_MAT MAT
+		WHERE MAT.MAT_CODE=RT.MAT_CODE) AS MAT_NAME,
+		RT.CREATE_TIME AS FINISH_DATE,
+		VL.LOCATION_NAME,BE.NAME AS USER_NAME,
+		OT.CONTRACT_NO,
+		OT.PRODUCT_CODE,PD.PRODUCT_TYPE,PD.PRODUCT_SPEC,
+		OT.TASK_LENGTH,PD.PROCESS_NAME,
+		PD.WIRE_COIL
+		FROM T_WIP_REPORT_TASK RT
+		INNER JOIN T_WIP_REPORT WR ON (RT.REPORT_ID=WR.ID AND RT.MAT_CODE IS
+		NOT
+		NULL)
+		INNER JOIN T_INV_INVENTORY INV ON(INV.BAR_CODE=WR.SERIAL_NUM)
+		INNER JOIN T_BAS_EMPLOYEE BE ON(BE.USER_CODE=RT.CREATE_USER_CODE)
+		INNER JOIN T_INV_LOCATION VL ON(INV.LOCATION_ID=VL.ID)
+		INNER JOIN
+		T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		INNER JOIN
+		T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		ON(OT.ORDER_ITEM_PRO_DEC_ID=PD.ID)
+		WHERE
+		PD.STATUS='FINISHED'
+		<include refid="useProcedureWhere" />
+		ORDER BY
+		<if test="sort != null and sort.size() > 0">
+			<foreach collection="sort" item="s" separator=",">
+				${s.property} ${s.direction}
+			</foreach>
+		</if>)T
+		 )RT
+		 WHERE ROWNUM_<![CDATA[>]]>#{start, jdbcType=INTEGER} 
+		 AND ROWNUM_<![CDATA[<=]]>#{end, jdbcType=INTEGER}
+	</select>
+
+	<select id="getProcessName" resultMap='getMap'>
+		SELECT DISTINCT
+		PROCESS_NAME FROM T_WIP_CHECK
+	</select>
+
+	<select id="countList" parameterType="map" resultType="int">
+		SELECT  COUNT(*)
+		FROM T_WIP_REPORT_TASK RT
+		INNER JOIN T_WIP_REPORT WR ON (RT.REPORT_ID=WR.ID AND RT.MAT_CODE IS NOT NULL)
+		INNER JOIN T_INV_INVENTORY INV ON(INV.BAR_CODE=WR.SERIAL_NUM)
+		INNER JOIN T_BAS_EMPLOYEE BE ON(BE.USER_CODE=RT.CREATE_USER_CODE)
+		INNER JOIN T_INV_LOCATION VL ON(INV.LOCATION_ID=VL.ID)
+		INNER JOIN T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		INNER JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PD ON(OT.ORDER_ITEM_PRO_DEC_ID=PD.ID)
+		WHERE PD.STATUS='FINISHED'
+		<include refid="useProcedureWhere" /> 
+	</select>
+
+	<select id="searchProcessName" resultMap="getMap">
+		SELECT DISTINCT
+		PD.PROCESS_NAME
+		FROM T_WIP_REPORT_TASK RT
+		INNER JOIN T_WIP_REPORT WR ON
+		(RT.REPORT_ID=WR.ID AND RT.MAT_CODE IS NOT
+		NULL)
+		INNER JOIN
+		T_INV_INVENTORY INV ON(INV.BAR_CODE=WR.SERIAL_NUM)
+		INNER JOIN
+		T_BAS_EMPLOYEE BE ON(BE.USER_CODE=RT.CREATE_USER_CODE)
+		INNER JOIN
+		T_INV_LOCATION VL ON(INV.LOCATION_ID=VL.ID)
+		INNER JOIN T_PLA_ORDER_TASK
+		OT ON(RT.ORDER_TASK_ID=OT.ID)
+		INNER JOIN T_WIP_ONOFF_RECORD OO
+		ON(BE.USER_CODE=OO.USER_CODE AND
+		RT.CREATE_TIME BETWEEN OO.ON_TIME AND
+		OO.OFF_TIME)
+		INNER JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		ON(OT.ORDER_ITEM_PRO_DEC_ID=PD.ID)
+		WHERE PD.STATUS='FINISHED'
+	</select>
+
+	<select id="searchContractNo" parameterType="String" resultMap="getMap">
+		SELECT DISTINCT OT.CONTRACT_NO
+		FROM T_WIP_REPORT_TASK RT
+		INNER JOIN
+		T_WIP_REPORT WR ON (RT.REPORT_ID=WR.ID AND RT.MAT_CODE IS NOT
+		NULL)
+		INNER JOIN T_INV_INVENTORY INV ON(INV.BAR_CODE=WR.SERIAL_NUM)
+		INNER
+		JOIN T_BAS_EMPLOYEE BE ON(BE.USER_CODE=RT.CREATE_USER_CODE)
+		INNER JOIN
+		T_INV_LOCATION VL ON(INV.LOCATION_ID=VL.ID)
+		INNER JOIN T_PLA_ORDER_TASK
+		OT ON(RT.ORDER_TASK_ID=OT.ID)
+		INNER JOIN T_WIP_ONOFF_RECORD OO
+		ON(BE.USER_CODE=OO.USER_CODE AND
+		RT.CREATE_TIME BETWEEN OO.ON_TIME AND
+		OO.OFF_TIME)
+		INNER JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		ON(OT.ORDER_ITEM_PRO_DEC_ID=PD.ID)
+		WHERE PD.STATUS='FINISHED'
+		AND
+		OT.CONTRACT_NO LIKE '%'||#{contractNo,jdbcType=VARCHAR}||'%'
+	</select>
+
+	<sql id="useProcedureWhere">
+		<if test="contractNo != null">
+			AND OT.CONTRACT_NO = #{contractNo, jdbcType=VARCHAR}
+		</if>
+		<if test="processName != null">
+			AND PD.PROCESS_NAME= #{processName, jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	<select id="useProcedureUsing" parameterType="map" resultMap="getMap">
+		SELECT RT.*,
+		(CASE WHEN (SELECT DISTINCT MP.PROP_TARGET_VALUE FROM
+		T_INV_MAT
+		MAT,T_INV_MAT_PROP MP,T_INV_TEMPLET_DETAIL TD
+		WHERE
+		MAT.MAT_CODE=RT.MAT_CODE
+		AND MAT.ID=MP.MAT_ID AND
+		TD.ID=MP.TEMPLET_DETAIL_ID
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID
+		AND
+		TD.PROP_CODE='BJY-001-001') IS NOT NULL THEN
+		RT.MAT_CODE || '(' ||
+		(SELECT DISTINCT MP.PROP_TARGET_VALUE FROM T_INV_MAT
+		MAT,T_INV_MAT_PROP MP,T_INV_TEMPLET_DETAIL TD
+		WHERE
+		MAT.MAT_CODE=RT.MAT_CODE
+		AND MAT.ID=MP.MAT_ID AND
+		TD.ID=MP.TEMPLET_DETAIL_ID
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID
+		AND
+		TD.PROP_CODE='BJY-001-001') || ')'
+		ELSE RT.MAT_CODE END) AS MAT_CODE
+		FROM
+		(
+		SELECT T.*,ROWNUM ROWNUM_ FROM(
+		SELECT RT.ID,RT.MAT_CODE,
+		(SELECT MAT.MAT_NAME FROM
+		T_INV_MAT MAT
+		WHERE MAT.MAT_CODE=RT.MAT_CODE) AS MAT_NAME,
+		RT.CREATE_TIME AS FINISH_DATE,
+		VL.LOCATION_NAME,BE.NAME AS USER_NAME,
+		OT.CONTRACT_NO,
+		OT.PRODUCT_CODE,PD.PRODUCT_TYPE,PD.PRODUCT_SPEC,
+		OT.TASK_LENGTH,PD.PROCESS_NAME,
+		PD.WIRE_COIL,
+        WR.ID REPORT_ID,
+        WR.USE_STATUS,
+        WR.USE_STATUS AS IS_USED
+		FROM T_WIP_REPORT_TASK RT
+		INNER JOIN T_WIP_REPORT WR ON (RT.REPORT_ID=WR.ID AND RT.MAT_CODE IS
+		NOT
+		NULL)
+		INNER JOIN T_INV_INVENTORY INV ON(INV.BAR_CODE=WR.SERIAL_NUM)
+		INNER JOIN T_BAS_EMPLOYEE BE ON(BE.USER_CODE=RT.CREATE_USER_CODE)
+		INNER JOIN T_INV_LOCATION VL ON(INV.LOCATION_ID=VL.ID)
+		INNER JOIN
+		T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		INNER JOIN
+		T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		ON(OT.ORDER_ITEM_PRO_DEC_ID=PD.ID)
+        INNER JOIN T_PRO_PRODUCT_PROCESS_WIP PPW ON PPW.ID = OT.PROCESS_ID AND PPW.NEXT_PROCESS_ID != '-1'
+        
+		WHERE PD.STATUS='FINISHED'
+		<include refid="useProcedureUsingWhere" />
+		ORDER BY
+		<if test="sort != null and sort.size() > 0">
+			<foreach collection="sort" item="s" separator=",">
+				RT.CREATE_TIME ${s.direction}
+			</foreach>
+		</if>)T
+		 )RT
+		 WHERE ROWNUM_<![CDATA[>]]>#{start, jdbcType=INTEGER} 
+		 AND ROWNUM_<![CDATA[<=]]>#{end, jdbcType=INTEGER}
+	</select>
+	
+	<select id="getOrderIdByTaskId" parameterType="map" resultType="string">
+SELECT
+    DISTINCT R.WORK_ORDER_NO
+FROM
+    T_WIP_REPORT R
+WHERE
+    EXISTS
+    (
+        SELECT
+            1
+        FROM
+            T_WIP_REPORT_TASK RT
+        WHERE
+            RT.REPORT_ID = R.ID
+            AND RT.ID IN
+			<foreach collection="idArr" item="id" open="(" separator="," close=")">  
+					    #{id, jdbcType=VARCHAR}
+		    </foreach>
+        )
+	</select>
+	
+	<select id="getMatQuan" parameterType="map" resultType="map">
+SELECT
+    T.MATNAME                   AS MATNAME,
+    SUM(T.AMOUNT*(LENGTH/1000)) AS QUANTITY
+FROM
+    (
+        SELECT
+            R.WORK_ORDER_NO       AS ORDERNO,
+            MW.MAT_NAME           AS MATNAME,
+            SUM(MW.AMOUNT)        AS AMOUNT,
+            SUM(RT.REPORT_LENGTH) AS LENGTH
+        FROM
+            T_PLA_MRP_WORK_ORDER MW,
+            T_WIP_REPORT_TASK RT,
+            T_WIP_REPORT R
+        WHERE
+            R.WORK_ORDER_NO = MW.WORK_ORDER_NO
+        AND RT.REPORT_ID = R.ID
+        AND R.WORK_ORDER_NO IN
+        <foreach collection="orderNoArr" item="no" open="(" separator="," close=")">  
+					    #{no, jdbcType=VARCHAR}
+	    </foreach>
+        AND RT.ID IN
+		<foreach collection="idArr" item="id" open="(" separator="," close=")">  
+					    #{id, jdbcType=VARCHAR}
+	    </foreach>
+        GROUP BY
+            R.WORK_ORDER_NO,
+            RT.ID,
+            MW.MAT_NAME) T
+GROUP BY
+    T.MATNAME
+	</select>
+	
+	<select id="getAllMatQuan" resultType="map">
+	SELECT
+    R.MAT_NAME      AS MATNAME,
+    SUM(R.QUANTITY) AS QUANTITY
+FROM
+    (
+        SELECT
+            T.WORK_ORDER_NO,
+            MW.MAT_NAME,
+            MW.AMOUNT*(T.LENGTH/1000) AS QUANTITY
+        FROM
+            (
+                SELECT DISTINCT
+                    WR.WORK_ORDER_NO,
+                    SUM(RT.REPORT_LENGTH) AS LENGTH
+                FROM
+                    T_WIP_REPORT WR
+                INNER JOIN
+                    T_WIP_REPORT_TASK RT
+                ON
+                    (
+                        RT.REPORT_ID=WR.ID
+                    AND RT.MAT_CODE IS NOT NULL)
+                INNER JOIN
+                    T_PLA_ORDER_TASK OT
+                ON
+                    (
+                        RT.ORDER_TASK_ID=OT.ID)
+                INNER JOIN
+                    T_PRO_PRODUCT_PROCESS_WIP PPW
+                ON
+                    PPW.ID = OT.PROCESS_ID
+                AND PPW.NEXT_PROCESS_ID != '-1'
+                WHERE
+                    WR.USE_STATUS = '未使用'
+                GROUP BY
+                    WR.WORK_ORDER_NO,
+                    RT.ID)T,
+            T_PLA_MRP_WORK_ORDER MW
+        WHERE
+            T.WORK_ORDER_NO = MW.WORK_ORDER_NO) R
+GROUP BY
+   R.MAT_NAME 
+ORDER BY QUANTITY DESC
+	</select>
+
+    <select id="getAllMatCost" parameterType="map" resultType="map">
+    SELECT 
+T.MAT_CODE AS MATCODE,
+T.MAT_NAME AS MATNAME,
+SUM(T.QUANTITY*(ORDER_LENGTH/1000)) AS QUANTITY
+FROM(
+SELECT
+            W.WORK_ORDER_NO,
+            PM.MAT_CODE,
+            PM.MAT_NAME,
+            SUM(PM.QUANTITY) AS QUANTITY,
+            W.ORDER_LENGTH
+        FROM
+            T_PLA_MRP PM,
+            T_WIP_WORK_ORDER W
+        WHERE
+        PM.MAT_CODE LIKE 'Y%'
+        AND PM.WORK_ORDER_ID = W.ID
+        AND W.ID IN
+        <foreach collection="flowIdArr" item="id1" open="(" separator="," close=")">  
+					    #{id1, jdbcType=VARCHAR}
+	    </foreach>
+        AND PM.WORK_ORDER_ID = W.ID
+        GROUP BY
+            W.WORK_ORDER_NO,
+            W.ORDER_LENGTH,
+            PM.MAT_CODE,
+            PM.MAT_NAME) T
+GROUP BY
+T.MAT_CODE,
+T.MAT_NAME
+    </select>
+    
+    <insert id="insertCostInfo" parameterType="map">
+    INSERT
+    INTO
+        T_PLA_MRP_WORK_ORDER
+        (
+            ID,
+            WORK_ORDER_ID,
+            WORK_ORDER_NO,
+            MAT_CODE,
+            MAT_NAME,
+            AMOUNT,
+            CREATE_USER_CODE,
+            CREATE_TIME,
+            MODIFY_USER_CODE,
+            MODIFY_TIME
+        )
+        VALUES
+        (
+            SYS_GUID(),
+            #{thisWorkOrderId, jdbcType=VARCHAR},
+            #{thisWorkOrderNo, jdbcType=VARCHAR},
+            #{matCode, jdbcType=VARCHAR},
+            #{matName, jdbcType=VARCHAR},
+            #{quantity, jdbcType=VARCHAR},
+            'JOB',
+            SYSDATE,
+            'JOB',
+            SYSDATE
+        )
+    </insert>
+    
+    <select id="getAllWorkOrder" resultType="string">
+            SELECT DISTINCT WORK_ORDER_NO AS WORKORDERNO
+            FROM T_WIP_WORK_ORDER
+            WHERE
+            STATUS NOT IN ('CANCELED','TO_AUDIT')
+            AND TO_CHAR(CREATE_TIME,'yyyy-mm-dd hh:mm:ss') > '2017-01-01 00:00:00'
+    </select>
+
+	<select id="countListUsing" parameterType="map" resultType="int">
+		SELECT  COUNT(*)
+		FROM T_WIP_REPORT_TASK RT
+		INNER JOIN T_WIP_REPORT WR ON (RT.REPORT_ID=WR.ID AND RT.MAT_CODE IS NOT NULL)
+		INNER JOIN T_INV_INVENTORY INV ON(INV.BAR_CODE=WR.SERIAL_NUM)
+		INNER JOIN T_BAS_EMPLOYEE BE ON(BE.USER_CODE=RT.CREATE_USER_CODE)
+		INNER JOIN T_INV_LOCATION VL ON(INV.LOCATION_ID=VL.ID)
+		INNER JOIN T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		INNER JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PD ON(OT.ORDER_ITEM_PRO_DEC_ID=PD.ID)
+        INNER JOIN T_PRO_PRODUCT_PROCESS_WIP PPW ON PPW.ID = OT.PROCESS_ID AND PPW.NEXT_PROCESS_ID != '-1'
+		WHERE PD.STATUS='FINISHED'
+		<include refid="useProcedureUsingWhere" /> 
+	</select>
+	
+	<sql id="useProcedureUsingWhere">
+		<if test="contractNo != null">
+			AND OT.CONTRACT_NO = #{contractNo, jdbcType=VARCHAR}
+		</if>
+		<if test="processName != null">
+			AND PD.PROCESS_NAME= #{processName, jdbcType=VARCHAR}
+		</if>
+		<if test="isUsed != null and isUsed != ''">
+		AND WR.USE_STATUS = #{isUsed,jdbcType=VARCHAR}
+		  </if>
+	</sql>
+</mapper>

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception
+END
+InconsistentException.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception/InconsistentException.java
+END
+DataCommitException.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception/DataCommitException.java
+END
+MESException.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception/MESException.java
+END
+ErrorBasConfigException.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/2033/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception/ErrorBasConfigException.java
+END
+UnsupportedOperationException.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception/UnsupportedOperationException.java
+END
+IllegalArgumentException.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/605/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/exception/IllegalArgumentException.java
+END

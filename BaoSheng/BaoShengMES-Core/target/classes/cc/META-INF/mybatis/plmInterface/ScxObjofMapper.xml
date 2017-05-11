@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ScxObjofDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.ScxObjof"
+		id="getMap">
+	</resultMap>
+
+	<select id="lastUpdateData" parameterType="map"
+		resultType="cc.oit.bsmes.interfacePLM.model.ScxObjof">
+		SELECT
+		ID,
+		ITEMID1,
+		ITEMTN1,
+		ITEMID2,
+		ITEMTN2,
+		CTIME,
+		MTIME
+		FROM SCX_OBJOF
+		WHERE DEL='0'
+		AND WKAID <![CDATA[ <>]]>
+		'3'
+		AND ITEMTN1 = 'SCX'
+		AND ITEMTN2 = 'MACH'
+		<if test="lastDate != null">
+			AND <![CDATA[(CTIME > #{lastDate} OR MTIME > #{lastDate})]]>
+		</if>
+	</select>
+
+	<select id="findByProcessId" parameterType="String"
+		resultType="cc.oit.bsmes.interfacePLM.model.ScxObjof">
+		SELECT
+		ID,
+		ITEMID1,
+		ITEMTN1,
+		ITEMID2,
+		ITEMTN2,
+		CTIME,
+		MTIME
+		FROM SCX_OBJOF
+		WHERE ITEMID1=#{processId,jdbcType=VARCHAR}
+		AND WKAID <![CDATA[ <>]]>'3'
+		AND DEL='0'
+	</select>
+
+	<insert id="insertObjof" parameterType="cc.oit.bsmes.interfacePLM.model.Scxk">
+		INSERT INTO
+		SCX_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME
+		,OWNER,STATE,ITEMID1,ITEMTN1,ITEMID2,ITEMTN2,SL)
+		VALUES(#{id,jdbcType=VARCHAR},'0','N','1',#{designno,jdbcType=VARCHAR},#{designno,jdbcType=VARCHAR},
+		'MES',sysdate,'MES','A',#{itemid1,jdbcType=VARCHAR},'PROCESS',#{itemid2,jdbcType=VARCHAR},
+		'SCX','1')
+	</insert>
+
+	<delete id="deleteScxObjofByPrcvNo" parameterType="String">
+		DELETE FROM
+		SCX_OBJOF SO WHERE EXISTS(SELECT * FROM PROCESS_OBJOF PO,PRCV
+		WHERE SO.ITEMID1=PO.ITEMID2 AND PO.ITEMID1=PRCV.ID AND
+		PRCV.NO=#{param,jdbcType=VARCHAR})
+		AND SO.WKAID<![CDATA[<>]]>'3'
+		AND SO.DEL='0'
+	</delete>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.RealCostDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.RealCost" id="getMap">
+	</resultMap>
+    <select id="checkProductPutIn" parameterType="string" resultType="cc.oit.bsmes.wip.model.RealCost">
+        SELECT
+          RE.ID,
+          RE.MAT_CODE
+        FROM T_WIP_REAL_COST RE
+          WHERE RE.WORK_ORDER_NO = #{param1}
+          AND RE.BATCH_NO = #{param2}
+    </select>
+
+    <delete id="deleteByBarCode" parameterType="string" flushCache="true">
+        DELETE FROM T_WIP_REAL_COST WHERE BATCH_NO = #{param2}
+    </delete>
+</mapper>

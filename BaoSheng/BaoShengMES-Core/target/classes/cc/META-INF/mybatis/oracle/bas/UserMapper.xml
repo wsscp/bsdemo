@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.UserDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.User" id="getMap">
+	</resultMap>
+	
+	<update id="update" parameterType="cc.oit.bsmes.bas.model.User">
+		UPDATE T_BAS_USER
+		<set>
+			<if test="password != null and password !=''">
+				PASSWORD = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null and status !=''">
+				STATUS  = #{status,jdbcType=VARCHAR},
+			</if>
+			MODIFY_TIME = sysdate,
+			MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR} 
+	</update>
+
+    <update id="updateByUserCode" parameterType="string" >
+        UPDATE T_BAS_USER
+          SET   SUPPLEMENTARY = #{param2},
+                MODIFY_TIME = sysdate,
+                MODIFY_USER_CODE = #{param1}
+        WHERE USER_CODE = #{param1}
+    </update>
+	
+	<select id="find" parameterType="cc.oit.bsmes.bas.model.User" resultType="cc.oit.bsmes.bas.model.User">
+		SELECT 	bu.*,
+				be.NAME as name,
+				be.ORG_CODE
+		FROM T_BAS_EMPLOYEE be 
+			RIGHT JOIN T_BAS_USER bu ON bu.USER_CODE = be.USER_CODE
+			LEFT JOIN T_BAS_USER_ROLE bur ON bur.USER_ID = bu.ID
+			LEFT JOIN T_BAS_ROLE br ON br.ID = bur.ROLE_ID
+		<where>
+			<if test="userCode !=null and userCode !=''">
+				bu.USER_CODE LIKE #{userCode,jdbcType=VARCHAR}
+			</if>
+			<if test="name !=null and name !=''">
+				AND be.NAME LIKE #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="role != null and role != ''">
+				AND br.NAME LIKE #{role,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				AND be.ORG_CODE LIKE #{orgCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="count" parameterType="cc.oit.bsmes.bas.model.User" resultType="int">
+		SELECT 	COUNT(bu.ID) 
+		FROM T_BAS_EMPLOYEE be 
+			RIGHT JOIN T_BAS_USER bu ON bu.USER_CODE = be.USER_CODE
+			LEFT JOIN T_BAS_USER_ROLE bur ON bur.USER_ID = bu.ID
+			LEFT JOIN T_BAS_ROLE br ON br.ID = bur.ROLE_ID
+		<where>
+			<if test="userCode !=null and userCode !=''">
+				bu.USER_CODE LIKE #{userCode,jdbcType=VARCHAR}
+			</if>
+			<if test="name !=null and name !=''">
+				AND be.NAME LIKE #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="role != null and role != ''">
+				AND br.NAME LIKE #{role,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.bas.model.User">
+		SELECT 	bu.*,
+				be.NAME as name,
+				be.ORG_CODE
+		FROM T_BAS_USER bu LEFT JOIN T_BAS_EMPLOYEE be ON bu.USER_CODE = be.USER_CODE
+		WHERE bu.ID = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByUserCode" parameterType="string" resultType="cc.oit.bsmes.bas.model.User">
+		SELECT U.*,E.NAME,E.ORG_CODE FROM T_BAS_USER U
+		LEFT JOIN T_BAS_EMPLOYEE E ON U.USER_CODE = E.USER_CODE
+		WHERE U.USER_CODE = #{userCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getOrgName" parameterType="string" resultType="string">
+		SELECT
+		    NAME
+		FROM
+		    T_BAS_ORG
+		WHERE
+		    ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAllOrg" resultType="cc.oit.bsmes.bas.model.User">
+		SELECT
+		    NAME AS ORG_NAME,
+		    ORG_CODE
+		FROM
+		    T_BAS_ORG
+	</select>
+	
+	<update id="updateUserCode" parameterType="cc.oit.bsmes.bas.model.User">
+		UPDATE T_BAS_USER
+		<set>
+			USER_CODE = #{userCode,jdbcType=VARCHAR},
+			MODIFY_TIME = sysdate,
+			MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR} 
+	</update>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.DebugDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.Debug" id="getMap">
+	</resultMap>
+	<sql id="debugColumns">
+		D.ID,
+		D.WORK_ORDER_NO,
+		D.DEBUG_TYPE,
+		D.START_TIME,
+		D.END_TIME,
+		D.CREATE_TIME,
+		D.CREATE_USER_CODE,
+		D.MODIFY_TIME,
+		D.MODIFY_USER_CODE
+	</sql>
+	<!-- 根据workOrderNo获取设备信息 -->
+	<select id="getByWorkOrderNoAndNullEndTime" resultMap="getMap" parameterType="string">
+		SELECT
+		<include refid="debugColumns" />
+		FROM T_WIP_DEBUG D
+		WHERE D.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR} 
+		AND D.END_TIME IS NULL
+	</select>
+</mapper>

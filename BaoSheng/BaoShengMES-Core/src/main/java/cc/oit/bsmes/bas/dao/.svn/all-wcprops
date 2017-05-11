@@ -1,0 +1,185 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/11982/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao
+END
+EquipEnergyMonthMonitorDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/11982/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EquipEnergyMonthMonitorDAO.java
+END
+EquipCalendarDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/7320/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EquipCalendarDAO.java
+END
+UserDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/7572/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/UserDAO.java
+END
+EmployeeDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7648/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EmployeeDAO.java
+END
+MonthCalendarDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/MonthCalendarDAO.java
+END
+WorkShiftDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/WorkShiftDAO.java
+END
+EquipMESWWMappingDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EquipMESWWMappingDAO.java
+END
+WeekCalendarShiftDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/WeekCalendarShiftDAO.java
+END
+SysMessageDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/SysMessageDAO.java
+END
+MesClientDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/7308/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/MesClientDAO.java
+END
+AmoebaDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/11502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/AmoebaDAO.java
+END
+WeekCalendarDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/WeekCalendarDAO.java
+END
+ParamConfigDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/ParamConfigDAO.java
+END
+OrgDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/5661/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/OrgDAO.java
+END
+AttachmentDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8390/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/AttachmentDAO.java
+END
+DataDicDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5032/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/DataDicDAO.java
+END
+EmployeeFamilyInfoDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/11247/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EmployeeFamilyInfoDAO.java
+END
+MesClientManEqipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5161/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/MesClientManEqipDAO.java
+END
+ParmsMappingDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8304/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/ParmsMappingDAO.java
+END
+EmployeeResumeDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11836/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EmployeeResumeDAO.java
+END
+ResumeDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/11248/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/ResumeDAO.java
+END
+UserRoleDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/4121/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/UserRoleDAO.java
+END
+EquipCalShiftDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EquipCalShiftDAO.java
+END
+RoleDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/4658/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/RoleDAO.java
+END
+EquipEnergyMonitorDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/11874/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/EquipEnergyMonitorDAO.java
+END
+RoleEquipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/5028/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/RoleEquipDAO.java
+END
+PropConfigDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/PropConfigDAO.java
+END
+VProcessEquipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/VProcessEquipDAO.java
+END
+RoleResourceDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/3712/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/RoleResourceDAO.java
+END
+ResourcesDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4617/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/dao/ResourcesDAO.java
+END

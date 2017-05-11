@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.ParmsMappingDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.ParmsMapping" id="getMap">
+	</resultMap>
+
+	<select id="getParmsMapping" resultType="map">
+		select count(1) AS NUM,EQUIP_CODE,PARM_CODE from T_INT_EQUIP_MES_WW_MAPPING group by EQUIP_CODE,PARM_CODE
+	</select>
+	
+	<!-- 获取设备上该标签的警戒值：targetCode:标签名\equipCode:设备编码\orgCode:组织编码-->
+	<select id="getEquipWWProductValue" resultType="string">
+		SELECT EQUIP_WW_TARGETVALUE(#{param1}, #{param2}, #{param3}) FROM DUAL
+	</select>
+	
+</mapper>

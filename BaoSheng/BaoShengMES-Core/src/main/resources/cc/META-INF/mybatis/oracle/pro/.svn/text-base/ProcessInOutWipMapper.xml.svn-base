@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessInOutWipDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessInOutWip" id="getMap">
+		<result property="matCode" column="MAT_CODE"/>
+	</resultMap>
+	
+	<!-- 根据工艺流程的id获取每个工序的投入和产出 -->
+	<select id="getByProcessId" parameterType="string" resultMap="getMap" >
+		WITH MATTEMP AS
+		 (SELECT M.MAT_NAME,
+		         M.MAT_CODE,
+		         M.COLOr,
+		         WMSYS.WM_CONCAT(D.PROP_NAME || ':' || P.PROP_TARGET_VALUE) AS REMARK
+		    FROM T_INV_MAT_WIP            M,
+		         T_INV_MAT_PROP_WIP       P,
+		         T_INV_TEMPLET_DETAIL     D,
+		         T_PRO_PROCESS_IN_OUT_WIP W
+		   WHERE P.MAT_ID = M.ID
+		     AND P.TEMPLET_DETAIL_ID = D.ID
+		     AND M.PROCESS_IN_OUT_WIP_ID = W.ID
+		     AND W.PRODUCT_PROCESS_ID = #{processId, jdbcType=VARCHAR}
+		     AND (D.PROP_NAME IN ('宽度',
+		                          '厚度',
+		                          '材质',
+		                          '尺寸',
+		                          '规格',
+		                          '单丝直径',
+		                          '单丝标准直径',
+		                          '成品电线最大外径',
+		                          '成品电线最小外径',
+		                          '成品电线标准外径',
+		                          '结构') OR D.PROP_NAME LIKE '%颜色%')
+		   GROUP BY M.MAT_CODE, M.MAT_NAME, M.COLOR
+		   ORDER BY REMARK)
+		SELECT O.ID,
+		       O.MAT_CODE,
+		       O.IN_OR_OUT,
+		       O.QUANTITY,
+		       O.QUANTITY_FORMULA,
+		       O.UNIT,
+		       O.USE_METHOD,
+		       O.PRODUCT_PROCESS_ID,
+		       M.MAT_NAME,
+    		   M.COLOR,
+		       T.REMARK
+		  FROM T_PRO_PROCESS_IN_OUT_WIP O
+		  INNER JOIN T_INV_MAT_WIP M ON O.MAT_CODE = M.MAT_CODE AND O.ID=M.PROCESS_IN_OUT_WIP_ID
+		  LEFT JOIN MATTEMP T ON O.MAT_CODE = T.MAT_CODE
+		WHERE
+		    O.PRODUCT_PROCESS_ID = #{processId, jdbcType=VARCHAR}
+		 ORDER BY IN_OR_OUT DESC
+	</select>
+	
+	<select id="countByProcessId" parameterType="string" resultType="int" >
+		SELECT COUNT(1)
+		FROM T_PRO_PROCESS_IN_OUT_WIP
+		WHERE PRODUCT_PROCESS_ID = #{processId}
+	</select>
+
+    <insert id="insertAll" parameterType="java.util.List">
+        INSERT INTO T_PRO_PROCESS_IN_OUT_WIP(ID,PRODUCT_PROCESS_ID,MAT_CODE,IN_OR_OUT,CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,
+        QUANTITY,QUANTITY_FORMULA,UNIT,USE_METHOD)
+        <foreach collection="processInOutWip" item="item" index="index" 
+			  separator="union all">
+			  SELECT
+			  #{item.id,jdbcType=VARCHAR},#{item.productProcessId,jdbcType=VARCHAR},
+			  #{item.matCode,jdbcType=VARCHAR},#{item.inOrOut,jdbcType=VARCHAR},
+			  sysdate, 'Service', 
+			  sysdate, 'Service',
+			  #{item.quantity,jdbcType=DOUBLE},#{item.quantityFormula,jdbcType=VARCHAR},
+			  #{item.unit,jdbcType=VARCHAR},#{item.useMethod,jdbcType=VARCHAR}
+			  FROM DUAL
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteDate" parameterType="string">
+       DELETE FROM T_PRO_PROCESS_IN_OUT_WIP PIO WHERE EXISTS(
+        SELECT 1 FROM T_PRO_PRODUCT_PROCESS_WIP PP WHERE PP.PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+        AND PP.ID = PIO.PRODUCT_PROCESS_ID
+       )
+    </delete>
+
+</mapper>

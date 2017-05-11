@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/BSMES/!svn/ver/9331/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/dao
+END
+ActionLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/879/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/dao/ActionLogDAO.java
+END
+BizInfoDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/927/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/dao/BizInfoDAO.java
+END
+BizLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/879/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/dao/BizLogDAO.java
+END
+SaleLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/9331/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/dao/SaleLogDAO.java
+END
+EntityInfoDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5546/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/log/dao/EntityInfoDAO.java
+END

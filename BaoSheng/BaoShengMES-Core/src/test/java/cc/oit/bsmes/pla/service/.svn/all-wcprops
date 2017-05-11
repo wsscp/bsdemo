@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/11423/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/service
+END
+OrderTaskServiceTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/11423/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/service/OrderTaskServiceTest.java
+END
+CustomerOrderPlanServiceTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/service/CustomerOrderPlanServiceTest.java
+END
+CustomerOrderItemProDecServiceTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/service/CustomerOrderItemProDecServiceTest.java
+END
+CustomerOrderItemServiceTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/service/CustomerOrderItemServiceTest.java
+END
+InitDataTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/6754/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/service/InitDataTest.java
+END

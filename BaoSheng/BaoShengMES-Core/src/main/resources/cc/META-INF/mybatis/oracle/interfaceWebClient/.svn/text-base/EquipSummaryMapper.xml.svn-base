@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfaceWebClient.dao.EquipSummaryDAO">
+	<resultMap type="cc.oit.bsmes.interfaceWebClient.model.EquipSummary" id="getMap">
+	</resultMap>
+	
+	<select id="getEquipSummary" parameterType="cc.oit.bsmes.interfaceWebClient.model.EquipSummary" resultMap="getMap">
+	
+	    select TYPE,sum(TIMES) as  TIMES   from T_RPT_EQUIP_SUMMARY  
+    		where  REPORT_DATE>=#{startTime,jdbcType=TIMESTAMP}    	  
+    		AND REPORT_DATE <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP}  
+	
+	       <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>  
+    	 group by TYPE
+    	  
+	</select>
+ 
+	
+	<select id="getEquipOEE" parameterType="cc.oit.bsmes.interfaceWebClient.model.EquipSummary" resultMap="getMap">
+	
+    select REPORT_DATE,TYPE , TIMES   from T_RPT_EQUIP_SUMMARY 
+    where  REPORT_DATE>=#{startTime,jdbcType=TIMESTAMP}    	  
+    		AND REPORT_DATE <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP}  
+	
+	       <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>  
+    	  order by REPORT_DATE ASC
+	</select>
+	
+ 
+</mapper>

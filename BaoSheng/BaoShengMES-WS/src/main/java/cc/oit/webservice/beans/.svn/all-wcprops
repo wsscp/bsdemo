@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/11809/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans
+END
+ERPOrderSyncService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/ERPOrderSyncService.java
+END
+SaveSalesOrderItemResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/SaveSalesOrderItemResponse.java
+END
+SaveSalesOrderItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/SaveSalesOrderItem.java
+END
+SaveSalesOrderResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/SaveSalesOrderResponse.java
+END
+ERPOrderSyncServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/11809/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/ERPOrderSyncServiceImpl.java
+END
+SaveSalesOrder.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/SaveSalesOrder.java
+END
+package-info.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/package-info.java
+END
+ERPService.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7824/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/ERPService.java
+END
+ObjectFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5852/trunk/BaoSheng/BaoShengMES-WS/src/main/java/cc/oit/webservice/beans/ObjectFactory.java
+END

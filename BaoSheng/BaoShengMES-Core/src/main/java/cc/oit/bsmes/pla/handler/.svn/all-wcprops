@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/11600/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/handler
+END
+MatcherEquipCalendarHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/5662/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/handler/MatcherEquipCalendarHandler.java
+END
+QcWipHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/11600/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/handler/QcWipHandler.java
+END
+ReverseRecursionCraftHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/5674/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/handler/ReverseRecursionCraftHandler.java
+END
+ForwardRecursionCraftHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/5662/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/handler/ForwardRecursionCraftHandler.java
+END

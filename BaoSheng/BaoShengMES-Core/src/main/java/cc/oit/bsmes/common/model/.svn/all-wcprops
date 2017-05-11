@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/7810/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/model
+END
+ResourcesStore.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7810/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/model/ResourcesStore.java
+END
+Base.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/model/Base.java
+END
+EventStore.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/model/EventStore.java
+END

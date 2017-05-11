@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductCraftsWipDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProductCraftsWip" id="getMap">
+	</resultMap>
+	
+	<parameterMap id="qcMap" type="map" >
+	    <parameter property="QCWIPLIST" javaType="java.util.List" jdbcType="ARRAY" mode="IN" typeHandler="cc.oit.bsmes.pla.handler.QcWipHandler"/>
+	</parameterMap>
+	
+	<select id="getByProcessReceiptId" parameterType="string" resultMap="getMap">
+		SELECT *
+			FROM T_PRO_PRODUCT_CRAFTS_WIP
+			WHERE ID IN
+			(
+				SELECT PRO.PRODUCT_CRAFTS_ID
+				FROM T_PRO_PROCESS_RECEIPT_WIP PR
+				INNER JOIN T_PRO_EQIP_LIST_WIP EL ON EL.ID=PR.EQIP_LIST_ID
+				INNER JOIN T_PRO_PRODUCT_PROCESS_WIP PRO ON PRO.ID=EL.PROCESS_ID
+				WHERE PR.ID=#{processReceiptId, jdbcType=VARCHAR}
+			)
+
+	</select>
+	
+	<select id="getCountExists" parameterType="map" resultType="int">
+	   SELECT COUNT(*) FROM T_PRO_PRODUCT_CRAFTS_WIP WHERE SALES_ORDER_ITEM_ID = #{salesOrderItemId, jdbcType=VARCHAR}
+	   AND PRODUCT_CRAFTS_ID = #{craftsId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getExistsId" parameterType="map" resultMap="getMap">
+	   SELECT * FROM T_PRO_PRODUCT_CRAFTS_WIP WHERE SALES_ORDER_ITEM_ID = #{salesOrderItemId, jdbcType=VARCHAR}
+	   AND PRODUCT_CRAFTS_ID = #{craftsId, jdbcType=VARCHAR}
+	   AND ROWNUM = 1
+	</select>
+	
+	<select id="getByMatPropId" parameterType="string" resultMap="getMap">
+		SELECT *
+			FROM T_PRO_PRODUCT_CRAFTS_WIP
+			WHERE ID IN
+			(
+				SELECT PRO.PRODUCT_CRAFTS_ID
+				FROM T_INV_MAT_PROP_WIP MP
+				INNER JOIN T_INV_MAT_WIP MAT ON MAT.ID=MP.MAT_ID
+				INNER JOIN T_PRO_PRODUCT_PROCESS_WIP PRO ON PRO.ID=MAT.PROCESS_WIP_ID
+				WHERE MP.ID=#{matPropId, jdbcType=VARCHAR}
+			)
+
+	</select>
+
+	<update id="updateToSpecial" parameterType="map">
+	    UPDATE T_PRO_PRODUCT_CRAFTS_WIP 
+	    SET IS_SPECIAL ='1',
+	    CRAFTS_CNAME= #{craftsCname, jdbcType=VARCHAR},
+	    MODIFY_USER_CODE= #{modifyUserCode, jdbcType=VARCHAR},
+	    MODIFY_TIME= #{modifyTime, jdbcType=DATE}
+	    WHERE ID = #{productCraftsId, jdbcType=VARCHAR}
+
+	</update>
+	
+	<insert id="insertNewDate" parameterType="java.util.List">
+        INSERT INTO T_PRO_PRODUCT_CRAFTS_WIP(ID,CRAFTS_CODE,CRAFTS_NAME,START_DATE,END_DATE,CRAFTS_VERSION,PRODUCT_CODE,CREATE_TIME,CREATE_USER_CODE,
+        MODIFY_TIME,MODIFY_USER_CODE,ORG_CODE,IS_DEFAULT,CRAFTS_CNAME,SALES_ORDER_ITEM_ID,PRODUCT_CRAFTS_ID)
+        <foreach collection="productCraftsWipList" item="item" index="index" 
+			  separator="union all">
+			  SELECT
+			  #{item.id,jdbcType=VARCHAR},#{item.craftsCode,jdbcType=VARCHAR},#{item.craftsName,jdbcType=VARCHAR},#{item.startDate,jdbcType=DATE},
+			  #{item.endDate,jdbcType=DATE},#{item.craftsVersion,jdbcType=VARCHAR},#{item.productCode,jdbcType=VARCHAR},
+			  sysdate, 'Service', 
+			  sysdate, 'Service',
+			  #{item.orgCode,jdbcType=VARCHAR},#{item.isDefault,jdbcType=VARCHAR},#{item.craftsCname,jdbcType=VARCHAR},
+			  #{item.salesOrderItemId,jdbcType=VARCHAR},#{item.productCraftsId,jdbcType=VARCHAR}
+			  FROM DUAL
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteDate" parameterType="string">
+       DELETE FROM T_PRO_PRODUCT_CRAFTS_WIP WHERE ID = #{oldCraftsId,jdbcType=VARCHAR}
+    </delete>
+    
+    <select id="getCountById" parameterType="string" resultType="int">
+       SELECT COUNT(*) FROM T_PRO_PRODUCT_CRAFTS_WIP WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+    
+    <insert id="dataSeparationFunctionNew" parameterMap="qcMap" statementType="CALLABLE">
+		{call WIP_DATA_SEPARATION(?)}
+	</insert>
+
+</mapper>
+
+

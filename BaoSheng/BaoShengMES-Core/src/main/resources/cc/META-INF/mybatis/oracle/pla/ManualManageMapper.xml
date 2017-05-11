@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.ManualManageDAO">
+	<resultMap type="cc.oit.bsmes.pla.model.ManualManage" id="getMap">
+	</resultMap>
+	
+	<select id="getInfo" parameterType="map" resultMap="getMap">
+	  SELECT O.* FROM (SELECT R.*,ROWNUM as rownum_
+      FROM (SELECT T.ID,
+               T2.CONTRACT_NO,
+               T1.ID AS SALES_ORDER_ITEM_ID,
+               (T1.CUST_PRODUCT_TYPE || '-' || T1.CUST_PRODUCT_SPEC) AS CUST_PRODUCT_TYPE,
+               T1.CONTRACT_LENGTH,
+               T.PT_FINISH_TIME,
+               T.CL_FINISH_TIME,
+               T.BZ_FINISH_TIME,
+               T.HT_FINISH_TIME,
+               T.COORDINATE_TIME,
+               T.REMARKS,
+               T.INFO_SOURCES
+          FROM T_PLA_PRODUCT_DELIVERY T,
+               T_ORD_SALES_ORDER_ITEM T1,
+               T_ORD_SALES_ORDER      T2
+         WHERE T.SALES_ORDER_ITEM_ID = T1.ID
+           AND T2.ID = T1.SALES_ORDER_ID
+           <include refid = "getParameter"/>
+           ORDER BY  T1.CREATE_TIME DESC
+           ) R) O
+     WHERE O.rownum_ > #{start}
+       AND O.rownum_ <![CDATA[<=]]> #{end}
+	</select>
+	
+	<select id="getAllInfo" parameterType="map" resultMap="getMap">
+	 select T.id,
+               T2.contract_no,
+               T1.id as SALES_ORDER_ITEM_ID,
+               (T1.cust_product_type || '-' || T1.cust_product_spec) as CUST_PRODUCT_TYPE,
+               T1.contract_length,
+               T.pt_finish_time,
+               T.cl_finish_time,
+               T.bz_finish_time,
+               T.ht_finish_time,
+               T.coordinate_time,
+               T.remarks,
+               T.INFO_SOURCES,
+               rownum as rownum_
+          from T_PLA_PRODUCT_DELIVERY T,
+               T_ORD_SALES_ORDER_ITEM T1,
+               T_ORD_SALES_ORDER      T2
+         where T.sales_order_item_id = T1.id
+           and T2.id = T1.sales_order_id
+	</select>
+	
+	<select id="countContractNo" parameterType="map" resultType="int">
+	    select count(SO.CONTRACT_NO)
+          FROM T_ORD_SALES_ORDER SO,
+          	   T_ORD_SALES_ORDER_ITEM OI,
+          	   T_PLA_PRODUCT_DELIVERY PD
+          WHERE PD.sales_order_item_id = OI.ID
+          	AND SO.ID = OI.sales_order_id
+          <include refid = "getCount"/>
+	</select>
+	
+	<sql id="getCount">
+		<if test="contractNo!=null and contractNo!=''">
+			AND SO.CONTRACT_NO = #{contractNo,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="getParameter">
+		<if test="contractNo!=null and contractNo!=''">
+			AND T2.CONTRACT_NO = #{contractNo,jdbcType=VARCHAR}
+		</if>
+		<if test="ptFinishTime!=null and ptFinishTime!=''"> 
+		    AND TO_CHAR(T.pt_finish_time,'yyyy-MM-dd') = #{ptFinishTime,jdbcType=VARCHAR}
+		</if>
+		<if test="clFinishTime!=null and clFinishTime!=''"> 
+		    AND TO_CHAR(T.cl_finish_time,'yyyy-MM-dd') = #{clFinishTime,jdbcType=VARCHAR}
+		</if>
+		<if test="bzFinishTime!=null and bzFinishTime!=''"> 
+		    AND TO_CHAR(T.bz_finish_time,'yyyy-MM-dd') = #{bzFinishTime,jdbcType=VARCHAR}
+		</if>
+		<if test="htFinishTime!=null and htFinishTime!=''"> 
+		    AND TO_CHAR(T.ht_finish_time,'yyyy-MM-dd') = #{htFinishTime,jdbcType=VARCHAR}
+		</if>
+		<if test="coordinatetime!=null and coordinatetime!=''"> 
+		    AND TO_CHAR(T.coordinate_time,'yyyy-MM-dd') = #{coordinatetime,jdbcType=VARCHAR}
+		</if>
+		<if test="infosources!=null and infosources!=''"> 
+		    AND T.INFO_SOURCES = #{infosources,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<update id="updateData" parameterType="Map">
+	    UPDATE
+	    	T_PLA_PRODUCT_DELIVERY
+		SET
+		    PT_FINISH_TIME= TO_DATE(#{ptFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    CL_FINISH_TIME= TO_DATE(#{clFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    BZ_FINISH_TIME=	TO_DATE(#{bzFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    HT_FINISH_TIME=	TO_DATE(#{htFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    COORDINATE_TIME= TO_DATE(#{coordinateTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		   	REMARKS = #{remarks,jdbcType=VARCHAR},
+		    INFO_SOURCES= #{infosources,jdbcType=VARCHAR}
+		WHERE
+	    	ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateData1" parameterType="Map">
+	    UPDATE
+	    	T_PLA_PRODUCT_DELIVERY
+		SET
+		    PT_FINISH_TIME= TO_DATE(#{ptFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    CL_FINISH_TIME= TO_DATE(#{clFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    BZ_FINISH_TIME=	TO_DATE(#{bzFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    HT_FINISH_TIME=	TO_DATE(#{htFinishTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    COORDINATE_TIME= TO_DATE(#{coordinateTime,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		   	REMARKS = #{remarks,jdbcType=VARCHAR},
+		    INFO_SOURCES= #{infoSources,jdbcType=VARCHAR}
+		WHERE
+	    	ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 绝缘下单列表 ：获取查询下拉框：合同号 -->
+	<select id="getContractNo" resultMap="getMap">
+	    SELECT DISTINCT SO.CONTRACT_NO
+	    <include refid="sendOrderCommonQuery"/>
+	</select>
+	
+	<select id="getInfoSources" resultMap="getMap">
+	    SELECT DISTINCT PD.INFO_SOURCES
+	    FROM 
+		     T_PLA_PRODUCT_DELIVERY PD,
+			 T_ORD_SALES_ORDER SO,
+	         T_ORD_SALES_ORDER_ITEM SOI
+	    WHERE
+	    	 PD.sales_order_item_id = SOI.ID
+	    AND	 SO.ID = SOI.SALES_ORDER_ID
+	    AND PD.INFO_SOURCES IS NOT NULL
+	</select>
+	
+	
+	<select id="getptFinishTime" resultMap="getMap">
+	    SELECT DISTINCT PD.PT_FINISH_TIME
+	    <include refid="sendOrderCommonQuery"/>
+	</select>
+	
+	 <!-- 下拉框查询的公共部分 -->
+	<sql id="sendOrderCommonQuery">
+		FROM 
+		     T_PLA_PRODUCT_DELIVERY PD,
+			 T_ORD_SALES_ORDER SO,
+	         T_ORD_SALES_ORDER_ITEM SOI
+	    WHERE
+	    	 PD.sales_order_item_id = SOI.ID
+	    AND	 SO.ID = SOI.SALES_ORDER_ID
+    	<!-- 下面是其他条件的关联查询条件 -->
+		<if test="contractNo!=null and contractNo!=''"> 
+		    AND SO.CONTRACT_NO LIKE #{contractNo,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+</mapper>

@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/BSMES/!svn/ver/11671/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model
+END
+HandSchedule.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/11671/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/HandSchedule.js
+END
+OrderItemProDec.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5569/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/OrderItemProDec.js
+END
+SortAndCalculate.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5617/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/SortAndCalculate.js
+END
+FinishedProduct.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/11579/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/FinishedProduct.js
+END
+OrderProcess.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5569/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/OrderProcess.js
+END
+Process.js.bak
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/10392/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/Process.js.bak
+END
+ImportProduct.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/7235/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/ImportProduct.js
+END
+ProcessFinish.js.bak
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/9996/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/ProcessFinish.js.bak
+END
+ProcessInOut.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/9252/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/ProcessInOut.js
+END
+WorkOrder.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10008/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/WorkOrder.js
+END
+Attach.js.bak
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/10008/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/Attach.js.bak
+END
+ProcessMatProp.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/9252/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/ProcessMatProp.js
+END
+ProcessQc.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/ProcessQc.js
+END
+ChooseCrafts.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6510/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/handSchedule/model/ChooseCrafts.js
+END

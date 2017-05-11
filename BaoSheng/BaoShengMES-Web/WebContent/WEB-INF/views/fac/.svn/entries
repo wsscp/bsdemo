@@ -1,0 +1,67 @@
+10
+
+dir
+12152
+http://101.231.47.126:8080/svn/BSMES/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/views/fac
+http://101.231.47.126:8080/svn/BSMES
+
+
+
+2017-03-01T06:01:44.833863Z
+11883
+hzhu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cb86dc5a-27e7-f949-8907-1b6afd8e026a
+
+equipInfo
+dir
+
+maintainItem
+dir
+
+maintainRecord
+dir
+
+dailyCheck
+dir
+
+shunDownStatistics
+dir
+
+equipEnergyMonitor
+dir
+
+workTask
+dir
+
+equipMaintenance
+dir
+
+equipFaultManage
+dir
+
+equipInformation
+dir
+
+shunDownAnalysis
+dir
+
+maintainTemplate
+dir
+
+maintainRecordItem
+dir
+

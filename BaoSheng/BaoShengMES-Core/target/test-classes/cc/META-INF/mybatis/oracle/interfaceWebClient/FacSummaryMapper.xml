@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfaceWebClient.dao.FacSummaryDAO">
+	<resultMap type="cc.oit.bsmes.interfaceWebClient.model.FacSummary" id="getMap">
+	</resultMap>
+	
+	<select id="getFacSummary" parameterType="cc.oit.bsmes.interfaceWebClient.model.FacSummary" resultMap="getMap">
+	
+	  select sum(TYPE_VALUE) as TYPE_VALUE,TYPE from   T_RPT_FAC_SUMMARY   where 
+	    TYPE in('PROD_FIN','CON_FIN','AMOUNT_FIN','WORK_HOUR_FIN','EQUIP_HOUR_FIN','EQUIP_SHUTDOWN_TIME_FIN','EQUIP_OEE_FIN') 
+	  
+	     <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>    	  
+    	  <if test="startTime!=null and startTime!=''">
+    		AND REPORT_DATE>=#{startTime,jdbcType=TIMESTAMP}
+    	  </if>
+    	 <if test="endTime!=null and endTime!=''">
+    		AND REPORT_DATE <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP} 
+    	</if>	  
+	  group by type
+      union
+       select TYPE_VALUE as TYPE_VALUE ,TYPE  from  T_RPT_FAC_SUMMARY  where TYPE in('PROD_SUM','CON_SUM','CON_AMOUNT','PROD_RATE','EQUIP_RUNNING')
+           <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>
+    	    <if test="reportDate!=null and reportDate!=''">
+    		  AND  REPORT_DATE=#{reportDate,jdbcType=VARCHAR}
+    	  </if>
+    	  
+	</select>
+	
+ 
+</mapper>

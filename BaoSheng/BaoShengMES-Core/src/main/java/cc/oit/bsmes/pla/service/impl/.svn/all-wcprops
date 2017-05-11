@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/12125/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl
+END
+ToolsRequirementPlanServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/3722/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/ToolsRequirementPlanServiceImpl.java
+END
+HighPriorityOrderItemServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/BSMES/!svn/ver/1960/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/HighPriorityOrderItemServiceImpl.java
+END
+CustomerOrderServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/9766/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/CustomerOrderServiceImpl.java
+END
+OrderTaskServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/10686/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/OrderTaskServiceImpl.java
+END
+MaterialMngServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/8934/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/MaterialMngServiceImpl.java
+END
+ProductSOPServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/7305/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/ProductSOPServiceImpl.java
+END
+AttachFileServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/11702/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/AttachFileServiceImpl.java
+END
+CustomerOrderPlanServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/9766/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/CustomerOrderPlanServiceImpl.java
+END
+CustomerOrderItemProDecServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/BSMES/!svn/ver/10686/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/CustomerOrderItemProDecServiceImpl.java
+END
+ImportProductServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/9766/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/ImportProductServiceImpl.java
+END
+OrderProcessPRServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/9597/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/OrderProcessPRServiceImpl.java
+END
+CustomerOrderItemServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/11923/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/CustomerOrderItemServiceImpl.java
+END
+ProductClassifyServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/6930/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/ProductClassifyServiceImpl.java
+END
+OaMrpServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/7464/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/OaMrpServiceImpl.java
+END
+DataEditServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/6202/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/DataEditServiceImpl.java
+END
+ProductServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/6463/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/ProductServiceImpl.java
+END
+ManualManageServiceimpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/9948/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/ManualManageServiceimpl.java
+END
+OrderStatisticsServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/11695/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/OrderStatisticsServiceImpl.java
+END
+HandScheduleServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/12125/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/HandScheduleServiceImpl.java
+END
+MaterialCheckReportServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/8124/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/MaterialCheckReportServiceImpl.java
+END
+CustomerOrderItemDecServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/5697/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/CustomerOrderItemDecServiceImpl.java
+END
+HighPriorityOrderItemProDecServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/BSMES/!svn/ver/2766/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/HighPriorityOrderItemProDecServiceImpl.java
+END
+CustomerOrderItemProDecOAServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/BSMES/!svn/ver/8145/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/CustomerOrderItemProDecOAServiceImpl.java
+END
+MaterialRequirementPlanServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/BSMES/!svn/ver/11999/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/MaterialRequirementPlanServiceImpl.java
+END
+OaUptempServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/7825/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/OaUptempServiceImpl.java
+END
+InvOaUseLogServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/3033/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/InvOaUseLogServiceImpl.java
+END
+OrderOAServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/7700/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pla/service/impl/OrderOAServiceImpl.java
+END

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.AttachmentDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.Attachment" id="getMap">
+	</resultMap>
+	<select id="getByProductIDAndLocation" parameterType="string" resultMap="getMap">
+		SELECT ID,FILE_NAME
+		FROM T_BAS_ATTACHMENT
+		WHERE REF_ID=#{param1} AND DOWNLOAD_PATH=#{param2}
+	</select>
+	
+	<delete id="deleteOne"  parameterType="cc.oit.bsmes.bas.model.Attachment">
+		DELETE FROM T_BAS_ATTACHMENT WHERE 
+		OWNER_MODULE=#{ownerModule, jdbcType=VARCHAR}
+		AND REF_ID=#{refId, jdbcType=VARCHAR}
+		AND SUB_TYPE=#{subType, jdbcType=VARCHAR}
+	</delete>
+</mapper>

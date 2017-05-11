@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.InventoryDetailDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.InventoryDetail" id="getMap">
+		<association property="inventory" column="INVENTORY_ID"
+			select="cc.oit.bsmes.inv.dao.InventoryDAO.getById"></association>
+	</resultMap>
+	
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.inv.model.InventoryDetail">
+		SELECT * FROM T_INV_INVENTORY_DETAIL WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByInvertoryId" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_INV_INVENTORY_DETAIL WHERE INVENTORY_ID = #{inventoryId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findByMatCodeAndLen" parameterType="map" resultMap="getMap">
+		SELECT ind.* FROM T_INV_INVENTORY_DETAIL ind,T_INV_INVENTORY inv 
+						WHERE ind.INVENTORY_ID = inv.ID 
+						AND inv.MATERIAL_CODE = #{param1}
+						AND ind.STATUS = 'AVAILABLE'
+						<![CDATA[AND ind.LENGTH <= #{param2}]]>
+						ORDER BY ind.LENGTH
+	</select>
+
+    <select id="getByProductCodeAndOrderLength" resultMap="getMap">
+        SELECT
+            IND.*
+        FROM T_INV_INVENTORY_DETAIL IND
+          LEFT JOIN T_INV_INVENTORY INV ON IND.INVENTORY_ID = INV.ID
+        WHERE IND.STATUS = 'AVAILABLE'
+          AND INV.MATERIAL_CODE = #{param1}
+          AND IND.LENGTH <![CDATA[<=]]> #{param2}
+          AND IND.LENGTH <![CDATA[>=]]> #{param3}
+        UNION  ALL
+        SELECT
+          INV.*
+        FROM T_INV_INVENTORY_DETAIL INV
+          LEFT JOIN T_PLA_INV_OA_USE_LOG IOU ON INV.ID = IOU.INVENTORY_DETAIL_ID
+        WHERE EXISTS (
+            SELECT
+              COI.ID
+            FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC COI
+            WHERE COI.USE_STOCK = '1'
+                  AND COI.STATUS = 'FINISHED'
+                  AND COI.ORDER_ITEM_ID = #{param4}
+                  AND COI.ID = IOU.REF_ID
+        )
+    </select>
+
+    <select id="getByOrderItemId" parameterType="string" resultMap="getMap">
+        SELECT
+          INV.*,
+          IOU.REF_ID
+        FROM T_INV_INVENTORY_DETAIL INV
+          LEFT JOIN T_PLA_INV_OA_USE_LOG IOU ON INV.ID = IOU.INVENTORY_DETAIL_ID
+        WHERE EXISTS (
+            SELECT
+              COI.ID
+            FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC COI
+            WHERE COI.USE_STOCK = '1'
+                  AND COI.STATUS = 'FINISHED'
+                  AND COI.ORDER_ITEM_ID = #{orderItemId}
+                  AND COI.ID = IOU.REF_ID
+        )
+    </select>
+
+    <delete id="deleteByBarCode" parameterType="string" flushCache="true">
+        delete
+        from T_INV_INVENTORY_DETAIL de
+        where exists (
+              select
+                  1
+              from T_INV_INVENTORY inv
+              where inv.id = de.INVENTORY_ID
+              and inv.BAR_CODE =#{barCode}
+          )
+    </delete>
+</mapper>

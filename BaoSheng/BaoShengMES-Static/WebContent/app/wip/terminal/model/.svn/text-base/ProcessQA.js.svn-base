@@ -1,0 +1,15 @@
+Ext.define('bsmes.model.ProcessQA',{
+	extend:'Ext.data.Model',
+	fields:[
+	        'checkItemCode',
+	        'checkItemName',
+	        'qcValue',
+	        'qcResult',
+	        'checkEqipCode',
+	        'workOrderNo',
+	        'processId',
+	        'itemTargetValue',
+	        'checkItemRange',
+            'type'
+	        ]
+});

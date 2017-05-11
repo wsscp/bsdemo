@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.MpartObjofDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.MpartObjof"
+		id="getMap">
+	</resultMap>
+
+
+	<delete id="deleteByProuductId" parameterType="String">
+		DELETE
+		FROM
+		MPART_OBJOF
+		WHERE
+		ITEMID1=#{param,jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</delete>
+
+	<select id="findByProcessId" parameterType="String" resultMap="getMap">
+		SELECT * FROM MPART_OBJOF WHERE ITEMID1=#{param,jdbcType=VARCHAR}
+		AND
+		WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</select>
+	
+	<select id="findMpartoutByProcessId" parameterType="String" resultMap="getMap">
+		SELECT * FROM MPART2_OBJOF WHERE ITEMID1=#{param,jdbcType=VARCHAR}
+		AND
+		WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</select>
+
+	<delete id="deleteMpartObjofByPrcvNo" parameterType="String">
+		DELETE FROM
+		MPART_OBJOF MO WHERE EXISTS(SELECT * FROM PRCV,PROCESS_OBJOF PO
+		WHERE
+		MO.ITEMID1=PO.ITEMID2 AND PO.ITEMID1=PRCV.ID AND
+		PRCV.NO=#{param,jdbcType=VARCHAR})
+	</delete>
+
+	<delete id="deleteMpartObjofByPrcvNo2" parameterType="String">
+		DELETE FROM
+		MPART2_OBJOF MO WHERE EXISTS(SELECT * FROM PRCV,PROCESS_OBJOF PO
+		WHERE MO.ITEMID1=PO.ITEMID2 AND PO.ITEMID1=PRCV.ID AND PRCV.NO=#{param,jdbcType=VARCHAR})
+		AND MO.WKAID<![CDATA[<>]]>'3'
+		AND MO.DEL='0'
+	</delete>
+	
+	<insert id="insertBatchIn" parameterType="ArrayList">
+		INSERT INTO MPART_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,OWNER,STATE,
+		ITEMID1,ITEMTN1,ITEMID2,ITEMTN2,XHNUM)
+		<foreach collection="param" index="index" item="item" separator="union all">
+			select #{item.id,jdbcType=VARCHAR},'0','N','1',#{item.designno,jdbcType=VARCHAR},
+			#{item.designno,jdbcType=VARCHAR},'MES',sysdate,'MES','A',#{item.itemid1,jdbcType=VARCHAR},
+			'PROCESS',#{item.itemid2,jdbcType=VARCHAR},'MPART',#{item.xhnum,jdbcType=DOUBLE} FROM DUAL
+		</foreach>
+	</insert>
+	
+	<insert id="insertBatchOut" parameterType="ArrayList">
+		INSERT INTO MPART2_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,OWNER,STATE,
+		ITEMID1,ITEMTN1,ITEMID2,ITEMTN2,BNUM)
+		<foreach collection="param" index="index" item="item" separator="union all">
+			select #{item.id,jdbcType=VARCHAR},'0','N','1',#{item.designno,jdbcType=VARCHAR},
+			#{item.designno,jdbcType=VARCHAR},'MES',sysdate,'MES','A',#{item.itemid1,jdbcType=VARCHAR},
+			'PROCESS',#{item.itemid2,jdbcType=VARCHAR},'MPART','1' FROM DUAL
+		</foreach>
+	</insert>
+
+</mapper>

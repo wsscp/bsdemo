@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/BSMES/!svn/ver/1682/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/opc/client/aop
+END
+JOpcConnect.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/1682/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/opc/client/aop/JOpcConnect.java
+END
+JOpcConnectAspect.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/1682/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/opc/client/aop/JOpcConnectAspect.java
+END

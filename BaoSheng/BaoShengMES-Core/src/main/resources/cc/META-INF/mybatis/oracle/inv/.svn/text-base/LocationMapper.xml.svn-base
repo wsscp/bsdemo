@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.LocationDAO">
+	<resultMap type="cc.oit.bsmes.inv.model.Location" id="getMap">
+		<result property="warehouseName" column="WAREHOUSE_NAME"/>
+		<result property="processName" column="PROCESS_NAME"/>
+	</resultMap>
+	
+	<update id="update" parameterType="cc.oit.bsmes.inv.model.Location">
+		UPDATE T_INV_LOCATION
+		<set>
+			<if test="processCode != null and processCode !=''">
+				PROCESS_CODE = #{processCode,jdbcType=VARCHAR},
+			</if>
+			<if test="locationName != null and locationName !=''">
+				LOCATION_NAME= #{locationName,jdbcType=VARCHAR},
+			</if>
+			<if test="locationX != null and locationX !=''">
+				LOCATION_X= #{locationX,jdbcType=VARCHAR},
+			</if>
+			<if test="locationY != null and locationY !=''">
+				LOCATION_Y= #{locationY,jdbcType=VARCHAR},
+			</if>
+			MODIFY_TIME = sysdate,
+			MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR} 
+	</update>
+    <select id="getIdleLocation" parameterType="string" resultType="cc.oit.bsmes.inv.model.Location">
+            SELECT
+                A.ID,
+                A.WAREHOUSE_ID
+            FROM T_INV_LOCATION A
+            LEFT JOIN T_INV_WAREHOUSE WA ON A.WAREHOUSE_ID = WA.ID
+            WHERE A.PROCESS_CODE = #{param1}
+                AND A.ORG_CODE=#{param2}
+                AND WA.TYPE = 'WIP'
+                AND A.TYPE = 'FIX'
+                AND NOT EXISTS (
+                    SELECT ID FROM T_INV_INVENTORY I WHERE A.ID = I.LOCATION_ID
+                )
+            UNION
+              SELECT
+                A.ID,
+                A.WAREHOUSE_ID
+            FROM T_INV_LOCATION A
+            LEFT JOIN T_INV_WAREHOUSE WA ON A.WAREHOUSE_ID = WA.ID
+            WHERE A.PROCESS_CODE = #{param1}
+                AND A.ORG_CODE=#{param2}
+                AND WA.TYPE = 'WIP'
+                AND A.TYPE = 'TEMP'
+    </select>
+
+    <select id="changeLocation" parameterType="string" resultType="cc.oit.bsmes.inv.model.Location">
+        SELECT
+          LO.*
+        FROM T_INV_LOCATION LO
+        WHERE LO.WAREHOUSE_ID = #{param1}
+        AND LO.PROCESS_CODE = #{param2}
+        AND LO.ORG_CODE = #{param3}
+        AND NOT EXISTS (
+            SELECT 1 FROM T_INV_INVENTORY INV WHERE INV.LOCATION_ID = LO.ID
+            AND INV.BAR_CODE = #{param4}
+        )
+    </select>
+    
+    <select id="getProductLocation" parameterType="string" resultType="cc.oit.bsmes.inv.model.Location">
+         SELECT * FROM (
+            SELECT
+              A.ID,
+              A.WAREHOUSE_ID
+            FROM T_INV_LOCATION A, T_INV_WAREHOUSE WA 
+            WHERE A.WAREHOUSE_ID = WA.ID
+            AND A.PROCESS_CODE = #{param1}
+            AND A.ORG_CODE=#{param2}
+            AND WA.TYPE = 'WIP'
+            AND A.TYPE = 'STORE'
+            )
+        WHERE ROWNUM = 1
+    </select>
+
+    <select id="getBySerialNum" parameterType="string" resultType="cc.oit.bsmes.inv.model.Location">
+        SELECT  LO.*
+        FROM T_INV_LOCATION LO
+        WHERE EXISTS (
+                SELECT 1 FROM T_INV_INVENTORY LN
+                WHERE LN.BAR_CODE = #{serialNum}
+                AND LO.ID = LN.LOCATION_ID
+        )
+    </select>
+    <select id="find" parameterType="cc.oit.bsmes.inv.model.Location" resultMap="getMap">
+    	SELECT A.ID,A.WAREHOUSE_ID,A.LOCATION_NAME,A.LOCATION_X,A.LOCATION_Y,A.LOCATION_Z,A.PROCESS_CODE,A.TYPE,B.NAME AS PROCESS_NAME,C.WAREHOUSE_NAME
+		FROM T_INV_LOCATION A ,T_PRO_PROCESS_INFO B,t_INV_WAREHOUSE C
+		WHERE A.PROCESS_CODE=B.CODE AND A.WAREHOUSE_ID=C.ID
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND WAREHOUSE_ID=#{warehouseId}
+		</if>
+		<if test="processCode!=null and processCode!=''">
+			AND PROCESS_CODE=#{processCode}
+		</if>
+    </select>
+    <select id="count" parameterType="cc.oit.bsmes.inv.model.Location" resultType="int">
+    	SELECT COUNT(1)
+    	FROM (SELECT A.ID
+		FROM T_INV_LOCATION A ,T_PRO_PROCESS_INFO B,t_INV_WAREHOUSE C
+		WHERE A.PROCESS_CODE=B.CODE AND A.WAREHOUSE_ID=C.ID
+		<if test="warehouseId!=null and warehouseId!=''">
+			AND WAREHOUSE_ID=#{warehouseId}
+		</if>
+		<if test="processCode!=null and processCode!=''">
+			AND PROCESS_CODE=#{processCode}
+		</if>)
+    </select>
+    <delete id="deleteByWarehouseId" parameterType="string">
+    	DELETE FROM T_INV_LOCATION WHERE WAREHOUSE_ID=#{warehouseId}
+    </delete>
+    <select id="checkLocationXY" parameterType="cc.oit.bsmes.inv.model.Location" resultMap="getMap">
+    	SELECT ID,LOCATION_NAME 
+    	FROM T_INV_LOCATION
+    	WHERE WAREHOUSE_ID=#{warehouseId} AND PROCESS_CODE=#{processCode} 
+    		AND LOCATION_X=#{locationX} AND LOCATION_Y=#{locationY}
+    </select>
+
+    <select id="getTempLocation" parameterType="string" resultType="cc.oit.bsmes.inv.model.Location">
+          SELECT
+              LO.ID,
+              LO.WAREHOUSE_ID
+          FROM T_INV_LOCATION LO
+          WHERE LO.PROCESS_CODE = #{param1}
+          AND LO.TYPE = 'TEMP'
+          AND EXISTS (
+            SELECT 1 FROM T_INV_WAREHOUSE WA WHERE WA.ID = LO.WAREHOUSE_ID
+            AND WA.TYPE = 'WIP'
+            AND WA.ORG_CODE = #{param2}
+          )
+    </select>
+    
+    <!-- 获取库位信息Combox -->
+	<select id="findInvLocationCombox" parameterType="cc.oit.bsmes.inv.model.Location" resultMap="getMap">
+		SELECT DISTINCT il.LOCATION_NAME
+		FROM T_INV_LOCATION il
+		WHERE 
+		  il.ORG_CODE=#{orgCode, jdbcType=VARCHAR}
+	</select>
+
+    <insert id="addLocation" parameterType="cc.oit.bsmes.inv.model.Location" flushCache="true">
+        INSERT INTO T_INV_LOCATION (ID,
+                                    WAREHOUSE_ID,
+                                    PROCESS_CODE,
+                                    LOCATION_NAME,
+                                    LOCATION_X,
+                                    LOCATION_Y,
+                                    LOCATION_Z,
+                                    CREATE_TIME,
+                                    CREATE_USER_CODE,
+                                    MODIFY_TIME,
+                                    MODIFY_USER_CODE,
+                                    ORG_CODE,
+                                    "TYPE") VALUES(
+                                     #{id},
+                                     #{warehouseId},
+                                     #{processCode},
+                                     #{processCode},
+                                     '',
+                                     '',
+                                     '',
+                                     sysdate,
+                                     #{createUserCode},
+                                     sysdate,
+                                     #{modifyUserCode},
+                                     #{orgCode},
+                                     #{type}
+                                     )
+    </insert>
+</mapper>

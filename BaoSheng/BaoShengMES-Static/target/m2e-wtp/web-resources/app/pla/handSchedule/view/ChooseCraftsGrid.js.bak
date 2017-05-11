@@ -1,0 +1,58 @@
+/**
+ * 可选工艺列表
+ */
+Ext.define('bsmes.view.ChooseCraftsGrid', {
+			extend : 'Oit.app.view.Grid',
+			itemId : 'chooseCraftsGrid',
+			alias : 'widget.chooseCraftsGrid',
+			store : 'ChooseCraftsStore',
+			hasPaging : false,
+			defaultEditingPlugin : false,
+			selModel : {
+				mode : "SINGLE", // "SINGLE"/"SIMPLE"/"MULTI"
+				checkOnly : true, // 只能通过checkbox选择
+				listeners : {
+					'selectionchange' : function(sm, selections) {
+					}
+				}
+			},
+			selType : 'checkboxmodel',
+			columns : [{
+						text : '工艺名称',
+						dataIndex : 'craftsCname',
+						flex : 0.8,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '工艺名称',
+						dataIndex : 'craftsName',
+						flex : 1.5,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '工艺编码',
+						dataIndex : 'craftsCode',
+						flex : 1.5,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '创建时间',
+						dataIndex : 'createTime',
+						flex : 1.5,
+						renderer : Ext.util.Format.dateRenderer('Y-m-d H:i:s'),
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '查看工序',
+						dataIndex : 'id',
+						flex : 0.8,
+						renderer : function(value, cellmeta, record, rowIndex) {
+							var me = this;
+							var html = '<a style="color:blue;cursor:pointer;" onclick="getInstanceProcessGrid(\''
+									+ record.get('id') + '\')">查看</a>';
+							return html;
+						},
+						sortable : false,
+						menuDisabled : true
+					}]
+		});

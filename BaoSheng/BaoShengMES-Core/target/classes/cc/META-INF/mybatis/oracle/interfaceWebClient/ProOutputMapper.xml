@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfaceWebClient.dao.ProOutputDAO">
+	<resultMap type="cc.oit.bsmes.interfaceWebClient.model.ProOutput" id="getMap">
+	</resultMap>
+	
+	<select id="getProOutput" parameterType="cc.oit.bsmes.interfaceWebClient.model.ProOutput" resultMap="getMap">
+	
+	      select PROCESS_CODE,PROCESS_NAME,TYPE, sum(TYPE_VALUE) as TYPE_VALUE  from T_RPT_PRO_OUTPUT     	   
+    		where  REPORT_DATE>=#{startTime,jdbcType=TIMESTAMP}    	  
+    		AND REPORT_DATE <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP}  
+	
+	       <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>  
+    	  group by PROCESS_CODE,PROCESS_NAME,TYPE order by PROCESS_CODE 
+    	  
+	</select>
+	
+ 
+</mapper>

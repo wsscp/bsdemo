@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessQcWipDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessQcWip" id="getMap">
+	</resultMap>
+	
+	<insert id="insertAll" parameterType="java.util.List">
+	    INSERT INTO T_PRO_PROCESS_QC_WIP(ID,PROCESS_ID,CHECK_ITEM_CODE,CHECK_ITEM_NAME,FREQUENCE,NEED_DA,NEED_IS,ITEM_TARGET_VALUE,
+	         ITEM_MAX_VALUE,ITEM_MIN_VALUE,DATA_TYPE,DATA_UNIT,MARKS,CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,HAS_PIC,
+	         NEED_SHOW,NEED_FIRST_CHECK,NEED_MIDDLE_CHECK,NEED_IN_CHECK,NEED_OUT_CHECK,NEED_ALARM,VALUE_DOMAIN,EMPH_SHOW,DATA_STATUS)
+	    <foreach collection="processQcWipList" item="item" index="index" 
+			  separator="union all">
+			  select  
+			    #{item.id,jdbcType=VARCHAR},#{item.processId,jdbcType=VARCHAR}, 
+			  #{item.checkItemCode,jdbcType=VARCHAR}, #{item.checkItemName,jdbcType=VARCHAR}, 
+			  #{item.frequence,jdbcType=VARCHAR},#{item.needDa,jdbcType=VARCHAR},
+			  #{item.needIs,jdbcType=VARCHAR},#{item.itemTargetValue,jdbcType=VARCHAR},
+			  #{item.itemMaxValue,jdbcType=VARCHAR},#{item.itemMinValue,jdbcType=VARCHAR},
+			  #{item.dataType,jdbcType=VARCHAR},#{item.dataUnit,jdbcType=VARCHAR},#{item.marks,jdbcType=VARCHAR},
+			  sysdate, 'Service', 
+			  sysdate, 'Service', 
+			  #{item.hasPic,jdbcType=VARCHAR},#{item.needShow,jdbcType=VARCHAR},
+			  #{item.needFirstCheck,jdbcType=VARCHAR},#{item.needMiddleCheck,jdbcType=VARCHAR},
+			  #{item.needInCheck,jdbcType=VARCHAR},#{item.needOutCheck,jdbcType=VARCHAR},
+			  #{item.needAlarm,jdbcType=VARCHAR},#{item.valueDomain,jdbcType=VARCHAR}, 
+			  #{item.emphShow,jdbcType=VARCHAR},#{item.dataStatus,jdbcType=VARCHAR} from dual
+	    </foreach>
+	</insert>
+	
+	<delete id="deleteDate" parameterType="string">
+       DELETE FROM T_PRO_PROCESS_QC_WIP QC WHERE EXISTS(
+       SELECT 1 FROM T_PRO_PRODUCT_PROCESS_WIP PP WHERE PP.PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+       AND PP.ID = QC.PROCESS_ID
+       )
+    </delete>	 
+	
+</mapper>

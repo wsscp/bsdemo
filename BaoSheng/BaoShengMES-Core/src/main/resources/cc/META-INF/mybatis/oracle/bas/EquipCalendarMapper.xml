@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EquipCalendarDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.EquipCalendar" id="getMap">
+		 <result property="id" column="ID" />
+		<collection property="equipCalShift"  column="ID" javaType="java.util.ArrayList"
+				ofType="cc.oit.bsmes.bas.model.EquipCalShift" select="cc.oit.bsmes.bas.dao.EquipCalShiftDAO.getEqipCalShiftByCalId"/> 
+	</resultMap>
+	
+	<!-- 根据日期获取设备工作日历 -->
+	<select id="getByEquipAndDateOfWork" resultMap="getMap" parameterType="EquipCalendar" >
+		SELECT ID,EQUIP_CODE,DATE_OF_WORK 
+		FROM T_BAS_EQIP_CALENDAR 
+		WHERE DATE_OF_WORK=#{dateOfWork,jdbcType=VARCHAR} AND EQUIP_CODE=#{equipCode,jdbcType=VARCHAR} AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	</select>
+	<select id="getByLimitTime" resultMap="getMap" parameterType="map">
+		SELECT ID,EQUIP_CODE,DATE_OF_WORK,ORG_CODE 
+		FROM T_BAS_EQIP_CALENDAR 
+		WHERE DATE_OF_WORK>=#{start,jdbcType=VARCHAR} 
+		AND DATE_OF_WORK<![CDATA[<=]]>#{end,jdbcType=VARCHAR} 
+		AND EQUIP_CODE=#{equipCode,jdbcType=VARCHAR}
+	</select>
+	
+	
+    <!-- 获取设备工作日历： 直接带回班次及开始时间结束时间等等 -->
+	<select id="getEquipCalendarByCode" resultMap="getMap" parameterType="map">
+		SELECT C.ID,
+		       C.EQUIP_CODE,
+		       C.DATE_OF_WORK,
+		       C.ORG_CODE,
+		       R.WORK_SHIFT_ID,
+		       S.SHIFT_NAME,
+		       S.SHIFT_START_TIME,
+		       S.SHIFT_END_TIME
+		  FROM T_BAS_EQIP_CALENDAR C, T_BAS_EQIP_CAL_SHIFT R, T_BAS_WORK_SHIFT S
+		 WHERE R.WORK_SHIFT_ID = S.ID
+		   AND R.EQIP_CALENDAR_ID = C.ID
+		   AND C.DATE_OF_WORK <![CDATA[<=]]> #{end,jdbcType=VARCHAR} 
+		   AND C.DATE_OF_WORK >= #{start,jdbcType=VARCHAR} 
+		   AND C.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+		 ORDER BY C.DATE_OF_WORK, R.WORK_SHIFT_ID
+	</select>
+	
+	
+</mapper>

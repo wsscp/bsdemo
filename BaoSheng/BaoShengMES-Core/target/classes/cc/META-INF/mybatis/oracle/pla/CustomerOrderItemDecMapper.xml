@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.CustomerOrderItemDecDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.CustomerOrderItemDec" id="getMap">
+		<result property="id" column="ID" />
+		<collection property="cusOrderItemProDesList" column="ID" javaType="ArrayList" ofType="CustomerOrderItemProDec"
+				select="cc.oit.bsmes.pla.dao.CustomerOrderItemProDecDAO.getByCusOrderItemDecIdForPlan"></collection>
+		<collection property="cusOrderItemProDesListOA" column="ID" javaType="ArrayList" ofType="CustomerOrderItemProDecOA"
+				select="cc.oit.bsmes.pla.dao.CustomerOrderItemProDecOADAO.getByCusOrderItemDecIdForPlan"></collection>
+	</resultMap>
+	
+	<sql id="orderItemDecColumns"> 
+		d."ID",
+		d.ORDER_ITEM_ID,
+		d.LENGTH,
+		d.USE_STOCK,
+		d.STATUS,
+		d.CREATE_USER_CODE,
+		d.CREATE_TIME,
+		d.MODIFY_USER_CODE,
+		d.MODIFY_TIME
+	</sql>
+	
+	<!-- 计划排成中不能过滤生产中的，因为生产中item下面还有prodes是未生产的，这样就不会将其放入计算范围之内 -->
+	<select id="getByOrderItemIdForPlan" parameterType="string" resultMap="getMap">
+		SELECT <include refid="orderItemDecColumns"/> FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC d
+			WHERE d.ORDER_ITEM_ID=#{orderItemId}
+			AND (STATUS ='TO_DO' OR STATUS ='IN_PROGRESS')
+			ORDER BY USE_STOCK
+	</select>
+	
+	<select id="getByOrderItemId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="orderItemDecColumns"/> FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC d
+			WHERE d.ORDER_ITEM_ID=#{orderItemId}
+			AND STATUS ='TO_DO'
+			ORDER BY USE_STOCK
+	</select>
+	
+	<select id="getCustomerOrderItemDecIdByOrderItemId" parameterType="string" resultType="string" >
+		SELECT ID FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC D
+			WHERE D.ORDER_ITEM_ID=#{orderItemId} AND STATUS ='TO_DO' AND ROWNUM=1
+	</select> 
+
+	<select id="getCurrentByWoNo" parameterType="string" resultMap="getMap">
+		SELECT ROWNUM,T.* FROM (
+            SELECT <include refid="orderItemDecColumns"/> FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC d,T_PLA_ORDER_TASK t,T_PLA_CU_ORDER_ITEM_PRO_DEC p
+            WHERE t.WORK_ORDER_NO = #{workOrderNo} AND p."ID" = t.ORDER_ITEM_PRO_DEC_ID AND d."ID" = p.ORDER_ITEM_DEC_ID
+            AND t.STATUS IN ('TO_DO','IN_PROGRESS')
+            ORDER BY t.PLAN_START_DATE
+        ) T WHERE ROWNUM = 1
+	</select>
+
+	<select id="deleteCusOrderItemDecById" parameterType="string" statementType="CALLABLE">
+		CALL DELETE_CUS_ORDER_ITEM_DEC(#{param1},#{param2},#{param3})
+	</select>
+	
+	<!-- 获取未完成的订单明细分卷：根据订单明细ID -->
+	<select id="getUncompleteOrderItemDecByItemId" parameterType="string" resultMap="getMap">
+		SELECT 
+		  <include refid="orderItemDecColumns"/> 
+		FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC d
+		WHERE d.ORDER_ITEM_ID = #{customerOrderItemId}
+		  AND d.STATUS IN ('TO_DO', 'IN_PROGRESS')
+	</select>
+	
+</mapper>

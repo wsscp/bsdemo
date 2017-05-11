@@ -1,0 +1,1995 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.WorkOrderDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.WorkOrder" id="getMap">
+		<result property="id" column="ID"/>
+		<result property="processId" column="PROCESS_ID" />
+		<result property="workOrderNo" column="WORK_ORDER_NO" />
+		<association   property="productProcess" column="PROCESS_ID"
+			select="cc.oit.bsmes.pro.dao.ProductProcessDAO.getById"/>
+			<!-- 
+		<collection property="operateLogList"  column="WORK_ORDER_NO" javaType="java.util.ArrayList" ofType="cc.oit.bsmes.wip.model.WorkOrderOperateLog"
+			select="cc.oit.bsmes.wip.dao.WorkOrderOperateLogDAO.getByWorkOrderNo" />
+		-->
+	</resultMap>
+
+	<select id="getReceiver" resultMap='getMap'>
+       SELECT RECEIVER_USER_CODE from T_WIP_WORK_ORDER WHERE 
+       CREATE_TIME = (SELECT max(CREATE_TIME) from T_WIP_WORK_ORDER where WORK_ORDER_SECTION = #{Section, jdbcType=VARCHAR})
+       AND  WORK_ORDER_SECTION = #{Section, jdbcType=VARCHAR}
+    </select>
+    
+    <update id="insertNewColorData" parameterType="Map">
+    UPDATE T_INV_MAT M SET M.COLOR = #{color,jdbcType=VARCHAR} WHERE M.ID = (
+		SELECT M.ID FROM T_INV_MAT M WHERE EXISTS
+		(SELECT 1 FROM T_PRO_PROCESS_IN_OUT IO,T_PRO_PRODUCT_PROCESS PP,
+		            T_PLA_CUSTOMER_ORDER_ITEM OI
+		            WHERE  IO.MAT_CODE = M.MAT_CODE
+		        AND IO.PRODUCT_PROCESS_ID = PP.ID
+		        AND PP.PRODUCT_CRAFTS_ID = OI.CRAFTS_ID
+		        AND PP.PROCESS_CODE = 'Extrusion-Single'
+		        AND IO.IN_OR_OUT = 'OUT'
+		        AND OI.ID = #{id,jdbcType=VARCHAR}
+		))
+    </update>
+    
+	<select id="getCLcontractNo" resultMap="getMap">
+	    SELECT DISTINCT CONTRACT_NO FROM T_PLA_ORDER_TASK TPOT WHERE EXISTS 
+          (SELECT 1 FROM T_WIP_WORK_ORDER WO WHERE WO.WORK_ORDER_NO = TPOT.WORK_ORDER_NO AND WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR})
+			<if test="productSpec != null and productSpec.size() > 0">
+				AND PRODUCT_CODE IN
+                (SELECT PRODUCT_CODE FROM T_PLA_PRODUCT WHERE PRODUCT_SPEC IN
+				<foreach collection="productSpec" item="no_3"  open="(" separator="," close=")">  
+			    	#{no_3, jdbcType=VARCHAR}
+			    </foreach>)
+			</if>
+			<if test="custProductType != null and custProductType.size() > 0">
+				AND CONTRACT_NO IN
+                (SELECT CONTRACT_NO FROM T_ORD_SALES_ORDER WHERE ID IN
+                (SELECT SALES_ORDER_ID FROM T_ORD_SALES_ORDER_ITEM WHERE CUST_PRODUCT_TYPE IN
+				<foreach collection="custProductType" item="no_4"  open="(" separator="," close=")">  
+			    	#{no_4, jdbcType=VARCHAR}
+			    </foreach>))
+			</if>
+	</select>
+	
+	<select id="CLHTContractNoNC" resultMap="getMap">
+	    select tmp.CONTRACT_NO from
+(SELECT DISTINCT
+    CONTRACT_NO
+FROM
+    T_PLA_ORDER_TASK TPOT
+WHERE
+    EXISTS
+    (
+        SELECT
+            1
+        FROM
+            T_WIP_WORK_ORDER WO
+        WHERE
+            WO.WORK_ORDER_NO = TPOT.WORK_ORDER_NO
+        AND WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR}))tmp
+        <where>
+			<if test="ContractNoNC!=null and ContractNoNC!=''"> 
+			    <foreach collection="ContractNoNC" item="no_5">
+			        or  
+			    	(UPPER(tmp.CONTRACT_NO) LIKE UPPER (#{no_5, jdbcType=VARCHAR}))
+			    </foreach>
+			</if>
+		</where>
+	</select>
+	
+	<select id="getCLproductType" resultMap="getMap">
+	    SELECT DISTINCT CUST_PRODUCT_TYPE FROM T_ORD_SALES_ORDER_ITEM WHERE ID IN
+			(SELECT DISTINCT SALES_ORDER_ITEM_ID FROM T_PLA_CUSTOMER_ORDER_ITEM WHERE ID IN
+			(SELECT DISTINCT ORDER_ITEM_ID FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC WHERE ID IN
+			(SELECT DISTINCT ORDER_ITEM_DEC_ID FROM T_PLA_CU_ORDER_ITEM_PRO_DEC WHERE ID IN
+			(SELECT DISTINCT ORDER_ITEM_PRO_DEC_ID FROM T_PLA_ORDER_TASK WHERE CONTRACT_NO IN
+			(SELECT DISTINCT CONTRACT_NO FROM T_PLA_ORDER_TASK TPOT WHERE EXISTS 
+            (SELECT 1 FROM T_WIP_WORK_ORDER WO WHERE WO.WORK_ORDER_NO = TPOT.WORK_ORDER_NO AND 
+          WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR}))))))
+          <if test="productSpec != null and productSpec.size() > 0">
+				AND ID IN
+			(SELECT SALES_ORDER_ITEM_ID FROM T_PLA_CUSTOMER_ORDER_ITEM WHERE ID IN
+			(SELECT ORDER_ITEM_ID FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC WHERE ID IN
+			(SELECT ORDER_ITEM_DEC_ID FROM T_PLA_CU_ORDER_ITEM_PRO_DEC WHERE ID IN
+			(SELECT ORDER_ITEM_PRO_DEC_ID FROM T_PLA_ORDER_TASK WHERE PRODUCT_CODE IN
+			(SELECT PRODUCT_CODE FROM T_PLA_PRODUCT WHERE WORK_ORDER_NO IN
+			(SELECT WO.WORK_ORDER_NO FROM T_WIP_WORK_ORDER WO WHERE EXISTS 
+            (SELECT 1 FROM T_PLA_ORDER_TASK TPOT,T_PLA_PRODUCT TPP WHERE WO.WORK_ORDER_NO=TPOT.WORK_ORDER_NO AND TPOT.PRODUCT_CODE = TPP.PRODUCT_CODE
+             AND TPP.PRODUCT_SPEC IN
+             <foreach collection="productSpec" item="no_3"  open="(" separator="," close=")">  
+			    	#{no_3, jdbcType=VARCHAR}
+			    </foreach>) 
+		   AND WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR})
+		)))))
+			</if>
+			<if test="contractNo != null and contractNo.size() > 0">
+				AND SALES_ORDER_ID in
+                (SELECT ID FROM T_ORD_SALES_ORDER WHERE CONTRACT_NO IN
+				<foreach collection="contractNo" item="no_4"  open="(" separator="," close=")">  
+			    	#{no_4, jdbcType=VARCHAR}
+			    </foreach>)
+			</if>
+	</select>
+	
+	<select id="getCLproductSpec" resultMap="getMap">
+	    SELECT DISTINCT PRODUCT_SPEC FROM T_PLA_PRODUCT WHERE PRODUCT_CODE IN
+        (SELECT DISTINCT PRODUCT_CODE FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO IN
+        (SELECT WORK_ORDER_NO FROM T_WIP_WORK_ORDER  WO WHERE EXISTS (SELECT 1 FROM T_PLA_ORDER_TASK TPOT WHERE WO.WORK_ORDER_NO = TPOT.WORK_ORDER_NO) 
+        AND WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR}))
+        <if test="contractNo != null and contractNo.size() > 0">
+				AND PRODUCT_CODE IN
+          (SELECT PRODUCT_CODE FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO IN
+          (SELECT DISTINCT WORK_ORDER_NO FROM T_PLA_ORDER_TASK TPOT WHERE EXISTS 
+          (SELECT 1 FROM T_WIP_WORK_ORDER WO WHERE WO.WORK_ORDER_NO = TPOT.WORK_ORDER_NO AND 
+          WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR} AND
+          TPOT.CONTRACT_NO IN
+          <foreach collection="contractNo" item="no_4"  open="(" separator="," close=")">  
+			    	#{no_4, jdbcType=VARCHAR}
+			    </foreach>)))
+		</if>
+        <if test="custProductType != null and custProductType.size() > 0">
+				AND PRODUCT_CODE IN
+                (SELECT PRODUCT_CODE FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO IN
+                (SELECT DISTINCT WORK_ORDER_NO FROM T_PLA_ORDER_TASK TPOT WHERE EXISTS 
+                (SELECT 1 FROM T_WIP_WORK_ORDER WO WHERE WO.WORK_ORDER_NO = TPOT.WORK_ORDER_NO AND 
+                 WO.NEXT_SECTION = #{nextSection, jdbcType=VARCHAR}
+                 AND TPOT.CONTRACT_NO IN(SELECT DISTINCT TOSO.CONTRACT_NO FROM T_ORD_SALES_ORDER TOSO WHERE EXISTS
+		         (SELECT 1 FROM T_ORD_SALES_ORDER_ITEM TOSOI WHERE TOSO.ID=TOSOI.SALES_ORDER_ID AND TOSOI.CUST_PRODUCT_TYPE IN
+		         <foreach collection="custProductType" item="no_3"  open="(" separator="," close=")">  
+			    	#{no_3, jdbcType=VARCHAR}
+			    </foreach>
+			      )))))
+			</if>
+	</select>
+
+	<sql id="workOrderColumns">
+		WO."ID",
+		WO.WORK_ORDER_NO,
+		WO.EQUIP_CODE,
+		WO.ORG_CODE,
+		WO.PRE_START_TIME,
+		WO.PRE_END_TIME,
+		WO.REAL_START_TIME,
+		WO.REAL_END_TIME,
+		WO.AUDIT_TIME,
+		WO.ORDER_LENGTH,
+		WO.CANCEL_LENGTH,
+		WO.STATUS,
+		WO.PROCESS_ID,
+		WO.PROCESS_NAME,
+		WO.HALF_PRODUCT_CODE,
+		WO.IS_DELAYED,
+		WO.FIXED_EQUIP_CODE,
+		WO.CREATE_USER_CODE,
+		WO.CREATE_TIME,
+		WO.MODIFY_USER_CODE,
+		WO.MODIFY_TIME,
+		WO.RELEASE_DATE,
+		WO.REQUIRE_FINISH_DATE,
+		WO.DOC_MAKER_USER_CODE,
+		WO.RECEIVER_USER_CODE,
+		WO.USER_COMMENT,
+		WO.EQUIP_NAME,
+		WO.PROCESS_CODE,
+		WO.PROCESS_GROUP_RESPOOL,
+		WO.PROCESS_GROUP,
+		WO.PROCESSES_MERGED,
+		WO.SPECIAL_REQ_SPLIT,
+		WO.WORK_ORDER_SECTION,
+		WO.NEXT_SECTION,
+		WO.CUS_ORDER_ITEM_IDS,
+		WO.COMPLETE_CUS_ORDER_ITEM_IDS,
+		WO.AUDITED_CUS_ORDER_ITEM_IDS,
+		WO.IS_DISPATCH,
+		WO.IS_OLD_LINE,
+		WO.IS_ABROAD,
+		WO.PERCENT
+	</sql>
+
+	<select id="getByIds" resultMap="getMap">
+		SELECT
+		<include refid="workOrderColumns" />
+		FROM T_WIP_WORK_ORDER WO
+		<where>
+			<if test="list.size() > 0">
+				WO."ID" IN
+				<foreach collection="list" item="id" open="(" separator=","
+					close=")">
+					#{id}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByEquipCodeAndStatus" resultMap="getMap">
+		SELECT 
+		<include refid="workOrderColumns"/>  
+		FROM T_WIP_WORK_ORDER WO 
+		LEFT JOIN T_FAC_EQIP_INFO E
+    	ON WO.EQUIP_CODE = E.CODE
+		WHERE WO.STATUS = #{status.name} 
+			AND WO.EQUIP_CODE= #{equipCode}
+		<if test="orgCode != null and orgCode != ''">
+                AND WO.ORG_CODE = #{orgCode}
+		</if>
+		ORDER BY WO.PRE_START_TIME
+	</select>
+	
+	<sql id="findSalesOrderItemByProductTypeAndSpec">
+		SELECT
+            SOI.PRODUCT_CODE,
+            SOI.PRODUCT_TYPE,
+            SOI.PRODUCT_SPEC,
+            COI.SALES_ORDER_ITEM_ID,
+            COI.ID
+		FROM T_ORD_SALES_ORDER_ITEM SOI
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM COI ON SOI.ID = COI.SALES_ORDER_ITEM_ID
+		<where>
+			<if test="productType != null and productType != ''">
+				AND UPPER(SOI.PRODUCT_TYPE) LIKE UPPER(#{productType})
+			</if>
+			<if test="productSpec != null and productSpec != ''">
+				AND UPPER(SOI.PRODUCT_SPEC) LIKE UPPER(#{productSpec})
+			</if>
+		</where>
+	</sql>
+
+	<sql id="findCuOrderItemProDecByProductTypeAndSpec">
+		SELECT COIPD.ID, COID.ID AS ORDERITEMDECID, COI.ID AS ORDERITEMID
+		FROM
+		T_PLA_CU_ORDER_ITEM_PRO_DEC COIPD
+		LEFT JOIN
+		T_PLA_CUSTOMER_ORDER_ITEM_DEC COID
+		ON COID.ID = COIPD.Order_Item_Dec_Id
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM COI
+		ON COID.ORDER_ITEM_ID = COI.ID
+		<where>
+			<if test="(productType != null and productType != '') or (productSpec != null and productSpec != '')">
+				EXISTS ( SELECT 1 FROM (
+				<include refid="findSalesOrderItemByProductTypeAndSpec" />
+				) T WHERE T.ID = COI.ID )
+			</if>
+		</where>
+	</sql>
+	<sql id="findOrgCodeByOrgName">
+		SELECT ORG.ORG_CODE
+		FROM T_BAS_ORG ORG
+		<where>
+			<if test="orgName != null and orgName != ''">
+				ORG.ORG_CODE LIKE #{orgName} OR ORG.NAME LIKE #{orgName}
+			</if>
+		</where>
+	</sql>
+	<sql id="findOrderTaskByProductTypeAndSpec">
+		SELECT OT.WORK_ORDER_NO
+		FROM T_PLA_ORDER_TASK OT
+		<where>
+			<if test="(productType != null and productType != '') or (productSpec != null and productSpec != '')">
+				EXISTS ( SELECT 1 FROM (
+				<include refid="findCuOrderItemProDecByProductTypeAndSpec" />
+				) T WHERE OT.ORDER_ITEM_PRO_DEC_ID = T.ID )
+			</if>
+			<if test="operator != null and operator!=''">
+				AND UPPER(OT.OPERATOR) LIKE UPPER(#{operator})
+			</if>
+		</where>
+	</sql>
+	<sql id="findByRequestMapCondition">
+		FROM T_WIP_WORK_ORDER WO
+		LEFT JOIN T_FAC_EQIP_INFO E ON WO.EQUIP_CODE = E.CODE
+		LEFT JOIN T_FAC_EQIP_INFO FE ON WO.FIXED_EQUIP_CODE = FE.CODE
+		LEFT JOIN T_INV_MAT MAT ON MAT.MAT_CODE = WO.HALF_PRODUCT_CODE
+		LEFT JOIN T_PRO_PRODUCT_PROCESS PP ON WO.PROCESS_ID = PP.ID
+		LEFT JOIN ( SELECT MAX(WO.WORK_ORDER_NO) AS WORK_ORDER_NO,MAX(ORD.OPERATOR) AS OPERATOR, MAX(ORD.REMARKS) AS REMARKS
+					FROM T_WIP_WORK_ORDER WO,T_PLA_ORDER_TASK TASK,T_ORD_SALES_ORDER ORD
+					WHERE WO.WORK_ORDER_NO=TASK.WORK_ORDER_NO AND TASK.CONTRACT_NO=ORD.CONTRACT_NO
+					GROUP BY WO.WORK_ORDER_NO ) OPE
+        ON WO.WORK_ORDER_NO=OPE.WORK_ORDER_NO
+		<where>
+			<if test="orgName != null and orgName != ''">
+				AND ORG_CODE IN (
+				<include refid="findOrgCodeByOrgName" />
+				)
+			</if>
+			<if test="preStartTimeFrom != null and preStartTimeFrom != ''">
+				AND PRE_START_TIME &gt;= TO_DATE(#{preStartTimeFrom},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="workOrderNo != null and workOrderNo != ''">
+				AND WO.WORK_ORDER_NO LIKE #{workOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="preStartTimeTo != null and preStartTimeTo != ''">
+				AND PRE_START_TIME &lt;= TO_DATE(#{preStartTimeTo},'yyyy-mm-dd hh24:mi:ss')
+			</if>
+
+			<if test="releaseDate != null and releaseDate != ''">
+				AND WO.RELEASE_DATE &lt;= #{releaseDate}
+			</if>
+
+			<if test="requireFinishDate != null and requireFinishDate != ''">
+				AND WO.REQUIRE_FINISH_DATE &lt;= #{requireFinishDate}
+			</if>
+			<if test="(productType != null and productType != '') or (productSpec != null and productSpec != '')">
+				AND WO.WORK_ORDER_NO IN (
+				<include refid="findOrderTaskByProductTypeAndSpec" />
+				)
+			</if>
+			<if test="customerContractNO != null and customerContractNO != ''">
+				AND WO.WORK_ORDER_NO IN ( SELECT OT.WORK_ORDER_NO FROM
+				T_PLA_ORDER_TASK OT WHERE OT.CONTRACT_NO LIKE #{customerContractNO,jdbcType=VARCHAR} )
+			</if>
+			<if test="equipCode != null and equipCode != ''">
+				AND WO.EQUIP_CODE LIKE #{equipCode}
+			</if>
+			<if test="equipName != null and equipName != ''">
+				AND WO.EQUIP_NAME LIKE #{equipName}
+			</if>
+			<if test="processCode != null and processCode != ''">
+				AND PP.PROCESS_CODE LIKE #{processCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND WO.STATUS LIKE #{status}
+			</if>
+			<if test="operator != null and operator != ''">
+				AND OPE.operator LIKE #{operator,jdbcType=VARCHAR}
+			</if>
+			<if test="isDelayed != null and isDelayed != ''">
+				AND ( SELECT COUNT(*) 
+				    FROM T_PLA_ORDER_TASK OT1
+				    LEFT JOIN T_WIP_WORK_ORDER WO1
+				      ON OT1.WORK_ORDER_NO = WO1.WORK_ORDER_NO
+				    LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PRODEC1
+				      ON OT1.ORDER_ITEM_PRO_DEC_ID = PRODEC1.ID
+				    WHERE WO1.ID = WO.ID
+				    AND OT1.PLAN_FINISH_DATE 
+				<if test="isDelayed == 1">
+				      >
+				</if>
+				<if test="isDelayed == 0">
+				<![CDATA[<=]]>
+				</if>
+				    PRODEC1.LATEST_FINISH_DATE ) > 0
+				<!--
+					WO.IS_DELAYED IN 
+					<foreach collection="isDelayed" item="value" open="(" separator="," close=")"> 
+						#{value, jdbcType=VARCHAR} 
+					</foreach>
+					-->
+			</if>
+			<if test="orderItemStatus != null">
+				AND WO.STATUS IN
+				<foreach collection="orderItemStatus" item="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+	
+	<select id="findByRequestMap" parameterType="map" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+		SELECT <include refid="workOrderColumns" />,MAT.COLOR,MAT.MAT_SECTION,FE.NAME FIXED_EQUIP_NAME,
+			(SELECT ROUND((SUM(PRODEC.USED_STOCK_LENGTH) + SUM(PRODEC.FINISHED_LENGTH))/(SUM(PRODEC.USED_STOCK_LENGTH) + SUM(PRODEC.FINISHED_LENGTH) + SUM(PRODEC.UN_FINISHED_LENGTH))*100, 2) 
+	            FROM T_PLA_ORDER_TASK OT 
+	            LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PRODEC 
+	            ON OT.ORDER_ITEM_PRO_DEC_ID = PRODEC.ID 
+	            WHERE OT.WORK_ORDER_NO=WO.WORK_ORDER_NO) AS PERCENT,
+	            OPE.OPERATOR,
+	            OPE.REMARKS
+		<include refid="findByRequestMapCondition" />
+	</select>
+	<select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT count(1)
+		<include refid="findByRequestMapCondition" />
+	</select>
+	
+	<select id="getCurrentByEquipCode" resultMap="getMap" parameterType="string">
+		SELECT * FROM (
+			SELECT
+			   WO."ID",
+               WO.WORK_ORDER_NO,
+               WO.ORG_CODE,
+               WO.PRE_START_TIME,
+               WO.PRE_END_TIME,
+               WO.REAL_START_TIME,
+               WO.REAL_END_TIME,
+               WO.AUDIT_TIME,
+               WO.ORDER_LENGTH,
+               WO.CANCEL_LENGTH,
+               WO.STATUS,
+               WO.PROCESS_ID,
+               WO.PROCESS_NAME,
+               WO.HALF_PRODUCT_CODE,
+               WO.IS_DELAYED,
+               WO.FIXED_EQUIP_CODE,
+               WO.CREATE_USER_CODE,
+               WO.CREATE_TIME,
+               WO.MODIFY_USER_CODE,
+               WO.MODIFY_TIME,
+               WO.RELEASE_DATE,
+               WO.REQUIRE_FINISH_DATE,
+               WO.DOC_MAKER_USER_CODE,
+               WO.RECEIVER_USER_CODE,
+               WO.USER_COMMENT,
+               WO.EQUIP_NAME,
+               WO.PROCESS_CODE,
+               WO.PROCESS_GROUP_RESPOOL,
+               WO.PROCESS_GROUP,
+               WO.PROCESSES_MERGED,
+               WO.SPECIAL_REQ_SPLIT,
+               WO.WORK_ORDER_SECTION,
+               WO.NEXT_SECTION,
+               WO.CUS_ORDER_ITEM_IDS,
+               WO.COMPLETE_CUS_ORDER_ITEM_IDS,
+               WO.AUDITED_CUS_ORDER_ITEM_IDS,
+               WO.IS_DISPATCH,
+               WO.IS_OLD_LINE,
+               WO.IS_ABROAD,
+               ER.EQUIP_CODE
+			FROM T_WIP_WORK_ORDER WO,T_WIP_WO_EQUIP_RELATION ER
+			WHERE WO.STATUS IN ('TO_DO','IN_PROGRESS') AND WO.ID =  ER.WORK_ORDER_ID
+			AND ER.EQUIP_CODE = #{param1}
+			ORDER BY ER.SEQ,WO.PRE_START_TIME
+		) WHERE ROWNUM = 1
+	</select>
+	
+	<select id="getRecentByEquipCode" resultMap="getMap">
+		SELECT <include refid="workOrderColumns"/> FROM T_WIP_WORK_ORDER WO
+		WHERE WO.STATUS IN ('TO_DO','TO_AUDIT')
+			AND WO.EQUIP_CODE= #{param1}
+	AND (WO.REAL_END_TIME<![CDATA[<]]>SYSDATE+1 OR WO.REAL_END_TIME IS NULL)
+		<if test="param2 != null and param2 != ''">
+                AND WO.ORG_CODE = #{param2}
+		</if>
+		ORDER BY WO.PRE_START_TIME
+	</select>
+
+	<select id="getFinishWorkOrderForTerminal"  resultMap="getMap">
+		SELECT <include refid="workOrderColumns"/> FROM T_WIP_WORK_ORDER WO
+		WHERE WO.STATUS IN ('FINISHED')
+		AND WO.EQUIP_CODE= #{param1}
+		<!--AND WO.REAL_END_TIME<![CDATA[>]]>SYSDATE-2-->
+		<if test="param2 != null and param2 != ''">
+			AND WO.ORG_CODE = #{param2}
+		</if>
+		ORDER BY WO.PRE_START_TIME
+	</select>
+	
+	<update id="cancelByWorkOrderNo" parameterType="string" >
+		CALL CANCEL_WORK_ORDER(#{param1},#{param2})
+	</update>
+
+	<select id="getByPreTimeAndEquipCode" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+		SELECT
+		<include refid="workOrderColumns" />
+		FROM T_WIP_WORK_ORDER WO
+		<where>
+			<if test="param1 != null and param1 != '' ">
+				AND WO.PRE_START_TIME &gt;= #{param1}
+			</if>
+			<if test="param2 != null and param2 != '' ">
+				AND WO.PRE_END_TIME &lt;= #{param2}
+			</if>
+			<if test="param3 != null and param3 != '' ">
+				AND WO.EQUIP_CODE = #{param3}
+			</if>
+			<if test="param2 != null and param2 != ''">
+                AND WO.ORG_CODE = #{param4}
+			</if>
+		</where>
+		ORDER BY WO.PRE_START_TIME
+	</select>
+	
+	<!-- 设备加工追溯查询 -->
+	<select id="findForEquipProcessTrace" parameterType="map" resultType="map">
+		SELECT
+		<include refid="workOrderColumns" /> ,  
+			TMP.CONTRACT_NO,
+       		USER_TMP.USER_CODE 
+		FROM T_WIP_WORK_ORDER WO
+		LEFT JOIN T_PRO_PRODUCT_PROCESS SA ON SA.ID=WO.PROCESS_ID
+		LEFT JOIN (SELECT WORK_ORDER_NO, WMSYS.WM_CONCAT(DISTINCT CONTRACT_NO) CONTRACT_NO
+               FROM (SELECT DISTINCT OT.WORK_ORDER_NO,
+                            OT.CONTRACT_NO
+                       FROM T_PLA_ORDER_TASK OT)
+              GROUP BY WORK_ORDER_NO) TMP
+    	ON WO.WORK_ORDER_NO = TMP.WORK_ORDER_NO
+    	LEFT JOIN (SELECT WORK_ORDER_NO,
+                    WMSYS.WM_CONCAT(DISTINCT REPORT_USER_CODE) USER_CODE
+               FROM (SELECT distinct RE.WORK_ORDER_NO,
+                            RE.REPORT_USER_CODE
+                       FROM T_WIP_REPORT RE)
+              GROUP BY WORK_ORDER_NO) USER_TMP
+    	ON WO.WORK_ORDER_NO = USER_TMP.WORK_ORDER_NO
+		<include refid="findForEquipProcessTraceCondition"/>
+	</select>
+	<!-- 设备加工追溯查询 -->
+	<select id="countForEquipProcessTrace" parameterType="map" resultType="int">
+		SELECT COUNT(1) FROM T_WIP_WORK_ORDER WO
+		LEFT JOIN T_FAC_EQIP_INFO E
+		ON WO.EQUIP_CODE = E.CODE
+		LEFT JOIN (SELECT WORK_ORDER_NO, WMSYS.WM_CONCAT(DISTINCT CONTRACT_NO) CONTRACT_NO
+               FROM (SELECT DISTINCT OT.WORK_ORDER_NO,
+                            OT.CONTRACT_NO
+                       FROM T_PLA_ORDER_TASK OT)
+              GROUP BY WORK_ORDER_NO) TMP
+    	ON WO.WORK_ORDER_NO = TMP.WORK_ORDER_NO
+    	LEFT JOIN (SELECT WORK_ORDER_NO,
+                    WMSYS.WM_CONCAT(DISTINCT REPORT_USER_CODE) USER_CODE
+               FROM (SELECT DISTINCT RE.WORK_ORDER_NO,
+                            RE.REPORT_USER_CODE
+                       FROM T_WIP_REPORT RE)
+              GROUP BY WORK_ORDER_NO) USER_TMP
+    	ON WO.WORK_ORDER_NO = USER_TMP.WORK_ORDER_NO
+		<include refid="findForEquipProcessTraceCondition"/>
+	</select>
+	<!-- 设备加工追溯查询条件 -->
+	<sql id="findForEquipProcessTraceCondition">
+		<where>
+			<if test="equipCode != null and equipCode != '' ">
+				AND WO.EQUIP_NAME LIKE #{equipCode}
+			</if>
+			<if test="contractNo != null and contractNo != '' ">
+				AND INSTR(TMP.CONTRACT_NO, #{contractNo})>0
+				<!-- 
+					AND ((
+						SELECT COUNT(*) 
+						FROM DUAL 
+						WHERE 
+							#{contractNo} IN ( 
+								SELECT CONTRACT_NO 
+								FROM  (SELECT DISTINCT OT.WORK_ORDER_NO, OT.CONTRACT_NO FROM T_PLA_ORDER_TASK OT ) TMP
+								WHERE WO.WORK_ORDER_NO = TMP.WORK_ORDER_NO )) &gt; 0)
+								-->
+			</if>
+			<if test="realStartTime != null ">
+				AND WO.REAL_START_TIME &gt;= #{realStartTime}
+			</if>
+			<if test="realEndTime != null ">
+				AND WO.REAL_END_TIME &lt; #{realEndTime}
+			</if>
+			<if test="processCode!=null and processCode!=''">
+				AND WO.PROCESS_ID IN (SELECT ID FROM T_PRO_PRODUCT_PROCESS WHERE PROCESS_CODE=#{processCode})
+			</if>
+			<if test="statuss != null ">
+				AND WO.STATUS IN 
+				<foreach collection="statuss" item="status" open="(" separator="," close=")"> 
+			        #{status, jdbcType=VARCHAR} 
+				</foreach>
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+                AND WO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+
+		</where>
+	</sql>
+	
+	<select id="getForAudit" parameterType="java.lang.String" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+		SELECT 
+		<include refid="workOrderColumns"/> 
+		FROM T_WIP_WORK_ORDER WO
+		WHERE WO.STATUS = 'TO_AUDIT'
+        AND WO.ORG_CODE = #{orgCode}
+	</select>
+	
+	<update id="updateStatusByNo" parameterType="string" flushCache="true">
+		UPDATE T_WIP_WORK_ORDER SET STATUS = 'IN_PROGRESS' WHERE WORK_ORDER_NO = #{workOrderNo}
+	</update>
+	
+	<!-- 生产单设置为急件 -->
+	<update id="updateWorkerOrderIsDispatchByNo" parameterType="string" flushCache="true">
+		UPDATE T_WIP_WORK_ORDER SET IS_DISPATCH = '1' 
+		WHERE WORK_ORDER_NO IN
+		<foreach collection="workOrderNo" item="no" open="(" separator="," close=")">
+            #{no, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+	<update id="acceptWorkOrder" parameterType="string" flushCache="true">
+        CALL ACCEPT_WORK_ORDER(#{param1},#{param2})
+	</update>
+
+	<update id="finishWorkOrder" parameterType="string" flushCache="true">
+        CALL FINISH_WORK_ORDE(#{param1},#{param2})
+	</update>
+    
+    <update id="setRelationSeq" parameterType="string" flushCache="true">
+        CALL SP_SET_RELATION_SEQ(#{param1})
+	</update>
+    
+	<sql id="getDisorderWorkOrderByEquipCodeCondition">
+   		FROM T_WIP_WORK_ORDER WO
+		<where>
+			WO.WORK_ORDER_NO NOT IN
+	       (
+		       SELECT DISTINCT OT.WORK_ORDER_NO
+		          FROM T_PLA_ORDER_TASK OT
+		          LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PRODEC
+		            ON OT.ORDER_ITEM_PRO_DEC_ID  = PRODEC.ID
+		         WHERE EXISTS (SELECT 1
+		                  FROM T_PLA_HIGH_PRIORITY_PRO_DEC T  
+		                 WHERE T.ID = OT.ORDER_ITEM_PRO_DEC_ID)
+			<if test="equipCode != null and equipCode != ''">
+							AND CASE
+						         WHEN PRODEC.FIXED_EQUIP_CODE IS NOT NULL THEN
+						          PRODEC.FIXED_EQUIP_CODE
+						         ELSE
+						          PRODEC.EQUIP_CODE
+						       END = #{equipCode}
+			</if>
+             )
+			<if test="status != null and status != ''">
+				AND WO.STATUS = #{status}
+			</if>
+			<if test="equipCode != null and equipCode != ''">
+				AND CASE
+			         WHEN WO.FIXED_EQUIP_CODE IS NOT NULL THEN
+			          WO.FIXED_EQUIP_CODE
+			         ELSE
+			          WO.EQUIP_CODE
+			       END = #{equipCode}
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+                AND WO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	<select id="getDisorderWorkOrderByEquipCode" parameterType="cc.oit.bsmes.wip.model.WorkOrder" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+    	SELECT 
+			WO."ID",
+			WO.WORK_ORDER_NO,
+			#{equipCode} EQUIP_CODE,
+			WO.ORG_CODE,
+			WO.PRE_START_TIME,
+			WO.PRE_END_TIME,
+			WO.REAL_START_TIME,
+			WO.REAL_END_TIME,
+			WO.AUDIT_TIME,
+			WO.ORDER_LENGTH,
+			WO.CANCEL_LENGTH,
+			WO.STATUS,
+			WO.PROCESS_ID,
+			WO.PROCESS_NAME,
+			WO.HALF_PRODUCT_CODE,
+			WO.IS_DELAYED,
+			WO.FIXED_EQUIP_CODE,
+			WO.CREATE_USER_CODE,WO.CREATE_TIME,WO.MODIFY_USER_CODE,WO.MODIFY_TIME
+		<include refid="getDisorderWorkOrderByEquipCodeCondition"/>
+	</select>
+	<select id="countDisorderWorkOrderByEquipCode" parameterType="cc.oit.bsmes.wip.model.WorkOrder" resultType="int">
+    	SELECT 
+			COUNT(1)
+		<include refid="getDisorderWorkOrderByEquipCodeCondition"/>
+	</select>
+	
+	<!-- 更细生产单长度百分比 -->
+	<update id="updatePercent">
+		UPDATE T_WIP_WORK_ORDER W SET W.PERCENT=#{percent, jdbcType=DOUBLE}, W.MODIFY_TIME=SYSTIMESTAMP
+		WHERE W.WORK_ORDER_NO=#{workOrderNo, jdbcType=VARCHAR}
+		    AND W.MODIFY_TIME=#{modifyTime, jdbcType=TIMESTAMP}
+	</update>
+    
+	<select id="getSeqWorkOrderByEquipCode" parameterType="cc.oit.bsmes.wip.model.WorkOrder" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+    	SELECT 
+			WO."ID",
+			WO.WORK_ORDER_NO,
+			#{equipCode} EQUIP_CODE,
+			WO.ORG_CODE,
+			WO.PRE_START_TIME,
+			WO.PRE_END_TIME,
+			WO.REAL_START_TIME,
+			WO.REAL_END_TIME,
+			WO.AUDIT_TIME,
+			WO.ORDER_LENGTH,
+			WO.CANCEL_LENGTH,
+			WO.STATUS,
+			WO.PROCESS_ID,
+			WO.PROCESS_NAME,
+			WO.HALF_PRODUCT_CODE,
+			WO.IS_DELAYED,
+			WO.FIXED_EQUIP_CODE,
+			WO.CREATE_USER_CODE,WO.CREATE_TIME,WO.MODIFY_USER_CODE,WO.MODIFY_TIME,
+			T.SEQ
+		FROM T_WIP_WORK_ORDER WO 
+		LEFT JOIN ( <include refid="getSeqWorkOrderSql"/> ) T 
+		ON WO.WORK_ORDER_NO = T.WORK_ORDER_NO
+		<where> 
+			EXISTS (
+			SELECT 1 FROM ( <include refid="getSeqWorkOrderSql"/> ) TMP 
+				WHERE WO.WORK_ORDER_NO = TMP.WORK_ORDER_NO
+			)
+			<if test="status != null and status != ''">
+				AND WO.STATUS = #{status}
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+                AND WO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="equipCode != null and equipCode != ''">
+				AND CASE
+			         WHEN WO.FIXED_EQUIP_CODE IS NOT NULL THEN
+			          WO.FIXED_EQUIP_CODE
+			         ELSE
+			          WO.EQUIP_CODE
+			       END = #{equipCode}
+			</if>
+		</where>
+		ORDER BY T.SEQ
+	</select>
+    
+	<sql id="getSeqWorkOrderSql">
+    	SELECT DISTINCT OT.WORK_ORDER_NO, H.SEQ
+                  FROM T_PLA_ORDER_TASK OT
+                  LEFT JOIN T_PLA_HIGH_PRIORITY_PRO_DEC H
+                    ON OT.ORDER_ITEM_PRO_DEC_ID = H.ID
+                  LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC D
+                    ON OT.ORDER_ITEM_PRO_DEC_ID = D.ID
+                 WHERE EXISTS (SELECT 1
+                          FROM T_PLA_HIGH_PRIORITY_PRO_DEC HPT
+                         WHERE HPT.ID = OT.ORDER_ITEM_PRO_DEC_ID)
+		<if test="equipCode != null and equipCode != ''">
+		  AND CASE
+              WHEN D.FIXED_EQUIP_CODE IS NOT NULL THEN
+               D.FIXED_EQUIP_CODE
+              ELSE
+               D.EQUIP_CODE
+            END = #{equipCode}
+		</if>
+	</sql>
+    
+	<update id="updateWorkOrderFixEquip">
+    	UPDATE T_WIP_WORK_ORDER WO 
+    	SET	WO.FIXED_EQUIP_CODE = #{fixedEquipCode,jdbcType=VARCHAR}
+    	WHERE WO.WORK_ORDER_NO IN
+		<foreach collection="workOrderNoList" item="workOrderNo" open="(" separator="," close=")">
+            #{workOrderNo,jdbcType=VARCHAR}
+		</foreach>
+		<if test="fixedEquipCode==null or fixedEquipCode == ''">
+         	AND WO.EQUIP_CODE = WO.FIXED_EQUIP_CODE
+		</if>
+	</update>
+    
+	<!-- 跳过订单操作之更新PRO_DEC表的计算长度 -->
+	<update id="updateOrderLengthForSkip">
+    	UPDATE T_PLA_CU_ORDER_ITEM_PRO_DEC PD 
+    	SET PD.FINISHED_LENGTH=(PD.FINISHED_LENGTH + PD.UN_FINISHED_LENGTH), PD.UN_FINISHED_LENGTH=0 
+    	WHERE PD.ID IN (
+    			SELECT OT.ORDER_ITEM_PRO_DEC_ID 
+    			FROM T_PLA_ORDER_TASK OT 
+    			WHERE OT.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+    			)
+	</update>
+
+	<select id="getLastByEquipCode" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="workOrderColumns"/>
+        FROM T_WIP_WORK_ORDER WO
+        WHERE WO.EQUIP_CODE = #{param1}
+        AND WO.STATUS = 'FINISHED'
+		<if test="param2 != null and param2 != ''">
+            AND WO.ORG_CODE = #{param2}
+		</if>
+        ORDER BY REAL_END_TIME DESC
+	</select>
+
+	<update id="auditWorkOrder" flushCache="true">
+        CALL AUDIT_WORK_ORDER(#{param1},#{param2},#{param3},#{param4},#{param5},#{param6},#{param7})
+	</update>
+
+	<select id="getByBarCode" parameterType="string" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+        SELECT
+		<include refid="workOrderColumns"/>
+        FROM T_WIP_WORK_ORDER WO
+        WHERE ORG_CODE=#{param2} AND  EXISTS (
+            SELECT
+                1
+            FROM T_WIP_REPORT RE
+            WHERE RE.SERIAL_NUM = #{param1}
+              AND RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+        )
+	</select>
+    
+	<!-- 重新计算更新物料需求查询 -->
+	<select id="getListForUpMrpOfCalculatorOA" parameterType="cc.oit.bsmes.wip.model.WorkOrder" resultMap="getMap">
+      SELECT WO.ID AS WORK_ORDER_ID
+	  FROM T_PLA_MRP                     MO,
+	    T_WIP_WORK_ORDER              WO,
+	    T_PLA_ORDER_TASK              OT,
+	    T_PLA_CU_ORDER_ITEM_PRO_DEC   IPD,
+	    T_PLA_CUSTOMER_ORDER_ITEM_DEC I,
+	    T_PLA_CUSTOMER_ORDER_ITEM     OI
+	  WHERE MO.WORK_ORDER_ID = WO.ID
+	    AND WO.WORK_ORDER_NO = OT.WORK_ORDER_NO
+	    AND OT.ORDER_ITEM_PRO_DEC_ID = IPD.ID
+	    AND IPD.ORDER_ITEM_DEC_ID = I.ID
+	    AND I.ORDER_ITEM_ID = OI.ID
+	    AND (IPD.STATUS = 'TO_DO' OR IPD.STATUS = 'IN_PROGRESS')
+	    AND OI.ID = #{id, jdbcType=VARCHAR}
+	    AND IPD.PROCESS_CODE = #{processCode, jdbcType=VARCHAR}
+	    AND IPD.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		<if test="orgCode != null and orgCode != ''">
+            AND WO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+	  GROUP BY WO.ID
+	</select>
+
+	<select id="countToday" resultType="java.lang.Integer">
+        SELECT COUNT(WO.ID)
+        FROM T_WIP_WORK_ORDER WO,T_WIP_WO_EQUIP_RELATION RE
+        WHERE WO.ID = RE.WORK_ORDER_ID AND  RE.EQUIP_CODE=#{param1,jdbcType=VARCHAR} AND WO.ORG_CODE = #{param2,jdbcType=VARCHAR}
+        and WO.STATUS='TO_DO'
+	</select>
+
+	<select id="getByEquipCode" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="workOrderColumns"/>
+        FROM T_WIP_WORK_ORDER WO
+        WHERE WO.STATUS IN ('TO_DO','IN_PROGRESS')
+        AND WO.EQUIP_CODE= #{param1,jdbcType=VARCHAR}
+        AND TO_CHAR(WO.PRE_START_TIME,'YYYY-MM-DD') = TO_CHAR(SYSDATE,'YYYY-MM-DD')
+		<if test="param2 != null and param2 != ''">
+            AND WO.ORG_CODE = #{param2,jdbcType=VARCHAR}
+		</if>
+        ORDER BY WO.STATUS,WO.PRE_END_TIME
+	</select>
+    
+    <!-- 根据设备编码获取当前加工的产品信息 -->
+	<select id="getProductByEquipCode" parameterType="map" resultType="map">
+		SELECT DISTINCT
+		    PD.CONTRACT_NO      AS CONTRACTNO,
+		    PD.OPERATOR         AS OPERATOR,
+		    PD.PRODUCT_TYPE     AS PRODUCTTYPE,
+		    PD.PRODUCT_SPEC     AS PRODUCTSPEC,
+		    T.TASK_LENGTH       AS CONTRACTLENGTH
+		FROM
+		    T_PLA_ORDER_TASK T,
+		    T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		WHERE
+		    T.ORDER_ITEM_PRO_DEC_ID=PD.ID
+		AND T.STATUS = 'IN_PROGRESS'
+		AND PD.STATUS = 'IN_PROGRESS'
+		AND T.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		AND T.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		AND PD.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+	</select> 
+	
+	<select id="getFinishedWorkOrder" parameterType="cc.oit.bsmes.wip.model.WorkOrder" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+	SELECT
+	    a.real_start_time,
+	    a.real_end_time,
+	    a.order_length
+	FROM
+	    T_WIP_WORK_ORDER a ,
+	    T_PRO_PRODUCT_PROCESS c
+	WHERE
+   		a.process_id=c.id
+	AND a.work_order_no in (select work_order_no from t_pla_order_task where product_code=#{productCode,jdbcType=VARCHAR})
+	AND a.status= #{status,jdbcType=VARCHAR}
+	AND a.real_end_time>=#{realStartTime,jdbcType=TIMESTAMP}
+	AND a.real_end_time<![CDATA[<=]]>#{realEndTime,jdbcType=TIMESTAMP}
+	AND c.process_code=#{processCode,jdbcType=VARCHAR}
+	AND a.equip_code=#{equipCode,jdbcType=VARCHAR}
+	AND a.org_code=#{orgCode,jdbcType=VARCHAR}
+	</select> 
+    
+	<select id="getWorkOrderAndLimitTime" parameterType="map" resultMap="getMap">
+	
+       SELECT ord.WORK_ORDER_NO,pro.PROCESS_CODE,pro.PROCESS_NAME,ord.EQUIP_CODE,ord.REAL_START_TIME,ord.REAL_END_TIME,ord.ORDER_LENGTH,cra.PRODUCT_CODE
+ 	   FROM T_WIP_WORK_ORDER ord, T_PRO_PRODUCT_CRAFTS cra,T_PRO_PRODUCT_PROCESS pro
+	   WHERE ord.PROCESS_ID =pro.id AND pro.PRODUCT_CRAFTS_ID =cra.ID
+            AND ord.STATUS='FINISHED' AND  cra.PRODUCT_CODE= #{productCode,jdbcType=VARCHAR}  AND  ord.REAL_END_TIME>=#{startTime,jdbcType=TIMESTAMP}
+	AND  ord.REAL_END_TIME<![CDATA[<=]]>#{endTime,jdbcType=TIMESTAMP}  ORDER BY pro.SEQ ASC ,ord.REAL_START_TIME ASC 
+  
+	</select>
+    
+	<select id="getWorkOrderAndProduct" parameterType="map" resultMap="getMap">
+       SELECT ord.REAL_START_TIME,ord.REAL_END_TIME,cra.PRODUCT_CODE,product.PRODUCT_NAME
+ 	   FROM T_WIP_WORK_ORDER ord, T_PRO_PRODUCT_CRAFTS cra,T_PRO_PRODUCT_PROCESS pro,T_PLA_PRODUCT product
+	   WHERE ord.PROCESS_ID =pro.id AND pro.PRODUCT_CRAFTS_ID =cra.ID AND cra.PRODUCT_CODE=product.PRODUCT_CODE AND ord.EQUIP_CODE=#{equipCode,jdbcType=VARCHAR} AND pro.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+             AND ord.REAL_START_TIME IS NOT NULL  ORDER BY ord.REAL_START_TIME ASC 
+	</select>
+    
+	<select id="getWorkOrderByEquipList" parameterType="map" resultMap="getMap">
+      SELECT ord.WORK_ORDER_NO,ord.REAL_START_TIME,ord.REAL_END_TIME,cra.PRODUCT_CODE,PRODUCT_NAME,ord.EQUIP_CODE
+ 	  FROM T_WIP_WORK_ORDER ord,T_PRO_PRODUCT_CRAFTS cra,T_PRO_PRODUCT_PROCESS pro,T_PLA_PRODUCT product
+	  WHERE  ord.PROCESS_ID=PRO.ID AND pro.PRODUCT_CRAFTS_ID=cra.ID AND cra.PRODUCT_CODE=product.PRODUCT_CODE 
+            AND ord.REAL_START_TIME IS NOT NULL 
+		<if test="equipList != null and equipList != ''">
+             AND EQUIP_CODE  IN
+			<foreach collection="equipList" item="equipCode" open="(" separator="," close=")">
+            	#{equipCode,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+	</select>
+    
+	<select id="getProductNameByEquipCode" parameterType="string" resultType="cc.oit.bsmes.wip.model.WorkOrder">
+    	SELECT PRODUCT_NAME,REAL_START_TIME, DECODE(REAL_END_TIME,NULL,SYSDATE,REAL_END_TIME) AS REAL_END_TIME
+    	FROM T_WIP_WORK_ORDER r,T_PRO_PRODUCT_PROCESS s,T_PRO_PRODUCT_CRAFTS t,T_PLA_PRODUCT u
+   		WHERE r.PROCESS_ID=s.ID AND s.PRODUCT_CRAFTS_ID=t.ID AND T.PRODUCT_CODE=u.PRODUCT_CODE AND REAL_START_TIME IS NOT NULL
+    	  	  AND r.EQUIP_CODE=#{equipCode,jdbcType=VARCHAR}
+	</select>
+    
+	<!-- 查询生产单的 查询条件/包括成缆护套下单界面 -->
+    <sql id="findForHandScheduleIncludeSQLWhere">
+    	<where>
+    		<if test="(contractNo != null and (contractNo instanceof java.util.ArrayList)and contractNo.size() > 0) 
+    		    or (operator != null and (operator instanceof java.util.ArrayList) and operator.size() > 0)
+    		    or (custProductType != null and (custProductType instanceof java.util.ArrayList) and custProductType.size() > 0)
+    		    or (productType != null and (productType instanceof java.util.ArrayList) and productType.size() > 0)
+    		    or (productSpec != null and (productSpec instanceof java.util.ArrayList)and productSpec.size() > 0
+    		    or (isBianZhi != null and !(isBianZhi instanceof java.util.ArrayList) and isBianZhi != ''))">
+	            AND EXISTS(
+				    SELECT 1 FROM T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+				    WHERE PD.WORK_ORDER_NO=WO.WORK_ORDER_NO
+				        <if test="contractNo != null and (contractNo instanceof java.util.ArrayList)and contractNo.size() > 0">
+				    	    AND PD.CONTRACT_NO IN
+				    	    <foreach collection="contractNo" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+			            </if>
+			            <if test="operator != null and (operator instanceof java.util.ArrayList) and operator.size() > 0">
+				    	    AND PD.OPERATOR IN 
+				    	    <foreach collection="operator" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+				        </if>
+				        <if test="custProductType != null and (custProductType instanceof java.util.ArrayList) and custProductType.size() > 0">
+				            AND
+				            <foreach collection="custProductType" item="item" index="index"  open="(" separator="OR" close=")">  
+						    	PD.CUST_PRODUCT_TYPE like CONCAT(#{item, jdbcType=VARCHAR}, '%')
+						    </foreach>
+	                    </if>
+	                    <if test="productType != null and (productType instanceof java.util.ArrayList) and productType.size() > 0">
+	                    	AND PD.PRODUCT_TYPE IN
+	                    	<foreach collection="productType" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+				        </if>
+	                    <if test="productSpec != null and (productSpec instanceof java.util.ArrayList)and productSpec.size() > 0">
+	                    	AND PD.PRODUCT_SPEC IN
+	                    	<foreach collection="productSpec" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+				        </if>
+				        <if test="isBianZhi != null and !(isBianZhi instanceof java.util.ArrayList) and isBianZhi != ''">
+		                    and (
+                            select count(*) from 
+	                         T_WIP_WO_CUSORDER_RELATION t1, 
+	                         T_PRO_PRODUCT_PROCESS t2, 
+	                         T_PLA_CUSTOMER_ORDER_ITEM t3
+	                        where t1.WORK_ORDER_ID = wo.id
+	                         and t1.CUS_ORDER_ITEM_ID=t3.id
+	                         and t3.CRAFTS_ID=t2.PRODUCT_CRAFTS_ID
+	                         and t2.PROCESS_CODE='Braiding'
+                            ) > 0
+		                </if>
+				)
+			</if>
+			<!-- 成缆护套查询部分 end -->
+			<if test="(customerCompany != null and (customerCompany instanceof java.util.ArrayList) and customerCompany.size() > 0) or (wiresStructure != null and (wiresStructure instanceof java.util.ArrayList) and wiresStructure.size() > 0)">
+	            AND EXISTS(
+				    SELECT 1 FROM T_ORD_SALES_ORDER_ITEM OI,T_PLA_ORDER_TASK OT,T_ORD_SALES_ORDER SO
+	                WHERE OT.WORK_ORDER_NO =WO.WORK_ORDER_NO
+	                AND SO.CONTRACT_NO = OT.CONTRACT_NO
+	                AND SO.ID = OI.SALES_ORDER_ID
+				        <if test="customerCompany != null and (customerCompany instanceof java.util.ArrayList) and customerCompany.size() > 0">
+				            AND SO.CUSTOMER_COMPANY IN
+	                    	<foreach collection="customerCompany" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+	                    </if>
+	                    <if test="wiresStructure != null and (wiresStructure instanceof java.util.ArrayList) and wiresStructure.size() > 0">
+	                    	AND OI.WIRES_STRUCTURE IN
+	                    	<foreach collection="wiresStructure" item="item"  open="(" separator="," close=")">  
+						    	#{item, jdbcType=VARCHAR}
+						    </foreach>
+				        </if>
+				)
+			</if>
+			
+			<if test="equipCode != null and !(equipCode instanceof java.util.ArrayList) and equipCode != ''">
+				AND INSTR(WO.EQUIP_CODE, #{equipCode, jdbcType=VARCHAR}) > 0
+			</if>
+			<if test="processCode != null and (processCode instanceof java.util.ArrayList) and processCode.size() > 0">
+				AND WO.PROCESS_CODE IN
+				<foreach collection="processCode" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>
+			<if test="status != null and (status instanceof java.util.ArrayList) and status.size() > 0">
+				AND WO.STATUS IN
+				<foreach collection="status" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if>  
+			<if test="processCode != null and (processCode instanceof java.util.ArrayList) and processCode.size() > 0">
+				AND WO.PROCESS_CODE IN
+				<foreach collection="processCode" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+			</if> 
+			<if test="nextSection != null and !(nextSection instanceof java.util.ArrayList) and nextSection != ''">
+				AND INSTR(WO.NEXT_SECTION, #{nextSection, jdbcType=VARCHAR}) > 0
+				<!-- 
+				<if test="nextSection != null and (nextSection instanceof java.util.ArrayList) and nextSection.size() > 0">
+				AND WO.NEXT_SECTION IN
+				<foreach collection="nextSection" item="item" open="(" separator="," close=")">
+					#{item, jdbcType=VARCHAR}
+				</foreach>
+				</if>
+				-->
+			</if>
+			<if test="workOrderSection != null and !(workOrderSection instanceof java.util.ArrayList) and workOrderSection != ''">
+				AND WO.WORK_ORDER_SECTION = #{workOrderSection, jdbcType=VARCHAR}
+			</if>
+			<if test="workOrderNo != null and !(workOrderNo instanceof java.util.ArrayList) and workOrderNo != ''">
+				AND WO.WORK_ORDER_NO LIKE #{workOrderNo,jdbcType=VARCHAR}
+			</if>
+			<if test="releaseDate != null and !(releaseDate instanceof java.util.ArrayList) and releaseDate != ''">
+				AND WO.RELEASE_DATE <![CDATA[>=]]> TO_DATE(concat(#{releaseDate, jdbcType=VARCHAR}, ' 00:00:00'),'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="releaseDateEnd != null and !(releaseDateEnd instanceof java.util.ArrayList) and releaseDateEnd != ''">
+				AND WO.RELEASE_DATE <![CDATA[<=]]> TO_DATE(concat(#{releaseDateEnd, jdbcType=VARCHAR}, ' 23:59:59') ,'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="requireFinishDate != null and !(requireFinishDate instanceof java.util.ArrayList) and requireFinishDate != ''">
+				AND WO.REQUIRE_FINISH_DATE <![CDATA[>=]]> TO_DATE(concat(#{requireFinishDate, jdbcType=VARCHAR}, ' 00:00:00'),'yyyy-mm-dd hh24:mi:ss')
+				AND WO.REQUIRE_FINISH_DATE <![CDATA[<]]> TO_DATE(concat(#{requireFinishDate, jdbcType=VARCHAR}, ' 23:59:59') ,'yyyy-mm-dd hh24:mi:ss')
+			</if>
+			<if test="isDispatch != null and !(isDispatch instanceof java.util.ArrayList) and isDispatch != ''">
+				AND WO.IS_DISPATCH = '1'
+			</if>
+			<if test="orgCode!=null and !(orgCode instanceof java.util.ArrayList) and orgCode!=''">
+				AND WO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+			</if>
+    	</where>
+    </sql>
+    
+	<!-- 手动排程查看生产单/成缆/护套 -->
+	<select id="findForHandSchedule" parameterType="map" resultMap="getMap">
+		SELECT R.*,
+		       (SELECT COUNT(*) FROM 
+		           T_ORD_ATTACH_FILE F, 
+		           T_WIP_WO_CUSORDER_RELATION CR, 
+		           T_PLA_CUSTOMER_ORDER_ITEM O, 
+		           T_ORD_SALES_ORDER_ITEM SO, 
+		           T_ORD_SALES_ORDER S
+		         WHERE F.SALES_ORDER_ID=S.ID
+		           AND CR.CUS_ORDER_ITEM_ID = O.ID
+		           AND O.SALES_ORDER_ITEM_ID = SO.ID
+		           AND SO.SALES_ORDER_ID = S.ID
+		           AND CR.WORK_ORDER_ID = R.ID
+		       ) AS ORDERFILENUM
+		  FROM (SELECT ROW_.*, ROWNUM ROWNUM_
+		          FROM (SELECT <include refid="workOrderColumns"/>
+		                  FROM T_WIP_WORK_ORDER WO
+		                <include refid="findForHandScheduleIncludeSQLWhere"/>
+		                
+		                <if test="sort != null and sort.size() > 0">
+					      ORDER BY 
+						  <foreach collection="sort" item="s" separator=",">  
+						      ${s.property} ${s.direction}
+						  </foreach>
+			   		    </if>
+		 			   ) ROW_
+		 	   ) R WHERE ROWNUM_ <![CDATA[>]]> #{start, jdbcType=INTEGER} AND ROWNUM_ <![CDATA[<=]]> #{end, jdbcType=INTEGER}
+	</select>
+	
+	<select id="findForHandScheduleContract" parameterType="ArrayList" resultMap="getMap">
+	WITH DISC_INFO AS (
+	<![CDATA[SELECT COID.ORDER_ITEM_ID,R.WORK_ORDER_NO,( ' (盘具:' || A.DISK_NUMBER || ' 长度:' || A.REPORT_LENGTH ||  ')') as DISK_REPORT,A.CREATE_TIME ]]>  
+	FROM T_WIP_REPORT_TASK A ,
+	     T_PLA_ORDER_TASK OT ,
+	     T_PLA_CU_ORDER_ITEM_PRO_DEC PD ,
+	     T_PLA_CUSTOMER_ORDER_ITEM_DEC COID ,
+	     T_WIP_REPORT R 
+	WHERE A.ORDER_TASK_ID = OT.ID	
+	 AND OT.ORDER_ITEM_PRO_DEC_ID = PD.ID 
+	 AND  R.ID = A.REPORT_ID
+	 AND PD.ORDER_ITEM_DEC_ID = COID.ID 
+	 AND A.DISK_NUMBER IS NOT NULL)
+	SELECT ID,
+			RTRIM(XMLAGG(XMLPARSE(CONTENT(CONTRACT_NO) || ',' WELLFORMED))
+             .GETCLOBVAL(),',') AS CONTRACT_NO FROM (
+		SELECT WOID AS ID,CONTRACT_NO || WMSYS.WM_CONCAT(DISK_REPORT) || ';' || COIID AS CONTRACT_NO FROM (
+  			SELECT  WO.ID AS WOID, 
+  					COI.ID AS COIID,
+  					(SUBSTR(REGEXP_SUBSTR(SO.CONTRACT_NO,
+                             '[[:digit:]]+'),
+               LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,
+                                    '[[:digit:]]+')) - 4,
+               LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,
+                                    '[[:digit:]]+'))) || 
+        ' - ' || SOI.CUST_PRODUCT_TYPE || ' ' || SOI.CUST_PRODUCT_SPEC ||
+        ' - ' || SOI.CONTRACT_LENGTH)  AS CONTRACT_NO,
+    				TT.DISK_REPORT
+  		FROM T_WIP_WO_CUSORDER_RELATION CR
+ 			INNER JOIN T_PLA_CUSTOMER_ORDER_ITEM COI
+    			ON CR.CUS_ORDER_ITEM_ID = COI.ID
+ 			INNER JOIN T_ORD_SALES_ORDER_ITEM SOI
+    			ON COI.SALES_ORDER_ITEM_ID = SOI.ID
+ 			INNER JOIN T_ORD_SALES_ORDER SO
+    			ON SOI.SALES_ORDER_ID = SO.ID
+ 			INNER JOIN T_WIP_WORK_ORDER WO
+    			ON CR.WORK_ORDER_ID = WO.ID
+  			LEFT JOIN DISC_INFO TT
+    			ON TT.ORDER_ITEM_ID = COI.ID
+   			AND WO.WORK_ORDER_NO = TT.WORK_ORDER_NO
+ 		WHERE WO.ID IN (
+			<foreach collection="list" item="item" index="index"  separator=",">
+				#{item.id,jdbcType=VARCHAR}
+			</foreach>))
+ 		GROUP BY WOID,COIID,CONTRACT_NO)
+ 	GROUP BY ID
+	</select>
+	<select id="findForHandScheduleCount" resultType="int">
+		SELECT COUNT(*) 
+		FROM T_WIP_WORK_ORDER WO
+		<include refid="findForHandScheduleIncludeSQLWhere"/>
+	</select>
+	
+	<!-- 手动排程查看生产单 - 根据设备编码 - 设备生产单排序用 
+	|| '[' || SO.OPERATOR || ']'  -->
+	<select id="findForHandScheduleByEquipCode" parameterType="string" resultMap="getMap">
+		SELECT <include refid="workOrderColumns"/>,
+	  	   (SELECT (WMSYS.WM_CONCAT(SUBSTR(REGEXP_SUBSTR(SO.CONTRACT_NO,
+	                                                     '[[:digit:]]+'),
+	                                       LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,
+	                                                            '[[:digit:]]+')) - 4,
+	                                       LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,
+	                                                            '[[:digit:]]+'))) || ' - ' ||
+	                                SOI.PRODUCT_TYPE || ' ' || SOI.PRODUCT_SPEC ||
+	                                ' - ' || SOI.CONTRACT_LENGTH))
+	          FROM T_WIP_WO_CUSORDER_RELATION CR,
+	               T_PLA_CUSTOMER_ORDER_ITEM  COI,
+	               T_ORD_SALES_ORDER_ITEM     SOI,
+	               T_ORD_SALES_ORDER          SO
+	         WHERE CR.WORK_ORDER_ID = WO.ID
+	           AND CR.CUS_ORDER_ITEM_ID = COI.ID
+	           AND COI.SALES_ORDER_ITEM_ID = SOI.ID
+	           AND SOI.SALES_ORDER_ID = SO.ID) AS CONTRACT_NO,
+	       (SELECT TRUNC(SUM(D.FINISHED_LENGTH) /
+	                     SUM(D.FINISHED_LENGTH + D.UN_FINISHED_LENGTH),
+	                     2) * 100
+	          FROM T_PLA_CU_ORDER_ITEM_PRO_DEC D
+	         WHERE D.WORK_ORDER_NO = WO.WORK_ORDER_NO
+	         GROUP BY D.WORK_ORDER_NO) AS PERCENT,
+	       (SELECT COUNT(*)
+	          FROM T_ORD_ATTACH_FILE          F,
+	               T_WIP_WO_CUSORDER_RELATION CR,
+	               T_PLA_CUSTOMER_ORDER_ITEM  O,
+	               T_ORD_SALES_ORDER_ITEM     SO,
+	               T_ORD_SALES_ORDER          S
+	         WHERE F.SALES_ORDER_ID = S.ID
+	           AND CR.CUS_ORDER_ITEM_ID = O.ID
+	           AND O.SALES_ORDER_ITEM_ID = SO.ID
+	           AND SO.SALES_ORDER_ID = S.ID
+	           AND CR.WORK_ORDER_ID = WO.ID) AS ORDERFILENUM
+		  FROM T_WIP_WORK_ORDER WO, T_WIP_WO_EQUIP_RELATION WOR
+		 WHERE WO.ID = WOR.WORK_ORDER_ID
+		   AND WO.STATUS IN ('IN_PROGRESS', 'TO_DO')
+		   AND WOR.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+		 ORDER BY WOR.SEQ NULLS LAST, WO.CREATE_TIME
+	</select>
+	
+	<insert id="saveChangeWorkOrderNoReason" parameterType="Map">
+	    INSERT INTO T_WIP_WORK_ORDER_OPERATE_LOG
+	       (ID,
+	        WORK_ORDER_NO,
+	        EQUIP_CODE,
+	        OPERATE_REASON,
+	        STATUS,
+	        CREATE_USER_CODE,
+	        CREATE_TIME,
+	        MODIFY_USER_CODE,
+	        MODIFY_TIME,
+	        ORG_CODE)
+	     VALUES
+	        (
+	        GET_UUID(),
+	        #{oldWorkOrderNo,jdbcType=VARCHAR},
+	        #{equipCode,jdbcType=VARCHAR},
+	        #{reason,jdbcType=VARCHAR},
+	        'SWITCH',
+	        #{userCode,jdbcType=VARCHAR},
+	        SYSDATE,
+	        #{userCode,jdbcType=VARCHAR},
+	        SYSDATE,
+	        #{orgCode,jdbcType=VARCHAR}
+	        )
+	</insert>
+	
+	<!-- 根据设备编号 + 订单状态 查询生产单 计数 -->
+	<select id="countWOByEquipCodeAndStatus" parameterType="map" resultType="int">
+			SELECT
+				COUNT(1)
+			FROM T_WIP_WORK_ORDER T1,T_WIP_WO_EQUIP_RELATION T2
+			WHERE T1.ID = T2.WORK_ORDER_ID
+				AND T2.EQUIP_CODE = #{equipCode}
+			  <if	test="status == 'TO_DO'">
+				AND T1.STATUS IN ('IN_PROGRESS','TO_DO')
+			  </if>
+			  <if	test="status == 'FINISHED'">
+				AND T1.STATUS = 'FINISHED'
+			  </if>
+	</select>
+
+	<!-- 根据设备编号 + 订单状态 查询生产单 先按创建时间排序 -->
+	<!-- 增加一个WO.IS_DISPATCH字段查询，以便按创建时间以及是否为急件排序 -->	
+	<select id="getWOByEquipCodeAndStatus" parameterType="map" resultMap="getMap">
+		WITH ORDERITEMINFO AS
+		 (SELECT COID.ORDER_ITEM_ID,
+		         SO.CONTRACT_NO,
+		         SO.OPERATOR,
+		         SOI.CUST_PRODUCT_TYPE,
+		         SOI.CUST_PRODUCT_SPEC,
+		         SOI.CONTRACT_LENGTH,
+		         WO.WORK_ORDER_NO,
+		         GETCOLORSTR(WMSYS.WM_CONCAT(PD.COLOR)) AS COLOR,
+		         (CASE
+		           WHEN REGEXP_LIKE(MAX(PD.OUT_ATTR_DESC), 'conductorStruct') THEN
+		            (REGEXP_REPLACE(MAX(PD.OUT_ATTR_DESC),
+		                            '^.*"conductorStruct":"([^"]*)".*',
+		                            '\1'))
+		           ELSE
+		            ''
+		         END) AS CONDUCTORSTRUCT
+		    FROM T_PLA_CU_ORDER_ITEM_PRO_DEC   PD,
+		         T_PLA_CUSTOMER_ORDER_ITEM_DEC COID,
+		         T_PLA_CUSTOMER_ORDER_ITEM     COI,
+		         T_ORD_SALES_ORDER_ITEM        SOI,
+		         T_ORD_SALES_ORDER             SO,
+		         T_WIP_WORK_ORDER              WO,
+		         T_WIP_WO_EQUIP_RELATION       WOR
+		   WHERE PD.ORDER_ITEM_DEC_ID = COID.ID
+		     AND COID.ORDER_ITEM_ID = COI.ID
+		     AND COI.SALES_ORDER_ITEM_ID = SOI.ID
+		     AND SOI.SALES_ORDER_ID = SO.ID
+		     AND WOR.WORK_ORDER_ID = WO.ID
+		     AND WO.WORK_ORDER_NO = PD.WORK_ORDER_NO
+		     AND WOR.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		     <if test="status == 'TO_DO'">
+		       AND WO.STATUS IN ('IN_PROGRESS','TO_DO')
+		     </if>
+		     <if test="status == 'FINISHED'">
+		       AND WO.STATUS = 'FINISHED'
+		     </if>
+		   GROUP BY COID.ORDER_ITEM_ID,
+		            SO.CONTRACT_NO,
+		            SO.OPERATOR,
+		            SOI.CUST_PRODUCT_TYPE,
+		            SOI.CUST_PRODUCT_SPEC,
+		            SOI.CONTRACT_LENGTH,
+		            WO.WORK_ORDER_NO),
+		WORKORDERCOLORLENGTH AS
+		 (SELECT LISTAGG(COLOR, ',') WITHIN GROUP(ORDER BY COLOR) AS COLOR,
+		         WORK_ORDER_NO
+		    FROM (SELECT (CASE
+		                   WHEN (COLOR IS NULL) THEN
+		                    TASK_LENGTH || ''
+		                   WHEN (MAX(COLORNUM) IS NULL) THEN
+		                    COLOR || ':' || TASK_LENGTH
+		                   WHEN (MIN(COLORNUM) IS NULL) THEN
+		                    COLOR || ':' || TASK_LENGTH
+		                   WHEN (MIN(COLORNUM) = MAX(COLORNUM)) THEN
+		                    MAX(COLORNUM) || '#/' || COLOR || ':' || TASK_LENGTH
+		                   ELSE
+		                    MIN(COLORNUM) || '#-' || MAX(COLORNUM) || '#/' || COLOR || ':' ||
+		                    TASK_LENGTH
+		                 END) AS COLOR,
+		                 WORK_ORDER_NO
+		            FROM (SELECT (CASE
+		                           WHEN A.COLOR IS NULL THEN
+		                            NULL
+		                           WHEN INSTR(A.COLOR, '-') > 0 THEN
+		                            NULL
+		                           WHEN INSTR(A.COLOR, '#') = 0 THEN
+		                            NULL
+		                           ELSE
+		                            TO_NUMBER(SUBSTR(A.COLOR,
+		                                             0,
+		                                             INSTR(A.COLOR, '#', 1, 1) - 1))
+		                         END) AS COLORNUM,
+		                         (CASE
+		                           WHEN A.COLOR IS NULL THEN
+		                            A.COLOR
+		                           WHEN instr(A.COLOR, '-') > 0 THEN
+		                            A.COLOR
+		                           WHEN instr(A.COLOR, '#') = 0 THEN
+		                            A.COLOR
+		                           ELSE
+		                            SUBSTR(A.COLOR,
+		                                   INSTR(A.COLOR, '#') + 1,
+		                                   LENGTH(A.COLOR))
+		                         END) AS COLOR,
+		                         FLOOR(SUM(A.TASK_LENGTH)) AS TASK_LENGTH,
+		                         A.WORK_ORDER_NO
+		                    FROM T_PLA_ORDER_TASK        A,
+		                         T_WIP_WORK_ORDER        WO,
+		                         T_WIP_WO_EQUIP_RELATION WOR
+		                   WHERE A.WORK_ORDER_NO = WO.WORK_ORDER_NO
+		                     AND WO.ID = WOR.WORK_ORDER_ID
+		                     AND WOR.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		                     <if test="status == 'TO_DO'">
+							   AND WO.STATUS IN ('IN_PROGRESS','TO_DO')
+							 </if>
+							 <if test="status == 'FINISHED'">
+							   AND WO.STATUS = 'FINISHED'
+							 </if>
+		                   GROUP BY COLOR, A.WORK_ORDER_NO
+		                   ORDER BY COLORNUM)
+		           GROUP BY COLOR, TASK_LENGTH, WORK_ORDER_NO)
+		   GROUP BY WORK_ORDER_NO)
+		SELECT TEMP.*, OL.OPERATE_REASON
+		  FROM (SELECT T.IS_DISPATCH,
+		  			   T."ID",
+		               T.WORK_ORDER_NO,
+		               T.ORDER_LENGTH,
+		               T.STATUS,
+		               T.MAT_STATUS,
+		               T.PROCESS_NAME,
+		               T.RELEASE_DATE,
+		               T.PRE_END_TIME,
+		               T.PRE_START_TIME,
+		               T.REAL_END_TIME,
+		               T.REQUIRE_FINISH_DATE,
+		               T.DOC_MAKER_USER_CODE,
+		               T.RECEIVER_USER_CODE,
+		               T.USER_COMMENT,
+		               T.COLOR_PRODUCT_LENGTH,
+		               LTRIM(MAX(SYS_CONNECT_BY_PATH((SUBSTR(REGEXP_SUBSTR(T.CONTRACT_NO,
+		                                                                   '[[:digit:]]+'),
+		                                                     LENGTH(REGEXP_SUBSTR(T.CONTRACT_NO,
+		                                                                          '[[:digit:]]+')) - 4,
+		                                                     LENGTH(REGEXP_SUBSTR(T.CONTRACT_NO,
+		                                                                          '[[:digit:]]+'))) || '[' ||
+		                                             T.OPERATOR || '] ' ||
+		                                             T.CUST_PRODUCT_TYPE || ' ' ||
+		                                             T.CUST_PRODUCT_SPEC || ' (' ||
+		                                             T.COLOR || ',' ||
+		                                             T.CONDUCTORSTRUCT || ') - ' ||
+		                                             T.CONTRACT_LENGTH || ' M'),
+		                                             ';')),
+		                     ';') AS CONTRACT_NO
+		          FROM (SELECT ROW_NUMBER() OVER(PARTITION BY WO.WORK_ORDER_NO ORDER by WO.WORK_ORDER_NO) R,
+		          			   WO.IS_DISPATCH,
+		                       WO."ID",
+		                       WO.WORK_ORDER_NO,
+		                       WO.ORDER_LENGTH,
+		                       WO.STATUS,
+		                       WO.MAT_STATUS,
+		                       WO.RELEASE_DATE,
+		                       WO.PRE_END_TIME,
+		                       WO.PRE_START_TIME,
+		                       WO.REAL_END_TIME,
+		                       WO.REQUIRE_FINISH_DATE,
+		                       WO.DOC_MAKER_USER_CODE,
+		                       WO.RECEIVER_USER_CODE,
+		                       WO.USER_COMMENT,
+		                       WO.PROCESS_NAME,
+		                       T1.CONTRACT_NO,
+		                       T1.OPERATOR,
+		                       T1.CUST_PRODUCT_TYPE,
+		                       T1.CUST_PRODUCT_SPEC,
+		                       T1.CONTRACT_LENGTH,
+		                       T1.CONDUCTORSTRUCT,
+		                       T1.COLOR,
+		                       T2.COLOR AS COLOR_PRODUCT_LENGTH
+		                  FROM T_WIP_WORK_ORDER        WO,
+		                       T_WIP_WO_EQUIP_RELATION WOR,
+		                       ORDERITEMINFO           T1,
+		                       WORKORDERCOLORLENGTH    T2
+		                 WHERE WOR.WORK_ORDER_ID = WO.ID
+		                   AND T1.WORK_ORDER_NO = WO.WORK_ORDER_NO
+		                   AND T2.WORK_ORDER_NO = WO.WORK_ORDER_NO
+		                   AND WOR.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+						   <if test="status == 'TO_DO'">
+						     AND WO.STATUS IN ('IN_PROGRESS','TO_DO')
+						     ORDER BY WOR.seq,WO.CREATE_TIME
+						   </if>
+						   <if test="status == 'FINISHED'">
+						     AND WO.STATUS = 'FINISHED'
+						     ORDER BY WO.REAL_END_TIME DESC
+						   </if>) T
+		         START WITH R = 1
+		        CONNECT BY PRIOR R = R - 1
+		               AND PRIOR T.WORK_ORDER_NO = T.WORK_ORDER_NO
+		         GROUP BY T.IS_DISPATCH,
+		          		  T."ID",
+		                  T.WORK_ORDER_NO,
+		                  T.ORDER_LENGTH,
+		                  T.STATUS,
+		                  T.MAT_STATUS,
+		                  T.PROCESS_NAME,
+		                  T.RELEASE_DATE,
+		                  T.PRE_END_TIME,
+		                  T.PRE_START_TIME,
+		                  T.REAL_END_TIME,
+		                  T.REQUIRE_FINISH_DATE,
+		                  T.DOC_MAKER_USER_CODE,
+		                  T.RECEIVER_USER_CODE,
+		                  T.USER_COMMENT,
+		                  T.COLOR_PRODUCT_LENGTH) TEMP
+	     LEFT JOIN (SELECT T2.*
+		               FROM (SELECT L.*,
+		                            ROW_NUMBER() OVER(PARTITION BY L.WORK_ORDER_NO ORDER BY L.CREATE_TIME DESC NULLS LAST) RN
+		                       FROM T_WIP_WORK_ORDER_OPERATE_LOG L,
+		                            T_WIP_WORK_ORDER             O
+		                      WHERE L.WORK_ORDER_NO = O.WORK_ORDER_NO
+		                        AND L.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+							   <if test="status == 'TO_DO'">
+							     AND O.STATUS IN ('IN_PROGRESS','TO_DO')
+							   </if>
+							   <if test="status == 'FINISHED'">
+							     AND O.STATUS = 'FINISHED'
+							   </if>
+		                     ) T2
+		              WHERE RN = 1) OL
+		    ON TEMP.WORK_ORDER_NO = OL.WORK_ORDER_NO
+		    <if test="status == 'TO_DO'">
+		    ORDER BY TEMP.IS_DISPATCH DESC,TEMP.RELEASE_DATE ASC
+		    </if>
+		    <if test="status == 'FINISHED'">
+		    ORDER BY TEMP.REAL_END_TIME DESC
+		    </if>
+	</select>
+
+	<select id="getWOSalesOrderInfoCL" parameterType="string" resultType="map">
+		SELECT
+			A.ID AS ID,
+			B.CONTRACT_NO AS contractNo,
+			A.CUST_PRODUCT_TYPE||'('||A.CUST_PRODUCT_SPEC||')' AS typeSpec,
+			(CASE WHEN (E.WIRE_COIL_COUNT IS NULL) THEN
+				'1*'||F.TASK_LENGTH
+			ELSE
+				E.WIRE_COIL_COUNT||'*'||(F.TASK_LENGTH/E.WIRE_COIL_COUNT)
+			END) AS THICKNESS,
+			(SELECT WMSYS.WM_CONCAT(DISTINCT ITEM_TARGET_VALUE)
+				FROM T_PLA_CUSTOMER_ORDER_ITEM COI,
+					 T_PRO_PRODUCT_CRAFTS      PPC,
+					T_PRO_PRODUCT_PROCESS     PPP,
+					T_PRO_PROCESS_QC          PPQ
+				WHERE COI.CRAFTS_ID = PPC.ID
+				AND PPC.ID = PPP.PRODUCT_CRAFTS_ID
+				AND PPP.ID = PPQ.PROCESS_ID
+				AND PPQ.CHECK_ITEM_NAME LIKE '%导体结构%'
+				AND COI.ID = C.ID) AS CONDUCTORSTRUCT,
+			E.WIRE_COIL,
+			E.WIRE_COIL_COUNT,
+			F.COLOR
+		FROM  T_ORD_SALES_ORDER_ITEM A
+		LEFT JOIN T_ORD_SALES_ORDER B ON A.SALES_ORDER_ID = B.ID
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM C ON  A.ID =  C.SALES_ORDER_ITEM_ID
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC D ON D.ORDER_ITEM_ID = C.ID
+		LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC E ON E.ORDER_ITEM_DEC_ID = D.ID
+		LEFT JOIN T_PLA_ORDER_TASK F ON E.ID = F.ORDER_ITEM_PRO_DEC_ID
+		WHERE F.WORK_ORDER_NO = #{param1}
+	</select>
+	
+	<select id="getWOSalesOrderInfo" parameterType="string" resultType="map">
+		WITH PROPTEMP AS (
+				SELECT
+						A.ID,
+						SUM(E.TASK_LENGTH) AS TOTALLENGTH,
+						MAX(D.WIRE_COIL) AS WIRECOIL,
+						MAX(D.WIRE_COIL_COUNT) AS WIRECOILCOUNT,
+						MAX(D.OUT_ATTR_DESC) AS OUT_ATTR_DESC,
+						MAX(E.COLOR) AS COLOR
+				FROM    T_ORD_SALES_ORDER_ITEM A,
+						T_PLA_CUSTOMER_ORDER_ITEM B,
+						T_PLA_CUSTOMER_ORDER_ITEM_DEC C,
+						T_PLA_CU_ORDER_ITEM_PRO_DEC D,
+						T_PLA_ORDER_TASK E
+				WHERE A.ID = B.SALES_ORDER_ITEM_ID
+				AND B.ID = C.ORDER_ITEM_ID
+				AND C.ID = D.ORDER_ITEM_DEC_ID
+				AND D.ID = E.ORDER_ITEM_PRO_DEC_ID
+				AND E.WORK_ORDER_NO = #{param1}
+				GROUP BY A.ID
+		)
+		SELECT
+				A.ID,
+				O.CONTRACT_NO AS CONTRACTNO,
+				A.CUST_PRODUCT_TYPE||'('||A.CUST_PRODUCT_SPEC||')' AS TYPESPEC,
+				TEMP.WIRECOIL,
+				A.CONTRACT_LENGTH AS THICKNESS,
+				TEMP.OUT_ATTR_DESC,
+				TEMP.TOTALLENGTH,
+				TEMP.WIRECOILCOUNT,
+				TEMP.COLOR
+		 FROM T_ORD_SALES_ORDER_ITEM A
+		 LEFT JOIN T_ORD_SALES_ORDER O ON A.SALES_ORDER_ID = O.ID
+		 LEFT JOIN PROPTEMP TEMP ON A.ID = TEMP.ID
+		 WHERE EXISTS (
+			SELECT 1 FROM T_PLA_CUSTOMER_ORDER_ITEM B WHERE A.ID = B.SALES_ORDER_ITEM_ID AND EXISTS (
+				SELECT 1 FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC C WHERE B.ID = C.ORDER_ITEM_ID AND EXISTS (
+					SELECT 1 FROM T_PLA_CU_ORDER_ITEM_PRO_DEC D WHERE C.ID = D.ORDER_ITEM_DEC_ID AND EXISTS (
+						SELECT 1 FROM T_PLA_ORDER_TASK F WHERE D.ID = F.ORDER_ITEM_PRO_DEC_ID AND F.WORK_ORDER_NO = #{param1}
+					)
+				)
+			)
+		 )
+	</select>
+
+	<select id="getWorkOrderEquip" parameterType="string" resultType="string">
+		SELECT
+			ER.EQUIP_CODE
+		FROM T_WIP_WO_EQUIP_RELATION ER LEFT JOIN T_WIP_WORK_ORDER WO ON ER.WORK_ORDER_ID = WO.ID
+		WO.WORK_ORDER_NO = #{param1}
+	</select>
+	
+	<select id="getWorkOrderBaseInfo" parameterType="map" resultMap="getMap">
+		SELECT WO.WORK_ORDER_NO,
+		       WO.PROCESS_NAME,
+		       WO.PROCESS_CODE,
+		       WO.DOC_MAKER_USER_CODE,
+		       WO.RECEIVER_USER_CODE,
+		       WO.RELEASE_DATE,
+		       WO.REQUIRE_FINISH_DATE
+		  FROM T_WIP_WORK_ORDER              WO,
+		       T_WIP_WO_CUSORDER_RELATION    R,
+		       T_PRO_PROCESS_INFO            P
+		 WHERE WO.PROCESS_CODE = P.CODE
+		   AND WO.ID = R.WORK_ORDER_ID
+		   AND R.CUS_ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR}
+		   AND P.SECTION = #{section, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getWorkOrderFinishDetail" parameterType="map" resultMap="getMap">
+		 SELECT O.WORK_ORDER_NO,
+			  O.WIRE_COLOR,
+			  O.TASK_LENGTH,
+			  O.FINISHED_LENGTH,
+			  O.PROCESS_NAME,
+			  O.PROCESS_CODE,
+			  O.FINISHED_PERCENT,
+			  O.ORDER_ITEM_ID,
+			  O.UN_FINISHED_LENGTH
+		 FROM (SELECT WO.WORK_ORDER_NO,
+				   OIPD.COLOR AS WIRE_COLOR,
+				   POT.TASK_LENGTH,
+				   OIPD.FINISHED_LENGTH,
+				   OIPD.PROCESS_NAME,
+				   OIPD.PROCESS_CODE,
+				   trunc(OIPD.FINISHED_LENGTH/POT.TASK_LENGTH,2)*100||'%' AS finished_percent,
+				   COID.ORDER_ITEM_ID,
+				   OIPD.UN_FINISHED_LENGTH,
+				   INSTR(OIPD.COLOR, '#') SUBINDEX
+			  FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC COID,
+				   T_PLA_CU_ORDER_ITEM_PRO_DEC   OIPD,
+				   T_PLA_ORDER_TASK              POT,
+				   T_WIP_WORK_ORDER              WO
+			 WHERE COID.ID = OIPD.ORDER_ITEM_DEC_ID
+			   AND OIPD.ID = POT.ORDER_ITEM_PRO_DEC_ID
+			   AND POT.WORK_ORDER_NO = WO.WORK_ORDER_NO
+			   AND WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+			   <if test="orderItemId != null and orderItemId != ''">
+			   AND COID.ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR}
+			   </if>
+		   ) O
+		   ORDER BY TO_NUMBER(SUBSTR(O.WIRE_COLOR,0,O.SUBINDEX-1)) NULLS FIRST,O.WIRE_COLOR
+	</select>
+	
+	<!-- 上一道工序工序合成JSON字段 [成缆专用] -->
+	<select id="getProcessesMergedArrayByWorkNo" parameterType="string" resultType="string">
+		 SELECT WMSYS.WM_CONCAT(WO.PROCESSES_MERGED)
+		  FROM T_WIP_WORK_ORDER WO
+		  WHERE WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		 START WITH WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		CONNECT BY WO.WORK_ORDER_NO = PRIOR WO.PROCESS_GROUP_RESPOOL
+	</select>
+	
+	<!-- 根据其中一个生产单获取整个生产单流程 -->
+	<select id="getWorkOrderFlowArray" parameterType="string" resultMap="getMap">
+		SELECT R.*,
+		       (SELECT (WMSYS.WM_CONCAT(SUBSTR(REGEXP_SUBSTR(SO.CONTRACT_NO,
+		                                                     '[[:digit:]]+'),
+		                                       LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,
+		                                                            '[[:digit:]]+')) - 4,
+		                                       LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,
+		                                                            '[[:digit:]]+'))) || '[' ||
+		                                SO.OPERATOR || ']' || ' - ' ||
+		                                SOI.PRODUCT_TYPE || ' ' || SOI.PRODUCT_SPEC ||
+		                                ' - ' || SOI.CONTRACT_LENGTH))
+		          FROM T_WIP_WO_CUSORDER_RELATION CR,
+		               T_PLA_CUSTOMER_ORDER_ITEM  COI,
+		               T_ORD_SALES_ORDER_ITEM     SOI,
+		               T_ORD_SALES_ORDER          SO
+		         WHERE CR.WORK_ORDER_ID = R.ID
+		           AND CR.CUS_ORDER_ITEM_ID = COI.ID
+		           AND COI.SALES_ORDER_ITEM_ID = SOI.ID
+		           AND SOI.SALES_ORDER_ID = SO.ID) AS CONTRACT_NO,
+		       (SELECT TRUNC(SUM(D.FINISHED_LENGTH) /
+		                     SUM(D.FINISHED_LENGTH + D.UN_FINISHED_LENGTH),
+		                     2) * 100
+		          FROM T_PLA_CU_ORDER_ITEM_PRO_DEC D
+		         WHERE d.WORK_ORDER_NO = R.WORK_ORDER_NO) AS PERCENT
+		  FROM (SELECT T.*
+		          from (SELECT WO.*, ROWNUM AS SEQ
+		                  FROM T_WIP_WORK_ORDER WO
+		                 WHERE WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		                   AND WO.WORK_ORDER_NO <![CDATA[<>]]> #{workOrderNo, jdbcType=VARCHAR}
+		                 START WITH WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		                CONNECT BY PRIOR WO.PROCESS_GROUP_RESPOOL = WO.WORK_ORDER_NO
+		                 ORDER BY SEQ DESC) T
+		        UNION ALL
+		        SELECT WO.*, ROWNUM AS SEQ
+		          FROM T_WIP_WORK_ORDER WO
+		         WHERE WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		         START WITH WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+		        CONNECT BY WO.PROCESS_GROUP_RESPOOL = PRIOR WO.WORK_ORDER_NO) R
+	</select>
+
+	<select id="getPrintMatList" parameterType="string" resultType="map">
+		SELECT
+				WMSYS.WM_CONCAT(DISTINCT CONTRACT_NO) AS CONTRACT_NO,
+				task_length,
+				(
+				CASE WHEN (MAX(COLORNUM) IS NULL ) THEN COLOR1
+					  WHEN (MAX(COLORNUM) IS NULL) THEN COLOR1
+					  ELSE
+					  MIN(COLORNUM)||'-'||MAX(COLORNUM)||'#'||COLOR1
+					  END
+				) AS COLOR
+		FROM (
+			SELECT
+				WMSYS.WM_CONCAT(DISTINCT CONTRACT_NO) AS CONTRACT_NO,
+				sum(task_length) as task_length,
+				COLORNUM,
+				COLOR1
+		    FROM (
+
+				SELECT
+						SUBSTR(REGEXP_REPLACE(TA.CONTRACT_NO,'[[:alpha:]]','',1,0),
+								LENGTH(REGEXP_REPLACE(TA.CONTRACT_NO,'[[:alpha:]]','',1,0))-4,
+								LENGTH(REGEXP_REPLACE(TA.CONTRACT_NO,'[[:alpha:]]','',1,0))
+						) as CONTRACT_NO,
+						TA.color,
+						TA.task_length,
+						(CASE
+								WHEN TA.COLOR IS NULL THEN null
+								WHEN instr(TA.COLOR,'-')>0 THEN null
+								WHEN instr(TA.COLOR,'#') = 0 THEN null
+								ELSE to_number(SUBSTR(TA.COLOR,0,INSTR(TA.COLOR,'#',1,1)-1))
+						END) AS COLORNUM,
+						(CASE
+								WHEN TA.COLOR IS NULL THEN TA.COLOR
+								WHEN instr(TA.COLOR,'-')>0 THEN TA.COLOR
+								WHEN instr(TA.COLOR,'#') = 0 THEN TA.COLOR
+								ELSE SUBSTR(TA.COLOR,INSTR(TA.COLOR,'#')+1,LENGTH(TA.COLOR)) END) AS COLOR1
+				FROM
+						t_pla_order_task TA
+				LEFT JOIN
+						T_PLA_PRODUCT b
+				ON
+						TA.product_code = b.PRODUCT_CODE
+				WHERE
+						TA.work_order_no = #{param1}
+				ORDER BY COLORNUM
+				) TEMP
+				GROUP BY TEMP.COLOR1,TEMP.COLORNUM
+		    )
+		GROUP BY TASK_LENGTH,COLOR1
+	</select>
+	
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：合同号 -->
+	<select id="getContractNo" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SO.CONTRACT_NO
+		    <include refid="sendOrderCommonQuery"/>
+		) T WHERE T.CONTRACT_NO IS NOT NULL
+	</select>
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：单位 -->
+	<select id="getCustomerCompany" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SO.CUSTOMER_COMPANY
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.CUSTOMER_COMPANY IS NOT NULL
+	</select>
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：经办人 -->
+	<select id="getOperator" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SO.OPERATOR
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.OPERATOR IS NOT NULL
+	</select>
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：客户型号 -->
+	<select id="getCustproductType" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SOI.CUST_PRODUCT_TYPE
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.CUST_PRODUCT_TYPE IS NOT NULL
+	</select>
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：产品型号 -->
+	<select id="getProductType" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SOI.PRODUCT_TYPE
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.PRODUCT_TYPE IS NOT NULL
+	</select>
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：产品规格 -->
+	<select id="getProductSpec" resultMap="getMap">
+		SELECT T.* FROM (
+		    SELECT DISTINCT SOI.PRODUCT_SPEC
+		    <include refid="sendOrderCommonQuery"/>
+	    ) T WHERE T.PRODUCT_SPEC IS NOT NULL
+	</select>
+	<!-- 成缆/护套下单/生产单列表 ：获取查询下拉框：线芯结构 -->
+	<select id="getWiresStructure" resultMap="getMap">
+		SELECT T.* FROM (
+	        SELECT DISTINCT SOI.WIRES_STRUCTURE
+	        <include refid="sendOrderCommonQuery"/>
+        ) T WHERE T.WIRES_STRUCTURE IS NOT NULL
+    </select>
+    <!-- 下拉框查询的公共部分 -->
+    
+     <update id="saveTimeAndTempValue" parameterType="map">
+        UPDATE T_WIP_WORK_ORDER SET TIME=#{time,jdbcType=VARCHAR},
+        TEMPERATURE=#{temperature,jdbcType=VARCHAR} 
+        WHERE WORK_ORDER_NO=#{workOrderNo,jdbcType=VARCHAR}
+    </update>
+	<sql id="sendOrderCommonQuery">
+		FROM T_ORD_SALES_ORDER SO,
+	         T_ORD_SALES_ORDER_ITEM SOI,
+	         T_PLA_CUSTOMER_ORDER_ITEM OI,
+	         T_WIP_WO_CUSORDER_RELATION CR,
+	         T_WIP_WORK_ORDER WO
+	    WHERE SO.ID = SOI.SALES_ORDER_ID
+	        AND SOI.ID = OI.SALES_ORDER_ITEM_ID
+            AND OI.ID = CR.CUS_ORDER_ITEM_ID
+            AND WO.ID = CR.WORK_ORDER_ID
+    	<!-- 下面是其他条件的关联查询条件 -->
+    	<if test="contractNo != null and (contractNo instanceof java.util.ArrayList) and contractNo.size() > 0">
+			AND SO.CONTRACT_NO IN 
+			<foreach collection="contractNo" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="operator != null and (operator instanceof java.util.ArrayList) and operator.size() > 0">
+			AND SO.OPERATOR IN 
+			<foreach collection="operator" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="customerCompany != null and (customerCompany instanceof java.util.ArrayList) and customerCompany.size() > 0">
+			AND SO.CUSTOMER_COMPANY IN 
+			<foreach collection="customerCompany" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="custProductType != null and (custProductType instanceof java.util.ArrayList) and custProductType.size() > 0">
+			AND SOI.CUST_PRODUCT_TYPE IN
+			<foreach collection="custProductType" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="productType != null and (productType instanceof java.util.ArrayList) and productType.size() > 0">
+			AND SOI.PRODUCT_TYPE IN
+			<foreach collection="productType" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="productSpec != null and (productSpec instanceof java.util.ArrayList) and productSpec.size() > 0">
+			AND SOI.PRODUCT_SPEC IN
+			<foreach collection="productSpec" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="wiresStructure != null and (wiresStructure instanceof java.util.ArrayList) and wiresStructure.size() > 0">
+			AND SOI.WIRES_STRUCTURE IN
+			<foreach collection="wiresStructure" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="numberOfWires != null and (numberOfWires instanceof java.util.ArrayList) and numberOfWires.size() > 0">
+			AND SOI.NUMBER_OF_WIRES IN
+			<foreach collection="numberOfWires" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="section != null and (section instanceof java.util.ArrayList) and section.size() > 0">
+			AND SOI.SECTION IN
+			<foreach collection="section" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="status != null and (status instanceof java.util.ArrayList) and status.size() > 0">
+		    AND SOI.STATUS IN 
+			<foreach collection="status" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="nextSection != null and (nextSection instanceof java.util.ArrayList) and nextSection.size() > 0">
+		    AND WO.NEXT_SECTION IN 
+			<foreach collection="nextSection" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<!-- 下面是自身模糊查询条件 -->
+		<if test="contractNo != null and !(contractNo instanceof java.util.ArrayList) and contractNo != ''">
+			AND SO.CONTRACT_NO LIKE #{contractNo, jdbcType=VARCHAR}
+		</if>
+		<if test="operator != null and !(operator instanceof java.util.ArrayList) and operator != ''">
+			AND SO.OPERATOR LIKE #{operator, jdbcType=VARCHAR}
+		</if>
+		<if test="customerCompany != null and !(customerCompany instanceof java.util.ArrayList) and customerCompany != ''">
+			AND SO.CUSTOMER_COMPANY LIKE #{customerCompany, jdbcType=VARCHAR} 
+		</if>
+		<if test="custProductType != null and !(custProductType instanceof java.util.ArrayList) and custProductType != ''">
+			AND SOI.CUST_PRODUCT_TYPE LIKE #{custProductType, jdbcType=VARCHAR}
+		</if>
+		<if test="productType != null and !(productType instanceof java.util.ArrayList) and productType != ''">
+			AND SOI.PRODUCT_TYPE LIKE #{productType, jdbcType=VARCHAR}
+		</if>
+		<if test="productSpec != null and !(productSpec instanceof java.util.ArrayList) and productSpec != ''">
+			AND SOI.PRODUCT_SPEC LIKE #{productSpec, jdbcType=VARCHAR}
+		</if>
+		<if test="wiresStructure != null and !(wiresStructure instanceof java.util.ArrayList) and wiresStructure != ''">
+			AND SOI.WIRES_STRUCTURE LIKE #{wiresStructure, jdbcType=VARCHAR}
+		</if>
+		<if test="numberOfWires != null and !(numberOfWires instanceof java.util.ArrayList) and numberOfWires != ''">
+			AND SOI.NUMBER_OF_WIRES LIKE #{numberOfWires, jdbcType=VARCHAR}
+		</if>
+		<if test="section != null and !(section instanceof java.util.ArrayList) and section != ''">
+			AND SOI.SECTION LIKE #{section, jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and !(status instanceof java.util.ArrayList) and status != ''">
+		    AND SOI.STATUS LIKE #{status, jdbcType=VARCHAR} 
+		</if>
+		<if test="orgCode!=null and !(orgCode instanceof java.util.ArrayList) and orgCode!=''">
+			AND SO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		    AND SOI.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="createDate!=null and !(createDate instanceof java.util.ArrayList) and createDate!=''">
+			AND SOI.CREATE_TIME > TO_DATE(#{createDate, jdbcType=TIMESTAMP}, 'yyyy-mm-dd')
+		</if>
+		<if test="currentSection!=null and !(currentSection instanceof java.util.ArrayList) and currentSection!=''">
+		    AND INSTR(WO.NEXT_SECTION, #{currentSection, jdbcType=VARCHAR}) > 0
+		</if>
+	</sql>
+	
+	<select id="getContractLengthByWorkOrderNo" parameterType="string" resultType="string">
+	SELECT SUM(ITEM.CONTRACT_LENGTH)
+	  FROM T_PLA_CU_ORDER_ITEM_PRO_DEC   PRODEC,
+	       T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+	       T_PLA_CUSTOMER_ORDER_ITEM     ITEM,
+	       T_ORD_SALES_ORDER_ITEM        OI,
+	       T_PLA_ORDER_TASK              TASK
+	 WHERE PRODEC.ORDER_ITEM_DEC_ID = IDEC.ID
+	   AND IDEC.ORDER_ITEM_ID = ITEM.ID
+	   AND ITEM.SALES_ORDER_ITEM_ID = OI.ID
+	   AND TASK.ORDER_ITEM_PRO_DEC_ID = PRODEC.ID
+	   AND PRODEC.WORK_ORDER_NO = #{param1}
+	</select>
+	<select id="getContractLengthByProDecId" parameterType="string" resultType="string">
+	SELECT ITEM.CONTRACT_LENGTH
+    FROM T_PLA_CU_ORDER_ITEM_PRO_DEC   PRODEC,
+         T_PLA_CUSTOMER_ORDER_ITEM_DEC IDEC,
+         T_PLA_CUSTOMER_ORDER_ITEM     ITEM,
+         T_ORD_SALES_ORDER_ITEM        OI,
+         T_PLA_ORDER_TASK              TASK
+   WHERE PRODEC.ORDER_ITEM_DEC_ID = IDEC.ID
+     AND IDEC.ORDER_ITEM_ID = ITEM.ID
+     AND ITEM.SALES_ORDER_ITEM_ID = OI.ID
+     AND TASK.ORDER_ITEM_PRO_DEC_ID = PRODEC.ID
+     AND PRODEC.id = #{param1}
+	</select>
+	
+	<!-- 获取这批所有的相关的生产单信息 -->
+	<select id="getAllWorkOrderByOIID" parameterType="map" resultType="map">
+		SELECT WO.WORK_ORDER_NO         AS WORKORDERNO,
+		       WO.PROCESS_CODE          AS PROCESSCODE,
+		       WO.PROCESS_GROUP_RESPOOL AS LASTWORKORDERNO,
+		       CR.ORDER_TASK_LENGTH     AS ORDERTASKLENGTH,
+		       CR.CUS_ORDER_ITEM_ID     AS ORDERITEMID,
+		       I.CONTRACT_LENGTH        AS CONTRACTLENGTH,
+		       CR.SPLIT_LENGTH_ROLE     AS SPLITLENGTHROLE
+		  FROM 
+		    T_WIP_WORK_ORDER WO, 
+		    T_WIP_WO_CUSORDER_RELATION CR, 
+		    T_PLA_CUSTOMER_ORDER_ITEM I, 
+		    T_PRO_PROCESS_INFO P
+		 WHERE WO.ID = CR.WORK_ORDER_ID
+		   AND CR.CUS_ORDER_ITEM_ID = I.ID
+		   AND WO.PROCESS_CODE = P.CODE
+		   AND P.SECTION = '绝缘'
+		   AND WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		   AND CR.CUS_ORDER_ITEM_ID IN <foreach collection="orderItemIdArray" item="item" open="(" separator="," close=")">
+									       #{item, jdbcType=VARCHAR}
+									   </foreach>
+	</select>
+	
+	<select id="getFinishedPercent" parameterType="string" resultType="string">
+	SELECT 
+		trunc(SUM(COIPD.FINISHED_LENGTH)/SUM(COIPD.UN_FINISHED_LENGTH + COIPD.FINISHED_LENGTH),2)*100 || '%' AS finishedPercent
+	FROM 
+		T_WIP_WORK_ORDER WO,
+		T_PLA_CU_ORDER_ITEM_PRO_DEC COIPD
+	WHERE 
+		COIPD.ORDER_ITEM_DEC_ID in (SELECT 
+										COIPD.ORDER_ITEM_DEC_ID 
+									FROM 
+										T_PLA_CU_ORDER_ITEM_PRO_DEC COIPD
+									WHERE 
+										COIPD.WORK_ORDER_NO = #{param1})
+	AND COIPD.WORK_ORDER_NO = #{param2}
+	AND COIPD.WORK_ORDER_NO=WO.WORK_ORDER_NO
+	</select>
+	
+	<select id="getJJXX" parameterType="string" resultType="map">
+	SELECT T5.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID,
+		       TO_CHAR(SUM(T2.REPORT_LENGTH) / 1000,'fm9999990.9999') AS REPORT_LENGTH,
+		       MAX(T2.CREATE_USER_CODE) AS USER_CODE
+		  FROM T_PLA_ORDER_TASK              T1,
+		       T_WIP_REPORT_TASK             T2,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC   T3,
+		       T_PLA_CUSTOMER_ORDER_ITEM_DEC T4,
+		       T_PLA_CUSTOMER_ORDER_ITEM     T5
+		 WHERE T1.ID = T2.ORDER_TASK_ID
+		   AND T3.ID = T1.ORDER_ITEM_PRO_DEC_ID
+		   AND T4.ID = T3.ORDER_ITEM_DEC_ID
+		   AND T5.ID = T4.ORDER_ITEM_ID
+		   AND T1.WORK_ORDER_NO = #{param1}
+		 GROUP BY T5.SALES_ORDER_ITEM_ID
+	</select>
+	
+	<!-- 获取最新的订单的生产单 -->
+	<select id="getLatestWorkOrder" parameterType="map" resultMap='getMap'>
+		SELECT T.* from (
+        SELECT WO.* 
+        FROM 
+        	T_WIP_WORK_ORDER WO ,
+        	T_WIP_WO_CUSORDER_RELATION CR
+        WHERE WO.ID = CR.WORK_ORDER_ID
+        	AND CR.CUS_ORDER_ITEM_ID IN
+        	<foreach collection="orderItemIdArray" item="item"  open="(" separator="," close=")">  
+		    	#{item, jdbcType=VARCHAR}
+		    </foreach>
+		order by wo.create_time desc
+		) t where rownum = 1
+    </select>
+    
+    <!-- 更新生产单状态：排除状态finished的bug
+    	1、workOrder 2、orderTask 3、proDec/param workOrderNo:生产单号;status:状态 -->
+	<update id="updateWorkerOrderStatusNotFinished" flushCache="true">
+		UPDATE T_WIP_WORK_ORDER SET STATUS = #{param2}
+		WHERE WORK_ORDER_NO = #{param1}
+		AND STATUS <![CDATA[<>]]> 'FINISHED'
+	</update>
+
+
+	<!-- 根据其中一个生产单(护套）获取编织的任务 -->
+	<select id="getWorkOrderBraidingArray" parameterType="string" resultMap="getMap">
+       SELECT WO.*
+         FROM T_WIP_WORK_ORDER WO
+         WHERE  WO.PROCESS_CODE = 'Braiding'
+        START WITH WO.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR}
+        CONNECT BY WO.WORK_ORDER_NO = PRIOR WO.PROCESS_GROUP_RESPOOL
+	</select>
+	
+	<select id="changeWorkOrderSeq" parameterType="ArrayList" resultMap="getMap">
+		SELECT ID,WMSYS.WM_CONCAT(CONTRACT_NO) AS CONTRACT_NO 
+			FROM (SELECT WOID AS ID,CONTRACT_NO || ';' || COIID AS CONTRACT_NO 
+					FROM (SELECT  WO.ID AS WOID, 
+	  							 COI.ID AS COIID,
+	  					(SUBSTR(REGEXP_SUBSTR(SO.CONTRACT_NO,'[[:digit:]]+'),
+	               				LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,'[[:digit:]]+')) - 4,
+	               				LENGTH(REGEXP_SUBSTR(SO.CONTRACT_NO,'[[:digit:]]+'))) || 
+	        						' - ' || SOI.CUST_PRODUCT_TYPE || ' ' || SOI.CUST_PRODUCT_SPEC ||
+	        						' - ' || SOI.CONTRACT_LENGTH)  AS CONTRACT_NO
+	  						FROM T_WIP_WO_CUSORDER_RELATION CR
+					 			INNER JOIN T_PLA_CUSTOMER_ORDER_ITEM COI
+					    			ON CR.CUS_ORDER_ITEM_ID = COI.ID
+					 			INNER JOIN T_ORD_SALES_ORDER_ITEM SOI
+					    			ON COI.SALES_ORDER_ITEM_ID = SOI.ID
+					 			INNER JOIN T_ORD_SALES_ORDER SO
+					    			ON SOI.SALES_ORDER_ID = SO.ID
+					 			INNER JOIN T_WIP_WORK_ORDER WO
+					    			ON CR.WORK_ORDER_ID = WO.ID
+	 						WHERE WO.ID IN (
+							<foreach collection="list" item="item" index="index"  separator=",">
+								#{item.id,jdbcType=VARCHAR}
+							</foreach>))
+	 						GROUP BY WOID,COIID,CONTRACT_NO)
+	 		GROUP BY ID
+	</select>
+</mapper>

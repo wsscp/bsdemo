@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct
+END
+JsonProvider.js
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/JsonProvider.js
+END
+RemotingMethod.js
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/RemotingMethod.js
+END
+Transaction.js
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/Transaction.js
+END
+RemotingEvent.js
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/RemotingEvent.js
+END
+Manager.js
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/Manager.js
+END
+Provider.js
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/Provider.js
+END
+PollingProvider.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/PollingProvider.js
+END
+RemotingProvider.js
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/RemotingProvider.js
+END
+ExceptionEvent.js
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/ExceptionEvent.js
+END
+Event.js
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/direct/Event.js
+END

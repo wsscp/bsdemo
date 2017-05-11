@@ -1,0 +1,11 @@
+Ext.define('bsmes.model.Process', {
+			extend : 'Ext.data.Model',
+			fields : ['id', 'processCode', 'processName', 'seq', 'nextProcessName', {
+						name : 'sameProductLine',
+						type : 'boolean'
+					},{
+						name : 'ifNew',
+						type : 'boolean'
+					},
+					'inOutMat', 'equipCodeArray', 'equipNameArray', 'orderItemId']
+		});

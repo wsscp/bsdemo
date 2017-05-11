@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/11759/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/wwAc
+END
+EquipParamAcquisitionMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/9731/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/wwAc/EquipParamAcquisitionMapper.xml
+END
+EquipParamHistoryAcquisitionMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/BSMES/!svn/ver/11759/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/wwAc/EquipParamHistoryAcquisitionMapper.xml
+END

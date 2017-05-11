@@ -1,0 +1,7 @@
+Ext.define('bsmes.model.Event', {
+    extend: 'Sch.model.Event',
+    resourceIdField : 'resourceId',
+    startDateField  : 'startDate',
+    endDateField    : 'endDate', 
+    nameField       : 'name'
+});

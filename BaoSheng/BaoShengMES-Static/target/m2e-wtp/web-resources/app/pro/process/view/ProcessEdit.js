@@ -1,0 +1,28 @@
+Ext.define('bsmes.view.ProcessEdit',{
+	extend:'Oit.app.view.form.EditForm',
+	alias:'widget.processEdit',
+	title:'产品工序信息维护',
+	iconCls: 'feed-edit',
+	formItems:[{
+					fieldLabel:'工序代码',
+					xtype:'displayfield',
+					name:'processCode'
+				},{
+					fieldLabel:'工序名称',
+					xtype:'displayfield',
+					name:'processName'
+				},{
+					fieldLabel:'加工顺序',
+					xtype:'displayfield',
+					name:'seq'
+				},{
+					fieldLabel:'加工时间',
+					name:'processTime'
+				},{
+					fieldLabel:'前置时间',
+					name:'setUpTime'
+				},{
+					fieldLabel:'后置时间',
+					name:'shutDownTime'
+				}]			
+});

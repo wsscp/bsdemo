@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.WorkTaskDAO">
+	<resultMap type="cc.oit.bsmes.fac.model.WorkTask" id="getMap">
+	</resultMap>
+	
+	<select id="getWorkTasks" resultMap="getMap">
+		SELECT R.ID,
+		       R.EQUIP_CODE,
+		       (CASE
+		          WHEN S.EQUIP_ALIAS IS NOT NULL THEN
+		            (S.EQUIP_ALIAS || '-')
+		          ELSE
+		              ''
+		         END || '[' || S.CODE || ']' || S.NAME) AS EQUIP_NAME,
+		       WORK_START_TIME,
+		       WORK_END_TIME,
+		       T.PROCESS_CODE,
+		       T.HALF_PRODUCT_CODE
+		  FROM T_FAC_WORK_TASKS R, T_PLA_CU_ORDER_ITEM_PRO_DEC_OA T,
+		  	   (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS, LINE.ORG_CODE
+	               FROM T_FAC_EQIP_INFO    LINE,
+	                    T_FAC_PRODUCT_EQIP PE,
+	                    T_FAC_EQIP_INFO    EQUIP
+	              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+	                AND PE.EQUIP_ID = EQUIP.ID
+	                AND LINE.TYPE = 'PRODUCT_LINE') S
+		 WHERE R.EQUIP_CODE = S.CODE
+		   AND R.ORDER_ITEM_PRO_DEC_ID = T.ID
+    	   <if test="orgCode!=null and orgCode!=''">
+    	       AND S.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	   </if>
+    	   <if test="dFromDate!=null and dFromDate!=''">
+    		   AND WORK_START_TIME>=#{dFromDate,jdbcType=DATE}
+    	   </if>
+    	   <if test="dtoDate!=null and dtoDate!=''">
+    	 	   AND WORK_START_TIME <![CDATA[<]]>#{dtoDate,jdbcType=DATE} 
+    	   </if>
+    	   ORDER BY R.EQUIP_CODE ASC,T.PROCESS_CODE ASC,R.WORK_START_TIME ASC
+	</select>
+	
+	<!--
+	<insert id="insert" parameterType="WorkTask">
+		INSERT INTO T_FAC_WORK_TASKS  (
+			ID, 
+			EQUIP_CODE, 
+			ORDER_ITEM_PRO_DEC_ID,
+			DESCRIPTION, 
+			WORK_START_TIME,
+			WORK_END_TIME
+		) VALUES (
+			#{id,jdbcType=VARCHAR},
+			#{equipCode,jdbcType=VARCHAR}, 
+			#{orderItemProDecId,jdbcType=VARCHAR},
+			#{description,jdbcType=VARCHAR},
+			#{workStartTime,jdbcType=TIMESTAMP},
+			#{workEndTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	-->
+	
+	<!-- 根据设备编码获取设备计划加工任务负载-->
+	<select id="getByProcessId" resultMap="getMap" parameterType="string">
+	 	SELECT EQUIP_CODE,WORK_START_TIME,WORK_END_TIME,FINISHWORK 
+	 	FROM T_FAC_WORK_TASKS 
+	 	WHERE EQUIP_CODE IN (SELECT EQUIP_CODE FROM T_PRO_EQIP_LIST WHERE PROCESS_ID=#{processId,jdbcType=VARCHAR})
+	</select>
+		<!-- 根据设备编码,时间获取设备计划加工任务负载-->
+	<select id="getByProcessIdAndDate" resultMap="getMap" parameterType="string">
+	 	SELECT EQUIP_CODE,WORK_START_TIME,WORK_END_TIME,FINISHWORK 
+	 	FROM T_FAC_WORK_TASKS 
+	 	WHERE EQUIP_CODE IN (SELECT EQUIP_CODE FROM T_PRO_EQIP_LIST WHERE PROCESS_ID=#{processId,jdbcType=VARCHAR})
+	 		  AND WORK_START_TIME>=SYSDATE AND WORK_END_TIME <![CDATA[<=]]>SYSDATE+2
+	 		  
+	</select>
+	<delete id="deleteByOrgCode" parameterType="string">
+		DELETE FROM T_FAC_WORK_TASKS WHERE EQUIP_CODE IN (SELECT EQUIP_CODE FROM T_FAC_EQIP_INFO WHERE ORG_CODE=#{orgCode,jdbcType=VARCHAR}) 
+		<!-- AND ORDER_ITEM_PRO_DEC_ID NOT IN (SELECT ORDER_ITEM_PRO_DEC_ID FROM  T_PLA_ORDER_TASK WHERE IS_LOCK='1') -->
+		AND FINISHWORK='0'
+	</delete>
+	
+	<delete id="deleteByOrgCodeForOA" parameterType="string">
+		DELETE FROM T_FAC_WORK_TASKS W WHERE EXISTS (
+			SELECT 1 FROM T_FAC_EQIP_INFO E WHERE E.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			AND E.CODE = W.EQUIP_CODE
+	       <!--  SELECT 1 FROM T_PLA_ORDER_TASK O
+	        WHERE W.ORDER_ITEM_PRO_DEC_ID = O.ORDER_ITEM_PRO_DEC_ID 
+	        AND O.STATUS = 'TO_AUDIT'
+	        AND O.ORG_CODE=#{orgCode,jdbcType=VARCHAR} -->
+    	)
+	</delete>
+	<delete id="deleteByOrgCodeForOANotExistsOrderTask" parameterType="string">
+		DELETE FROM T_FAC_WORK_TASKS W WHERE NOT EXISTS (
+	        SELECT 1 FROM T_PLA_ORDER_TASK O
+	        WHERE W.ORDER_ITEM_PRO_DEC_ID = O.ORDER_ITEM_PRO_DEC_ID 
+	        AND O.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	)
+	</delete>
+	
+	<!-- 根据设备编码获取设备加工任务负载，条件为 没有加工完成并且开始时间大于等于当前时间
+	<select id="getToReport" resultMap="getMap" parameterType="string" >
+		SELECT EQUIP_CODE,WORK_START_TIME,WORK_END_TIME,ORDER_ITEM_PRO_DEC_ID 
+		FROM T_FAC_WORK_TASKS
+		WHERE EQUIP_CODE=#{eqipCode,jdbcType=VARCHAR} AND FINISHWORK='0' AND TO_DATE(WORK_START_TIME,'yyyy-mm-dd')>=SYSDATE
+	</select>-->
+	
+	<!-- 根据设备编码获取设备加工任务负载，条件为 没有加工完成-->
+	<select id="getByEquipCode" resultMap="getMap" parameterType="string" >
+		SELECT EQUIP_CODE,WORK_START_TIME,WORK_END_TIME,ORDER_ITEM_PRO_DEC_ID 
+		FROM T_FAC_WORK_TASKS
+		WHERE EQUIP_CODE=#{eqipCode,jdbcType=VARCHAR} AND FINISHWORK='0' AND WORK_END_TIME > SYSTIMESTAMP
+		ORDER BY WORK_END_TIME
+	</select>
+	<select id="getByCode" resultMap="getMap" parameterType="string" >
+		SELECT EQUIP_CODE,WORK_START_TIME,WORK_END_TIME
+		FROM T_FAC_WORK_TASKS
+		WHERE EQUIP_CODE=#{code,jdbcType=VARCHAR} 
+		ORDER BY WORK_START_TIME
+	</select>
+</mapper>

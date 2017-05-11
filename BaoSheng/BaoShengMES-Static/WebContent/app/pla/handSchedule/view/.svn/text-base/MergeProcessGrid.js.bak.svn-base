@@ -1,0 +1,64 @@
+/**
+ * 合并工序编辑列表：工序弹出列表
+ */
+
+Ext.define('bsmes.view.MergeProcessGrid', {
+			extend : 'Oit.app.view.Grid',
+			itemId : 'mergeProcessGrid',
+			alias : 'widget.mergeProcessGrid',
+			store : 'ProcessStore',
+			hasPaging : false,
+			defaultEditingPlugin : false,
+			height : 292,
+			columns : [
+					// {
+					// text : Oit.msg.pla.handSchedule.processCode,
+					// dataIndex : 'processCode',
+					// flex : 1,
+					// sortable : false,
+					// menuDisabled : true
+					// },
+					{
+				text : Oit.msg.pla.handSchedule.processName,
+				dataIndex : 'processName',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.handSchedule.seq,
+				dataIndex : 'seq',
+				flex : 0.6,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.handSchedule.nextProcess,
+				dataIndex : 'nextProcessName',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : '与上道工序同产线',
+				dataIndex : 'sameProductLine',
+				flex : 1,
+				xtype : 'checkcolumn',
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : '生产线',
+				dataIndex : 'equipNameArray',
+				flex : 1.5,
+				renderer : function(value, cellmeta, record, rowIndex){
+					var html = '<a style="color:blue;cursor:pointer;" onclick="getProcessEquipArray(\'' + rowIndex
+							+ '\', \'' + record.get('id') + '\', \'' + record.get('equipCodeArray')
+							+ '\', \'handSchedule/getBZProcessEquipArray\', \'mergeProcessGrid\')">修改</a>&nbsp;&nbsp;';
+					return html + value;
+				},
+				sortable : false,
+				menuDisabled : true
+			}],
+			tbar : [{
+						text : '添加工序',
+						iconCls : 'icon_add',
+						itemId : 'addProcessItem'
+					}]
+		});

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/BSMES/!svn/ver/4935/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis
+END
+ModelUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/ModelUtils.java
+END
+ParseTableNameAspect.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/ParseTableNameAspect.java
+END
+ColumnTarget.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4453/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/ColumnTarget.java
+END
+Property.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/Property.java
+END
+BaseProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4935/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/BaseProvider.java
+END
+Sort.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/Sort.java
+END

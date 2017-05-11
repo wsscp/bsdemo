@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.WeekCalendarDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.WeekCalendar" id="getMap">
+	</resultMap>
+	<select id="getWeekCalendarByWeekNo" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_BAS_WEEK_CALENDAR 
+		<where>
+			1=1
+			<if test="param1!=null and param1 != ''">
+				AND WEEK_NO=#{param1,jdbcType=VARCHAR}
+			</if>
+			<if test="param2!=null and param2 != ''">
+				 AND ORG_CODE=#{param2,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="getByOrgCode" resultMap="getMap" parameterType="string">
+		SELECT ID,WEEK_NO,ISWORKDAY FROM T_BAS_WEEK_CALENDAR WHERE ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	</select>
+</mapper>

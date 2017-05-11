@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.RoleEquipDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.RoleEquip" id="getMap">
+	</resultMap>
+	
+	<!-- 根据用户Code获取设备角色列表 -->
+	<select id="getRoleEquipByUserCode" parameterType="map" resultMap="getMap">
+		SELECT E.*
+	    FROM T_BAS_ROLE_EQIP E,
+	       T_BAS_USER_ROLE R,
+	       T_BAS_USER      U,
+	       T_FAC_EQIP_INFO I
+	    WHERE E.ROLE_ID = R.ROLE_ID
+	      AND R.USER_ID = U.ID
+	      AND E.EQIP_INFO_ID = I.ID
+	      AND I.CODE = #{equipCode}
+	      AND U.USER_CODE = #{userCode}
+	</select>
+	
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.WorkOrderEquipRelationDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.WorkOrderEquipRelation" id="getMap">
+	</resultMap> 
+	
+	<insert id="insert" parameterType="cc.oit.bsmes.wip.model.WorkOrderEquipRelation">
+	INSERT INTO T_WIP_WO_EQUIP_RELATION  (
+		ID, 
+		EQUIP_CODE, 
+		WORK_ORDER_ID,
+		CREATE_USER_CODE, 
+		CREATE_TIME,
+		MODIFY_USER_CODE, 
+		MODIFY_TIME
+	) VALUES (
+		GET_UUID(),
+		#{equipCode,jdbcType=VARCHAR}, 
+		#{workOrderId,jdbcType=VARCHAR},
+		#{createUserCode,jdbcType=VARCHAR},
+		SYSDATE,
+		#{modifyUserCode,jdbcType=VARCHAR},
+		SYSDATE
+	)
+	</insert>
+	
+	<!-- 删除生产单关联的设备关系 -->
+	<delete id="deleteByWorkOrderNo" parameterType="string">
+	    DELETE FROM T_WIP_WO_EQUIP_RELATION WHERE WORK_ORDER_ID IN (SELECT ID FROM T_WIP_WORK_ORDER WHERE WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR})
+	</delete>
+
+	<update id="updateSeqByWorkOrderNoAndEquipCode" parameterType="string" flushCache="true">
+		CALL PAUSE_WO_BY_RELACTION_SEQ(#{param1},#{param2},#{param3},#{param4})
+	</update>
+</mapper>

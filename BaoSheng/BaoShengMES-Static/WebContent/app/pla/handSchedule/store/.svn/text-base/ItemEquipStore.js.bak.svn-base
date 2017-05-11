@@ -1,0 +1,17 @@
+/**
+ * 获取新增工序的设备清单combobox选择项
+ * */
+Ext.define('bsmes.store.ItemEquipStore', {
+			extend : 'Oit.app.data.GridStore',
+			autoLoad : false,
+			fields : [{
+						name : 'name',
+						convert : function(value, record) {
+							return value + '[' + record.get('code') + ']';
+						}
+					}, 'code'],
+			proxy : {
+				type : 'rest',
+				url : 'handSchedule/equipInfo'
+			}
+		});

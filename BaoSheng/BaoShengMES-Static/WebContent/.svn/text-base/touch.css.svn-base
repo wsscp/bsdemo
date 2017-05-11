@@ -1,0 +1,441 @@
+/* button */
+.x-btn-default-toolbar-small .x-btn-inner {
+	color: #666666;
+	font-family: helvetica, arial, verdana, sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 0 5px;
+}
+
+/*grid 单元格高度*/
+.x-btn-default-toolbar-small-icon .x-btn-button,.x-btn-default-toolbar-small-noicon .x-btn-button
+	{
+	height: 30px;
+}
+
+.x-btn-default-toolbar-small-icon .x-btn-inner,.x-btn-default-toolbar-small-noicon .x-btn-inner
+	{
+	line-height: 30px;
+}
+
+.x-grid-cell {
+	font: normal 18px/22px helvetica, arial, verdana, sans-serif;
+}
+
+.x-grid-cell-print {
+	border-color: #666666;
+	border-style: solid;
+}
+
+/*.x-grid-cell-inner {
+	height:40px;
+    text-overflow: ellipsis;
+    padding: 5px 4px 3px 3px;
+}*/
+/* toolbar  button 高度*/
+.x-btn-default-small-icon .x-btn-button,.x-btn-default-small-noicon .x-btn-button
+	{
+	height: 26;
+}
+
+.x-btn-default-small .x-btn-inner {
+	font-size: 18px;
+	font-weight: bold;
+	font-family: helvetica, arial, verdana, sans-serif;
+	color: white;
+	padding: 5px 5px;
+}
+/*.x-tab-default .x-tab-inner {
+    font-size: 20px;
+    font-weight: bold;
+    font-family: helvetica, arial, verdana, sans-serif;
+    line-height: 16px;
+}
+*/
+.x-toolbar-text {
+	color: #333f49;
+	line-height: 16px;
+	font-family: helvetica, arial, verdana, sans-serif;
+	font-size: 20px;
+	font-weight: normal;
+}
+
+.x-form-item-label {
+	color: black;
+	font: normal 17px/17px helvetica, arial, verdana, sans-serif;
+	margin-top: 4px;
+}
+
+.x-panel-body-default {
+	font-size: 12px;
+}
+/**check/radio boxgroup的label文字的字体大小*/
+.x-boxlabel-size-20 {
+	font-size: 20px;
+}
+
+.x-boxlabel-size-30 {
+	font-size: 30px;
+}
+
+.x-boxlabel-size-40 {
+	font-size: 40px;
+}
+/**check/radio boxgroup的label文字的左间距*/
+.x-boxlabel-left-10 {
+	margin-left: 10px;
+}
+/**grid 表头字体大小*/
+.x-column-header {
+	font: bold 14px/15px helvetica, arial, verdana, sans-serif;
+}
+/**radio字体大小*/
+.x-form-cb-label {
+	font: normal 17px/17px helvetica, arial, verdana, sans-serif;
+}
+/*修改Button 背景图片*/
+.x-btn-default-toolbar-small {
+	/*background-image: -webkit-gradient(top, #88c6bc, #59aca9);*/
+	background-image: -webkit-linear-gradient(top, #88c6bc, #59aca9);
+	background-image: -moz-linear-gradient(top, #88c6bc, #59aca9);
+	background-image: -o-linear-gradient(top, #88c6bc, #59aca9);
+	background-image: linear-gradient(top, #88c6bc, #59aca9);
+}
+/*修改Button 上字的颜色*/
+.x-btn-default-toolbar-small .x-btn-inner {
+	color: white;
+}
+
+/*radio css*/
+.x-form-radio {
+	background: url(icons/icr-green-skin.png) no-repeat;
+	width: 23px;
+	height: 23px;
+	background-position: 1px -49px;
+}
+
+.x-form-radio:hover {
+	background-position: -49px -49px;
+}
+
+.x-form-cb-checked .x-form-radio {
+	background-position: -99px -49px;
+}
+
+.x-form-cb-checked:hover .x-form-radio {
+	background-position: -149px -49px;
+}
+
+.x-form-checkbox {
+	background: url(icons/icr-green-skin.png) no-repeat;
+	width: 23px;
+	height: 23px;
+	background-position: 0 0;
+}
+
+.x-form-checkbox:hover {
+	background-position: -50px 0;
+}
+
+.x-form-cb-checked .x-form-checkbox {
+	background-position: -100px 0;
+}
+
+.x-form-cb-checked:hover .x-form-checkbox {
+	background-position: -150px 0;
+}
+
+.x-form-cb {
+	margin-top: 0px;
+}
+
+.x-form-trigger-wrap .x-form-text {
+	border-width: 0;
+	height: 50px;
+}
+
+.x-grid-editor .x-form-text {
+	font: normal 20px/26px helvetica, arial, verdana, sans-serif;
+}
+
+.x-panel-header-default {
+	background-color: #287874;
+	background-image: none;
+}
+
+.x-toolbar-footer {
+	background: none repeat scroll 0 0 #e0eaf3;
+	border: 0 none;
+	margin: 0;
+	padding: 6px 0 6px 6px;
+}
+
+.x-panel-default-outer-border-rbl {
+	border-bottom-color: #287874 !important;
+	border-bottom-width: 1px !important;
+	border-left-color: #287874 !important;
+	border-left-width: 0px !important;
+	border-right-color: #287874 !important;
+	border-right-width: 0px !important;
+}
+
+.x-panel-default-outer-border-trl {
+	border-left-color: #287874 !important;
+	border-left-width: 0px !important;
+	border-right-color: #287874 !important;
+	border-right-width: 0px !important;
+	border-top-color: #287874 !important;
+	border-top-width: 0px !important;
+}
+
+.x-btn-default-toolbar-small {
+	border-color: #287874;
+}
+
+.x-panel-body-default {
+	background: none repeat scroll 0 0 white;
+	border-color: #287874;
+	border-style: solid;
+	border-width: 1px;
+	color: black;
+	font-size: 13px;
+}
+
+.x-panel-default-outer-border-trbl {
+	border-color: #287874 !important;
+	border-width: 1px !important;
+}
+
+.x-tab-bar-default {
+	background-color: #287874;
+}
+
+.x-tab-default-top {
+	background-color: #30918d;
+}
+
+.x-tab-default-active {
+	background-color: #8fc5c3;
+}
+
+.x-tab-default-active .x-tab-inner {
+	color: #FFFFFF;
+}
+
+/***/
+.x-form-display-field {
+	color: blue;
+	font: bold 14px/12px helvetica, arial, verdana, sans-serif;
+	line-height: 20px;
+}
+
+/* Ion.CheckRadio // Version 1.0.0 // by Denis Ineshin | ionden.com // 
+===================================================================================================================*/
+/* ===================================================================================================================== // CheckRadio */
+.icr {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	cursor: pointer;
+}
+
+.icr.disabled {
+	cursor: default;
+	opacity: 0.5;
+}
+
+.icr__text {
+	position: relative;
+	display: block;
+}
+
+.icr__radio,.icr__checkbox {
+	position: absolute;
+	display: block;
+	top: 0;
+	left: 0;
+}
+/* Ion.CheckRadio, Green Skin
+// Version 1.0.0
+// by Denis Ineshin | ionden.com
+// ===================================================================================================================*/
+
+/* =====================================================================================================================
+// Skin details */
+.icr__radio,.icr__checkbox {
+	background: url(icons/icr-green-skin.png) no-repeat;
+}
+
+.icr {
+	line-height: 19px;
+	margin: 0 25px 10px 0;
+}
+
+.icr__text {
+	padding: 2px 0 0 28px;
+}
+
+.icr__checkbox {
+	width: 23px;
+	height: 23px;
+	background-position: 0 0;
+}
+
+.icr.enabled:hover .icr__checkbox {
+	background-position: -50px 0;
+}
+
+.icr.checked .icr__checkbox {
+	background-position: -100px 0;
+}
+
+.icr.enabled.checked:hover .icr__checkbox {
+	background-position: -150px 0;
+}
+
+.icr__radio {
+	width: 23px;
+	height: 23px;
+	background-position: 1px -49px;
+}
+
+.icr.enabled:hover .icr__radio {
+	background-position: -49px -49px;
+}
+
+.icr.checked .icr__radio {
+	background-position: -99px -49px;;
+}
+
+.icr.enabled.checked:hover .icr__radio {
+	background-position: -149px -49px;;
+}
+
+.x-form-text {
+	border-color: #666666;
+}
+
+/**终端列表点击颜色设置:绿、黄、灰、白*/
+.x-grid-record-green,.x-grid-record-green .x-grid-td {
+	color: white;
+	background: green;
+}
+
+.x-grid-record-yellow, .x-grid-record-yellow .x-grid-td {
+	background: yellow;
+}
+
+.x-grid-record-grey, .x-grid-record-grey .x-grid-td {
+	background: grey;
+}
+
+.x-grid-record-white {
+	background: white;
+}
+
+.x-fieldset-header-text {
+	font-size: 18px;
+	line-height: 20px;
+	color: red;
+}
+
+
+
+
+/**
+单元操作css样式
+1、表格样式
+*/
+table.printtTable {
+	border-collapse:collapse;
+}
+table.printtTable > tbody > tr > td {
+	border:1px solid #000;
+	text-align:center;
+}
+table.printtTable > tbody > tr > td.small {
+	font-size: 12px;
+}
+table.printtTable > tbody > tr > td.title {
+	width:57px;
+	background-color:#93CDDD;
+}
+table.printtTable > tbody > tr > td.write {
+	background-color: #FFA07A;
+}
+table.printtTable > tbody > tr > td.write > input {
+	background-color: #FFA07A;
+}
+
+table.printtTable{
+-moz-box-shadow: 3px 3px 0px #000000;
+-webkit-box-shadow: 3px 3px 0px #000000;
+box-shadow: 3px 3px 0px #000000;
+}
+table td input{
+  border:0px ;
+}
+.table_box{
+  margin:auto;
+  margin-bottom:25px;
+  border:1px solid #000;
+  width:180mm;
+}
+.writing_tb{
+    margin:0 auto;
+	width:20px;
+	line-height:24px;
+}
+.box1_w{
+    width:190mm;
+}
+.box2_w{
+    width:180mm;
+}
+.box3_w{
+    width:170mm;
+}
+table.nav_table{
+  border-collapse:collapse;
+}
+table.nav_table > tbody > tr > td{
+  border:1px solid #000;
+  text-align:center;
+  padding:4px;
+}
+table.nav_table > tbody > tr > td.arrow-right{
+  border:none;
+  color:red;
+  text-align:center;
+}
+table.nav_table > tbody > tr > td.small {
+	font-size: 15px;
+}
+table > tbody > tr > td.imgBox {
+	width:105px;
+}
+table > tbody > tr > td.imgBox > div {
+	margin:auto;
+	border:1px solid;
+	width:95px;
+	height:95px;
+}
+table > tbody > tr > td.imgBox > div  > img {
+	width:100%;
+	height:100%;
+}
+table > tbody > tr > td.center {
+	text-align:center;
+}
+
+table > tbody > tr > td > input.needInput{
+	background-color: #FFE4C4;
+	width:100%;
+	height:100%;
+}
+table > tbody > tr > td.tdInput{
+	background-color: #FFE4C4;
+}
+/**
+单元操作css样式 --------------END
+*/

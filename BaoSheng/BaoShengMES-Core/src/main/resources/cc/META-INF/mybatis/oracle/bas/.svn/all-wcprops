@@ -1,0 +1,185 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/11980/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas
+END
+EquipEnergyMonthMonitorMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/BSMES/!svn/ver/11980/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EquipEnergyMonthMonitorMapper.xml
+END
+EquipCalendarMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/7320/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EquipCalendarMapper.xml
+END
+UserMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/7570/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/UserMapper.xml
+END
+EmployeeMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/7653/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EmployeeMapper.xml
+END
+MonthCalendarMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/3872/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/MonthCalendarMapper.xml
+END
+WorkShiftMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/3872/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/WorkShiftMapper.xml
+END
+EquipMESWWMappingMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EquipMESWWMappingMapper.xml
+END
+WeekCalendarShiftMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/4506/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/WeekCalendarShiftMapper.xml
+END
+SysMessageMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/4575/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/SysMessageMapper.xml
+END
+MesClientMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/7308/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/MesClientMapper.xml
+END
+AmoebaMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/11502/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/AmoebaMapper.xml
+END
+WeekCalendarMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/3872/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/WeekCalendarMapper.xml
+END
+ParamConfigMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/4506/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/ParamConfigMapper.xml
+END
+OrgMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/5661/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/OrgMapper.xml
+END
+AttachmentMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/8403/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/AttachmentMapper.xml
+END
+DataDicMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/5032/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/DataDicMapper.xml
+END
+EmployeeFamilyInfoMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/11253/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EmployeeFamilyInfoMapper.xml
+END
+MesClientManEqipMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/6391/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/MesClientManEqipMapper.xml
+END
+ParmsMappingMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/8304/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/ParmsMappingMapper.xml
+END
+EmployeeResumeMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/11835/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EmployeeResumeMapper.xml
+END
+ResumeMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/11254/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/ResumeMapper.xml
+END
+UserRoleMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4981/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/UserRoleMapper.xml
+END
+EquipCalShiftMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/4557/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EquipCalShiftMapper.xml
+END
+RoleMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4943/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/RoleMapper.xml
+END
+EquipEnergyMonitorMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/11980/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/EquipEnergyMonitorMapper.xml
+END
+RoleEquipMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/5028/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/RoleEquipMapper.xml
+END
+PropConfigMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/3872/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/PropConfigMapper.xml
+END
+VProcessEquipMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/3872/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/VProcessEquipMapper.xml
+END
+RoleResourceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/4506/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/RoleResourceMapper.xml
+END
+ResourcesMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/9816/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/bas/ResourcesMapper.xml
+END

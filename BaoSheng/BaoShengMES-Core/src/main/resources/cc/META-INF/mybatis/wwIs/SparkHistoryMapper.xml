@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfaceWWIs.dao.SparkHistoryDAO">
+
+	<resultMap type="cc.oit.bsmes.interfaceWWIs.model.SparkHistory" id="getMap">
+	</resultMap>
+	<select id="findByEventStamp" parameterType="map" resultMap="getMap">
+		SELECT 
+			  * 
+		FROM T_INT_SPARK_HISTORY
+		 where LENGTH > 0 
+		<if test="lastExecuteDate != null">
+		   and CREATE_TIME > #{lastExecuteDate}  			 
+		</if>
+		ORDER BY CREATE_TIME asc
+	</select>
+</mapper>

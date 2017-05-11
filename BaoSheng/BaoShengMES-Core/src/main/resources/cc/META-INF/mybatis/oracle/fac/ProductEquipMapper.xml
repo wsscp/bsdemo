@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.ProductEquipDAO">
+	<resultMap type="cc.oit.bsmes.fac.model.ProductEquip" id="getMap">
+	</resultMap>
+
+    <select id="getByLineAndProId" parameterType="string" resultType="cc.oit.bsmes.fac.model.ProductEquip">
+        SELECT
+          ID,
+          PRODUCT_LINE_ID,
+          EQUIP_ID
+        FROM T_FAC_PRODUCT_EQIP
+          WHERE PRODUCT_LINE_ID = #{param1}
+          AND EQUIP_ID = #{param2}
+    </select>
+
+    <select id="getByEquipId" parameterType="string" resultType="cc.oit.bsmes.fac.model.ProductEquip">
+        SELECT
+          ID,
+          PRODUCT_LINE_ID,
+          EQUIP_ID
+        FROM T_FAC_PRODUCT_EQIP
+          WHERE EQUIP_ID = #{param1}
+    </select>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductQCTemplateDAO">
+
+	<resultMap type="ProductQCTemplate" id="getMap">
+		<result column="WIRE_REQU" property="wireRequest"/>
+		<result column="ENV_PARM" property="environmentParameter"/>
+		<result column="ENV_VALUE" property="environmentValue"/>
+		<result column="MAT_REQU" property="matRequest"/>
+		<result column="EQIP_REQU" property="equipRequest"/>
+		
+	</resultMap>
+	<select id="find" resultMap="getMap" parameterType="ProductQCTemplate" >
+		SELECT * FROM T_PRO_PRODUCT_QC_TEMP 
+		<include refid="getParameter"/>        
+	</select>
+	<select id="count" resultType="int" parameterType="ProductQCTemplate">
+		SELECT COUNT(1)
+		FROM (SELECT ID FROM T_PRO_PRODUCT_QC_TEMP <include refid="getParameter"/>)
+	</select>
+	<sql id="getParameter">
+		<where>
+			<if test="name!=null and name!=''">
+				INSTR(NAME,#{name})>0
+			</if>
+			<if test="orgCode!=null and orgCode!=''">
+				AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="productCode!=null and productCode!=''">
+				AND PRODUCT_CODE=#{productCode,jdbcType=VARCHAR}
+			</if>
+			AND STATUS='VALID'
+		</where>
+	</sql>
+	<select id="getByNameAndProductCode" parameterType="map" resultMap="getMap">
+		SELECT ID,CODE FROM T_PRO_PRODUCT_QC_TEMP WHERE NAME=#{name,jdbcType=VARCHAR} AND PRODUCT_CODE=#{productCode,jdbcType=VARCHAR}
+	</select>
+</mapper>

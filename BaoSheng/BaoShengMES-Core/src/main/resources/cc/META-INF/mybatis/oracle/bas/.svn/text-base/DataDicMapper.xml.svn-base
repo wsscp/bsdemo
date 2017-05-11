@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.DataDicDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.DataDic" id="getMap">
+	</resultMap>
+	
+	<select id="getByDicCode" parameterType="string" resultType="cc.oit.bsmes.bas.model.DataDic">
+	  SELECT DD.* FROM T_BAS_DATA_DICT DD WHERE DD.TERMS_CODE = #{param1,jdbcType=VARCHAR} AND DD.CODE = #{param2,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<select id="geByKeyK" parameterType="string" resultType="cc.oit.bsmes.bas.model.DataDic">
+	  SELECT * FROM T_BAS_DATA_DICT DD WHERE DD.CODE = #{keyK,jdbcType=VARCHAR}
+	</select>
+
+    <select id="getValidByTermsCode" parameterType="string" resultMap="getMap">
+        SELECT
+          *
+        FROM  T_BAS_DATA_DICT
+        WHERE TERMS_CODE = #{param1}  AND STATUS = '1'
+        ORDER BY SEQ
+    </select>
+    
+    <!-- 根据词条类型和扩展属性查询词条详细信息 -->
+    <select id="getCodeByTermsCodeAndExtatt" parameterType="cc.oit.bsmes.bas.model.DataDic" resultMap="getMap">
+        SELECT
+          *
+        FROM  T_BAS_DATA_DICT
+        WHERE TERMS_CODE = #{termsCode}  AND EXTATT = #{extatt} AND STATUS = #{status}
+        ORDER BY SEQ
+    </select>
+    
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 优先级从高到低分别是 ERROR、WARN、INFO、DEBUG。通过在这里定义的级别，您可以控制到应用程序中相应级别的日志信息的开关。 
+	比如在这里定义了INFO级别， 则应用程序中所有DEBUG级别的日志信息将不被打印出来 -->
+<configuration scan="true" scanPeriod="60 seconds">
+	<property name="LOGFILE_HOME" value="/apps/var/logs" />
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%d{HH:mm:ss}]%-5level - %caller{1}%m%n </pattern>
+		</encoder>
+	</appender>
+	
+
+	
+	<appender name="dbLogAppender" class="cc.oit.bsmes.common.log.logback.DBLogAppender">		
+	 <layout>
+      <Pattern>%date [%thread] %-5level %logger - %msg%n</Pattern>
+    </layout>
+    <limit>5</limit>
+	</appender>
+	
+
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${LOGFILE_HOME}/reportLog.log</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>[%date] [%-5level] [%-8class{1}:%L] - %m%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGFILE_HOME}/LogFiles/reportLog.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<maxHistory>7</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                  <maxFileSize>20MB</maxFileSize>
+             </timeBasedFileNamingAndTriggeringPolicy> 
+		</rollingPolicy>
+		  
+	</appender>
+	
+	<!-- 分割tomcat的catalina.out日志文件 -->
+	<appender name="projLog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${catalina.home}/logs/meslog.txt</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>[%date] [%-5level] [%-8class{1}:%L] - %m%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${catalina.home}/logs/meslog-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+			
+			<timeBasedFileNamingAndTriggeringPolicy  class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                  <maxFileSize>20MB</maxFileSize>
+              </timeBasedFileNamingAndTriggeringPolicy> 	
+		</rollingPolicy>
+		  
+	</appender>
+	<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender"> 
+	   <appender-ref ref="dbLogAppender" /> 
+	   
+	  </appender>
+	<!-- 下面配置一些第三方包的日志过滤级别，用于避免刷屏 -->
+    <logger name="org" level="WARN"/>
+    
+    <logger name="com" level="WARN"/>
+    <logger name="cc.oit.bsmes.*.dao" level="WARN"/>
+    
+    <logger name="oracleDblogger" level="INFO" additivity="false"> 
+    <appender-ref ref="ASYNC" /> 
+    </logger>
+    
+
+	<!-- 开发调试阶段使用DEBUG，部署生产环境用INFO -->
+	<root level="DEBUG">
+		 
+		<appender-ref ref="console" />
+		<appender-ref ref="projLog" />
+	</root>
+</configuration>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.UserRoleDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.UserRole" id="getMap">
+		<result property="id" column="ID"/>
+		<result property="name" column="NAME"/>
+		<result property="description" column="DESCRIPTION"/>
+		<result property="userCode" column="USER_CODE"/>
+		<result property="orgCode" column="ORG_CODE"/>
+		<result property="roleId" column="ROLE_ID"/>
+		<result property="code" column="CODE"/>
+	</resultMap> 
+	
+	<select id="getByUserId" parameterType="map" resultMap="getMap">
+		SELECT T.ID,R.NAME,R.CODE,R.ORG_CODE,R.DESCRIPTION,S.USER_CODE,T.ROLE_ID,E.NAME AS USER_NAME
+		FROM T_BAS_ROLE R,T_BAS_USER S,T_BAS_USER_ROLE T, T_BAS_EMPLOYEE E
+		WHERE 
+		  R.ID=T.ROLE_ID AND 
+		  T.USER_ID=S.ID AND 
+		  S.USER_CODE=E.USER_CODE AND 
+		  S.ID=#{userId,jdbcType=VARCHAR} AND 
+		  R.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	</select>
+
+    <delete id="deleteByUserId" parameterType="string">
+        DELETE FROM T_BAS_USER_ROLE WHERE USER_ID = #{userId}
+
+    </delete>
+</mapper>

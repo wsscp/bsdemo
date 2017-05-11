@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.MatPropDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.MatProp" id="getMap">
+	</resultMap>
+	
+	<select id="find" parameterType="cc.oit.bsmes.inv.model.MatProp" resultMap="getMap">
+		select ID,MAT_ID,TEMPLET_DETAIL_ID,PROP_TARGET_VALUE from T_INV_MAT_PROP
+		<where>
+  			<if test="matId != null and matId != ''">
+				 MAT_ID=#{matId,jdbcType=VARCHAR}
+			</if>
+			<if test="templetDetailId != null and templetDetailId != ''">
+				AND TEMPLET_DETAIL_ID=#{templetDetailId,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByMatId" parameterType="map" resultMap="getMap">
+	     SELECT * FROM T_INV_MAT_PROP WHERE MAT_ID  IN
+	     <foreach collection="matIds" item="item"  open="(" separator="," close=")">
+               #{item, jdbcType=VARCHAR}
+          </foreach>
+	</select>
+	
+	<!-- 
+	<update id="update" parameterType="cc.oit.bsmes.inv.model.MatProp">
+		UPDATE T_INV_MAT_PROP
+		<set>
+			<if test="propTargetValue != null and propTargetValue !=''">
+				PROP_TARGET_VALUE = #{propTargetValue,jdbcType=VARCHAR}
+			</if>
+		
+		</set>
+		WHERE 1=1
+		<if test="id != null and id !=''">
+			AND ID = #{id, jdbcType=VARCHAR}
+		</if>
+		<if test="matId != null and matId !=''">
+			AND MAT_ID = #{matId,jdbcType=VARCHAR}
+		</if>
+		<if test="templetDetailId != null and templetDetailId !=''">
+			AND TEMPLET_DETAIL_ID = #{templetDetailId,jdbcType=VARCHAR}
+		</if>
+		
+	</update>
+	-->
+	
+	<delete id="deleteByMatId" parameterType="String"  >
+	    DELETE FROM T_INV_MAT_PROP WHERE MAT_ID=#{param,jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 根据matCode去物料属性 -->
+	<select id="findByMatCode" parameterType="string" resultMap="getMap">
+		SELECT
+		    P.ID,
+		    D.PROP_NAME,
+		    D.PROP_Code,
+		    P.PROP_TARGET_VALUE
+		FROM
+		    T_INV_MAT M,
+		    T_INV_MAT_PROP P,
+		    T_INV_TEMPLET_DETAIL D
+		WHERE
+		    M.ID=P.MAT_ID
+		AND P.TEMPLET_DETAIL_ID=D.ID
+		AND M.MAT_CODE=#{matCode, jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

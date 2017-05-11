@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.MonthReportDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.MonthReport" id="getMap"></resultMap>
+	
+	<!-- 查询一个月的员工工时记录 -->
+	<select id="getMonthReport" resultType="cc.oit.bsmes.wip.model.MonthReport">
+		SELECT DISTINCT
+		    I.CODE,
+		    I.EQUIP_ALIAS,
+		    WMSYS.WM_CONCAT(DISTINCT U.NAME) AS USERNAME,
+		    COUNT(I.CODE)*8 AS TOTALTIME
+		FROM
+		    T_BAS_EMPLOYEE U,
+		    T_WIP_ONOFF_RECORD R,
+		    T_FAC_EQIP_INFO I
+		WHERE
+		    U.USER_CODE = R.USER_CODE
+		    AND I.TYPE = 'PRODUCT_LINE'
+		    AND INSTR(R.EQUIP_CODES,I.CODE) > 0
+		<if test="yearMonth != null and yearMonth != ''">
+			AND TO_CHAR(R.ON_TIME,'yyyy-MM') = #{yearMonth ,jdbcType=VARCHAR}
+		</if>
+		<if test="code != null and code != ''">
+			AND I.CODE = #{code ,jdbcType=VARCHAR}
+		</if>
+		<if test="userCode != null and userCode != ''">
+			AND U.USER_CODE = #{userCode ,jdbcType=VARCHAR}
+		</if>
+		GROUP BY I.CODE,I.EQUIP_ALIAS
+		ORDER BY I.CODE
+	</select>
+	
+	<!-- 查询一个月的员工工时记录 -->
+	<select id="getMonthUsersByDate" parameterType="string" resultType="cc.oit.bsmes.wip.model.MonthReport">
+		SELECT DISTINCT
+		    R.USER_CODE AS USER_CODE,
+		    E.NAME AS USERNAME
+		FROM
+		    T_WIP_ONOFF_RECORD R,
+		    T_BAS_EMPLOYEE E
+		WHERE
+		    R.USER_CODE = E.USER_CODE
+		AND TO_CHAR(R.ON_TIME,'yyyy-MM') = #{yearMonth ,jdbcType=VARCHAR}
+	</select>
+	
+	
+</mapper>

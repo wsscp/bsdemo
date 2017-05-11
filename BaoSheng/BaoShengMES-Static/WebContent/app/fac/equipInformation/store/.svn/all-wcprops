@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/9311/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/fac/equipInformation/store
+END
+MaintainerStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/3417/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/fac/equipInformation/store/MaintainerStore.js
+END
+EquipInformationStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/8865/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/fac/equipInformation/store/EquipInformationStore.js
+END
+EmployeeUserStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/5532/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/fac/equipInformation/store/EmployeeUserStore.js
+END
+EquipEventCaseStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/8522/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/fac/equipInformation/store/EquipEventCaseStore.js
+END
+SparePartStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/9311/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/fac/equipInformation/store/SparePartStore.js
+END

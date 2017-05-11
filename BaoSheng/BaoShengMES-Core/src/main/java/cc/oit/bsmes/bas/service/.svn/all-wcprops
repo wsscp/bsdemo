@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/12058/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service
+END
+UserService.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/11251/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/UserService.java
+END
+EmployeeService.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7646/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/EmployeeService.java
+END
+MonthCalendarService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/MonthCalendarService.java
+END
+WorkShiftService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/WorkShiftService.java
+END
+EquipMESWWMappingService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/EquipMESWWMappingService.java
+END
+WeekCalendarShiftService.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/WeekCalendarShiftService.java
+END
+SysMessageService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/SysMessageService.java
+END
+MesClientService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/7134/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/MesClientService.java
+END
+AmoebaService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/AmoebaService.java
+END
+WeekCalendarService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/2038/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/WeekCalendarService.java
+END
+ParamConfigService.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/ParamConfigService.java
+END
+OrgService.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/OrgService.java
+END
+AttachmentService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8708/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/AttachmentService.java
+END
+DataDicService.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5407/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/DataDicService.java
+END
+MesClientManEqipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/8517/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/MesClientManEqipService.java
+END
+UserRoleService.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4121/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/UserRoleService.java
+END
+EquipCalShiftService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/EquipCalShiftService.java
+END
+RoleService.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4656/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/RoleService.java
+END
+EquipEnergyMonitorService.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/11873/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/EquipEnergyMonitorService.java
+END
+RoleEquipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5028/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/RoleEquipService.java
+END
+PropConfigService.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/PropConfigService.java
+END
+VProcessEquipService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/VProcessEquipService.java
+END
+RoleResourceService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/RoleResourceService.java
+END
+ResourcesService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4617/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/ResourcesService.java
+END
+EquipEnergyMonthMonitorService.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/11981/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/EquipEnergyMonthMonitorService.java
+END
+EquipCalendarService.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/7305/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/bas/service/EquipCalendarService.java
+END

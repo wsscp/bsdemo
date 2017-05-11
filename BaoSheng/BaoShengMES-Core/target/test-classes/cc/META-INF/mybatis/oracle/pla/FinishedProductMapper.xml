@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.FinishedProductDAO">
+
+	<resultMap type="FinishedProduct" id="getMap">
+	</resultMap>
+	
+	<select id="getAllModel" resultMap="getMap">
+	SELECT DISTINCT T.MODEL FROM T_PLA_FINISHED_PRODUCT T WHERE T.STATUS = '2'
+		<if test="query != ''">
+			T.MODEL LIKE #{query,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="getAllSpec" resultMap="getMap">
+	SELECT DISTINCT T.SPEC FROM T_PLA_FINISHED_PRODUCT T WHERE T.STATUS = '2'
+		<if test="query != ''">
+			T.SPEC LIKE #{query,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<select id="listFinishedProduct" parameterType="FinishedProduct" resultMap="getMap">
+		SELECT *
+		  FROM T_PLA_FINISHED_PRODUCT T
+		 WHERE T.STATUS = #{status, jdbcType=VARCHAR}
+		 <if test="spec != '' and spec != null">
+		 AND T.SPEC LIKE #{spec, jdbcType=VARCHAR}
+		 </if>
+		 <if test="model != '' and model != null">
+		 AND T.MODEL LIKE #{model, jdbcType=VARCHAR}
+		 </if>
+	</select>
+	
+	<select id="countFinishedProduct" parameterType="FinishedProduct" resultType="int">
+	     SELECT COUNT(*)
+	     FROM T_PLA_FINISHED_PRODUCT T
+	 	 WHERE T.STATUS = #{status, jdbcType=VARCHAR}
+		 <if test="spec != '' and spec != null">
+		 	AND T.SPEC LIKE #{spec, jdbcType=VARCHAR}
+		 </if>
+		 <if test="model != '' and model != null">
+		 	AND T.MODEL LIKE #{model, jdbcType=VARCHAR}
+		 </if>
+	</select>
+	
+	<select id="getFinishedProductById" parameterType="string" resultMap="getMap">
+	SELECT A.MODEL,A.SPEC,B.LENGTH,A.DISH,A.QUALIFYING,A.SERIAL_NUM,A.REGION
+	  FROM T_PLA_FINISHED_PRODUCT A, T_PLA_FINISHED_PRODUCT_LOG B
+	 WHERE A.ID = B.FINISHED_PRODUCT_ID
+	   AND B.ORDER_ITEM_ID = #{param1}
+	</select>
+	
+</mapper>

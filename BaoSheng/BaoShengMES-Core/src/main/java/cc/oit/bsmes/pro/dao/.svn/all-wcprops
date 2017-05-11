@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/11190/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao
+END
+ProductProcessBzDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductProcessBzDAO.java
+END
+ProcessInOutWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/9403/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessInOutWipDAO.java
+END
+ProcessQcEqipBzDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5551/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQcEqipBzDAO.java
+END
+ProductProcessDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductProcessDAO.java
+END
+ProductCraftsBzDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5592/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductCraftsBzDAO.java
+END
+EquipListDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/EquipListDAO.java
+END
+ProcessQCEqipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQCEqipDAO.java
+END
+ProcessQcWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQcWipDAO.java
+END
+ProductCraftsDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/9597/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductCraftsDAO.java
+END
+ProcessInformationDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessInformationDAO.java
+END
+EqipListBzDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/5566/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/EqipListBzDAO.java
+END
+ProductQCDetailDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/2716/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductQCDetailDAO.java
+END
+ProcessReceiptValueDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/1000/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessReceiptValueDAO.java
+END
+ProcessInOutBzDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/6483/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessInOutBzDAO.java
+END
+ProcessReceiptDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessReceiptDAO.java
+END
+ProcessInOutDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessInOutDAO.java
+END
+ProcessQcBzDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/6355/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQcBzDAO.java
+END
+ProcessQcValueDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11190/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQcValueDAO.java
+END
+EquipListWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/EquipListWipDAO.java
+END
+ProductProcessWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/10448/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductProcessWipDAO.java
+END
+ProductQCTemplateDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/2716/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductQCTemplateDAO.java
+END
+ProcessQCEqipWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQCEqipWipDAO.java
+END
+ProcessQcDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/9117/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessQcDAO.java
+END
+ProductCraftsWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/10941/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductCraftsWipDAO.java
+END
+ProductQCResultDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/1395/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProductQCResultDAO.java
+END
+ProcessReceiptWipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/8830/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/dao/ProcessReceiptWipDAO.java
+END

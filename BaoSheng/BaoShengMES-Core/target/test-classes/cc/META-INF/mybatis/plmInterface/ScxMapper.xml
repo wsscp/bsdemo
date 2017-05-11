@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ScxDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.Scx" id="getMap">
+	</resultMap>
+
+	<select id="lastUpdateData" parameterType="map"
+		resultType="cc.oit.bsmes.interfacePLM.model.Scx">
+		SELECT
+		ID,
+		NO,
+		NAME,
+		ENAME,
+		CTIME,
+		MTIME
+		FROM SCX
+		WHERE DEL='0'
+		AND WKAID <![CDATA[ <>]]>
+		'3'
+		<if test="lastDate != null">
+			AND <![CDATA[(CTIME > #{lastDate} OR MTIME > #{lastDate})]]>
+		</if>
+	</select>
+
+	<select id="getAsyncDataList" parameterType="string"
+		resultType="cc.oit.bsmes.interfacePLM.model.Scx">
+      <![CDATA[ 
+        SELECT 
+         PROCESS.ID AS PROCESS_ID, 
+         SCX.*
+	    FROM 
+	      PROCESS   PROCESS,
+	      SCX       SCX,
+	      SCX_OBJOF SCXO2
+	    WHERE 
+	      PROCESS.ID = SCXO2.ITEMID1
+          AND SCXO2.ITEMTN1 = 'PROCESS'
+          AND SCX.ID = SCXO2.ITEMID2
+          AND SCXO2.ITEMTN2 = 'SCX'
+          AND PROCESS.DEL = '0'
+          AND PROCESS.WKAID <> '3'
+          AND SCX.DEL = '0'
+          AND SCX.WKAID <> '3'
+          AND SCXO2.DEL = '0'
+          AND SCXO2.WKAID <> '3'
+        AND PROCESS.ID=#{processId,jdbcType=VARCHAR}
+      ]]>
+	</select>
+
+	<select id="getById" parameterType="String"
+		resultType="cc.oit.bsmes.interfacePLM.model.Scx">
+		SELECT
+		ID,
+		NO,
+		NAME,
+
+		CTIME,
+		MTIME
+		FROM SCX
+		WHERE DEL='0'
+		AND WKAID <![CDATA[ <>]]>
+		'3'
+		AND ID=#{scxId,jdbcType=VARCHAR}
+
+	</select>
+
+	<insert id="insertScx" parameterType="cc.oit.bsmes.interfacePLM.model.Scxk">
+		INSERT INTO
+		SCX(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,NO,NAME,VER,CREATOR,CTIME
+		,OWNER,STATE,CSVALUE1,CSVALUE2,CSVALUE3,CSTYPE)
+		VALUES(#{id,jdbcType=VARCHAR},'0','N','1',#{designno,jdbcType=VARCHAR},#{designno,jdbcType=VARCHAR},#{no,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},
+		'1','MES',SYSDATE,'MES','A',#{csvalue1,jdbcType=VARCHAR},#{csvalue2,jdbcType=VARCHAR},
+		#{csvalue3,jdbcType=VARCHAR},#{cstype,jdbcType=VARCHAR})
+
+	</insert>
+
+	<delete id="deleteScxByPrcvNo" parameterType="String">
+		DELETE FROM SCX WHERE EXISTS(SELECT * FROM SCX_OBJOF SO,PROCESS_OBJOF PO,
+		PRCV WHERE SO.ITEMID1=PO.ITEMID2 AND SO.ITEMID2=SCX.ID AND
+		PO.ITEMID1=PRCV.ID AND PRCV.NO=#{param,jdbcType=VARCHAR})
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</delete>
+
+	<!-- SELECT MACH.* FROM PROCESS PROCESS, MACH MACH, SCX SCX, SCX_OBJOF SCXO1, 
+		SCX_OBJOF SCXO2 WHERE MACH.ID = SCXO1.ITEMID2 AND SCXO1.ITEMTN2 = 'MACH' 
+		AND SCX.ID = SCXO1.ITEMID1 AND SCXO1.ITEMTN1 = 'SCX' AND PROCESS.ID = SCXO2.ITEMID1 
+		AND SCXO2.ITEMTN1 = 'PROCESS' AND SCX.ID = SCXO2.ITEMID2 AND SCXO2.ITEMTN2 
+		= 'SCX' AND MACH.DEL = '0' AND MACH.WKAID <> '3' AND PROCESS.ID=#{processId,jdbcType=VARCHAR} -->
+</mapper>

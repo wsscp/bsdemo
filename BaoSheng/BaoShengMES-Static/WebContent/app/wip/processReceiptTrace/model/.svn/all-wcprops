@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/6436/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model
+END
+ProcessReceiptTrace.js
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/2376/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model/ProcessReceiptTrace.js
+END
+ChartPoint.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/2376/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model/ChartPoint.js
+END
+Process.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/2923/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model/Process.js
+END
+ProcessQcTrace.js
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/2379/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model/ProcessQcTrace.js
+END
+TraceFormRecord.js
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2376/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model/TraceFormRecord.js
+END
+Equip.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6436/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/model/Equip.js
+END

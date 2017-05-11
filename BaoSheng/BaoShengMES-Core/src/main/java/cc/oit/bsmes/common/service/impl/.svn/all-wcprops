@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/service/impl
+END
+DatabasePropertyLoaderStrategy.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/service/impl/DatabasePropertyLoaderStrategy.java
+END
+MailSender.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/1259/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/service/impl/MailSender.java
+END
+MailEngine.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/service/impl/MailEngine.java
+END
+BaseServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/4557/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/service/impl/BaseServiceImpl.java
+END

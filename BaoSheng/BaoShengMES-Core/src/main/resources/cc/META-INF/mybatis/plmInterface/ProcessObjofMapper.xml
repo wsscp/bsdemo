@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ProcessObjofDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.ProcessObjof"
+		id="getMap">
+	</resultMap>
+
+	<insert id="insertProcessObjof" parameterType="cc.oit.bsmes.interfacePLM.model.ProcessObjof">
+		INSERT
+		INTO
+		PROCESS_OBJOF
+		(
+		ID,
+		DEL,
+		MSYM,
+		WKAID,
+		DESIGNNO,
+		BLDESIGNNO,
+		CREATOR,
+		CTIME,
+		OWNER,
+		STATE,
+		ITEMID1,
+		ITEMTN1,
+		ITEMID2,
+		ITEMTN2
+		)
+		VALUES
+		(#{id,jdbcType=VARCHAR},'0','N','1',#{designno,jdbcType=VARCHAR},#{designno,jdbcType=VARCHAR},
+		'MES',sysdate,'MES','A',#{itemid1,jdbcType=VARCHAR},'PRCV',#{itemid2,jdbcType=VARCHAR},
+		'PROCESS'
+		)
+	</insert>
+
+	<delete id="deleteProcessObjofByPrcvNo" parameterType="String">
+		DELETE
+		FROM PROCESS_OBJOF PO WHERE EXISTS(SELECT * FROM PRCV WHERE
+		PRCV.ID=PO.ITEMID1
+		AND PRCV.NO=#{param,jdbcType=VARCHAR})
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</delete>
+	
+	<select id="getByProcessId" parameterType="String" resultMap="getMap">
+		SELECT * FROM PROCESS_OBJOF WHERE WKAID<![CDATA[<>]]>'3'
+		AND ITEMID2=#{processId,jdbcType=VARCHAR}
+		AND DEL='0'
+	</select>
+	
+	<insert id="insertBatch" parameterType="ArrayList">
+		INSERT INTO PROCESS_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,
+		OWNER,STATE,ITEMID1,ITEMTN1,ITEMID2,ITEMTN2)
+		<foreach collection="param" item="item" index="index" separator="union all">
+	    	select #{item.id,jdbcType=VARCHAR},'0','N','1',#{item.designno,jdbcType=VARCHAR},
+	    	#{item.designno,jdbcType=VARCHAR},'MES',sysdate,'MES','A',#{item.itemid1,jdbcType=VARCHAR},
+	    	'PRCV',#{item.itemid2,jdbcType=VARCHAR},'PROCESS' FROM DUAL
+		</foreach>
+	</insert>
+
+</mapper>

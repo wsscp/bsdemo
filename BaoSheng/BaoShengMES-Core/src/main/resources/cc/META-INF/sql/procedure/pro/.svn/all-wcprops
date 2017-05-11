@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/10392/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pro
+END
+DELETE_EVENT_PROCESS.sql
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/3708/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pro/DELETE_EVENT_PROCESS.sql
+END
+SAVE_PRODUCT_WEIGHT_BY_WONO.sql
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/3058/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pro/SAVE_PRODUCT_WEIGHT_BY_WONO.sql
+END
+UPDATE_INV_OA_USE_LOG.sql
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/3708/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pro/UPDATE_INV_OA_USE_LOG.sql
+END
+SAVE_PROCESS_QC_VALUE.sql
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/10392/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pro/SAVE_PROCESS_QC_VALUE.sql
+END

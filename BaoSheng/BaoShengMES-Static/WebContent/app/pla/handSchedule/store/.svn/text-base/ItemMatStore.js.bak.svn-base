@@ -1,0 +1,21 @@
+/**
+ * 获取新增工序的投入物料combobox选择项
+ * */
+Ext.define('bsmes.store.ItemMatStore', {
+			extend : 'Oit.app.data.GridStore',
+			autoLoad : false,
+			fields : [{
+						name : 'matName',
+						convert : function(value, record) {
+							return value + '[' + record.get('matCode') + ']';
+						}
+					}, 'matCode', {
+						name : 'isDefault',
+						type : 'boolean'
+					}],
+			proxy : {
+				type : 'rest',
+				url : 'handSchedule/matInfo'
+			}
+
+		});

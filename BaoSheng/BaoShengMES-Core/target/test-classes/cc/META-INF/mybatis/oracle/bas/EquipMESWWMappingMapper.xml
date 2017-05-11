@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EquipMESWWMappingDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.EquipMESWWMapping" id="getMap">
+	</resultMap>
+	
+	<select id="findByRequestMap" parameterType="map" resultType="EquipMESWWMapping">
+		SELECT ID,AC_EQUIP_CODE,TAG_NAME,EQUIP_CODE,PARM_CODE,CREATE_USER_CODE,CREATE_TIME,
+		MODIFY_USER_CODE,MODIFY_TIME,
+		(SELECT E.NAME FROM T_EVE_EVENT_TYPE E WHERE E.CODE=EVENT_TYPE) AS EVENT_TYPE
+		FROM T_INT_EQUIP_MES_WW_MAPPING 
+		<where>
+		  <if test="tagName != null and tagName != ''">
+				TAG_NAME LIKE #{tagName,jdbcType=VARCHAR}
+		  </if>
+		  <if test="equipCode != null and equipCode != ''">
+				AND EQUIP_CODE LIKE #{equipCode,jdbcType=VARCHAR}
+		  </if>
+		</where>
+		ORDER BY MODIFY_TIME DESC
+	</select>
+	
+	<select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT COUNT(ID)
+		FROM T_INT_EQUIP_MES_WW_MAPPING 
+		<where>
+		  <if test="tagName != null and tagName != ''">
+				TAG_NAME LIKE #{tagName,jdbcType=VARCHAR}
+		  </if>
+		  <if test="equipCode != null and equipCode != ''">
+				AND EQUIP_CODE LIKE #{equipCode,jdbcType=VARCHAR}
+		  </if>
+		</where>
+	</select>
+	
+	<select id="getByTagName" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_INT_EQUIP_MES_WW_MAPPING WHERE TAG_NAME = #{tagName,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByEquipCodeAndParmCode" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_INT_EQUIP_MES_WW_MAPPING WHERE EQUIP_CODE = #{param1,jdbcType=VARCHAR} AND PARM_CODE = #{param2,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="autoGenerate">
+		<![CDATA[
+        INSERT
+		INTO
+		    T_INT_EQUIP_MES_WW_MAPPING
+		    (
+		        ID,
+		        AC_EQUIP_CODE,
+		        TAG_NAME,
+		        EQUIP_CODE,
+		        PARM_CODE,
+		        CREATE_USER_CODE,
+		        CREATE_TIME,
+		        MODIFY_USER_CODE,
+		        MODIFY_TIME
+		    )
+		SELECT
+		    SYS_GUID(),
+		    AC_EQUIP_CODE,
+		    AC_EQUIP_CODE || '.' || PARM_CODE,
+		    EQUIP_CODE,
+		    PARM_CODE,
+		    'ADMIN',
+		    SYSDATE,
+		    'ADMIN',
+		    SYSDATE
+		FROM
+		    (
+		        SELECT
+		            RECEIPT_CODE AS PARM_CODE,
+		            EQUIP_CODE,
+		            AC_EQUIP_CODE
+		        FROM
+		            T_PRO_PROCESS_RECEIPT RE
+		        WHERE
+		            RE.AC_EQUIP_CODE IS NOT NULL
+		        UNION
+		        SELECT
+		            QC.CHECK_ITEM_CODE AS PARM_CODE,
+		            EP.EQUIP_CODE,
+		            EP.AC_EQUIP_CODE
+		        FROM
+		            T_PRO_PROCESS_QC_EQIP EP,
+		            T_PRO_PROCESS_QC QC
+		        WHERE
+		            QC.ID = EP.QC_ID
+		        AND EP.AC_EQUIP_CODE IS NOT NULL )
+		]]>
+	</insert>
+	
+	<!-- 删除设备下面相关的映射关系 -->
+	<delete id="deleteByAcEquipCode">
+		DELETE FROM T_INT_EQUIP_MES_WW_MAPPING 
+		WHERE AC_EQUIP_CODE = #{acEquipCode, jdbcType=VARCHAR}
+	</delete>
+	
+	
+	<!-- 根据设备和参数获取标签名 -->
+	<select id="getTagNameByEquipCodeParams" parameterType="map" resultType="map">
+		SELECT 
+		  WMSYS.WM_CONCAT(TAG_NAME) AS TAGNAME 
+		FROM 
+		  T_INT_EQUIP_MES_WW_MAPPING 
+		WHERE 
+		  EQUIP_CODE = #{equipCode, jdbcType=VARCHAR} 
+		  AND PARM_CODE IN
+		  <foreach collection="paramCodes" item="code" open="(" separator="," close=")">  
+		    #{code,jdbcType=VARCHAR} 
+		  </foreach>
+		GROUP BY EQUIP_CODE
+	</select>
+	
+	<!-- 报警处理后台任务: 获取事件类型不为空的数据 -->
+	<select id="getDataForEvent" resultType="EquipMESWWMapping">
+		SELECT 
+		  *
+		FROM 
+		  T_INT_EQUIP_MES_WW_MAPPING 
+		WHERE 
+		  EVENT_TYPE IS NOT NULL
+	</select>
+	
+</mapper>

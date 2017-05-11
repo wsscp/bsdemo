@@ -1,0 +1,197 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/BSMES/!svn/ver/11643/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test
+END
+TestProductAndCrafts.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/7337/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/TestProductAndCrafts.java
+END
+QRCreate.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/7405/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/QRCreate.java
+END
+Person.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/7818/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/Person.java
+END
+PatchReportTaskData.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchReportTaskData.java
+END
+PatchWoCusorderRelation.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/7360/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchWoCusorderRelation.java
+END
+DeleteWorkOrderJunit.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/8888/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/DeleteWorkOrderJunit.java
+END
+PatchEquipCalendarJDBC.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7818/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchEquipCalendarJDBC.java
+END
+FileLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/FileLog.java
+END
+CalculatorOAJunit.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7337/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/CalculatorOAJunit.java
+END
+PatchWorkOrderReportData.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/7240/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchWorkOrderReportData.java
+END
+PatchOrderData.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/6660/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchOrderData.java
+END
+UpdateCusOrderItemFinishJYJunit.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/8888/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/UpdateCusOrderItemFinishJYJunit.java
+END
+TestAAMain.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/TestAAMain.java
+END
+JunitTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/11643/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/JunitTest.java
+END
+PatchEquipCalendar.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchEquipCalendar.java
+END
+ValidationCrafts.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/7337/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/ValidationCrafts.java
+END
+ProcessTime.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/7337/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/ProcessTime.java
+END
+ConOracle.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/ConOracle.java
+END
+PatchProDecCustProductSpec.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/7818/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchProDecCustProductSpec.java
+END
+PatchWorkOrderProcessId.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/7818/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchWorkOrderProcessId.java
+END
+ImprotCrafts.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/8468/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/ImprotCrafts.java
+END
+TestA.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/TestA.java
+END
+MainTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/MainTest.java
+END
+TestMain.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/TestMain.java
+END
+PatchProdecRelateOrderIds.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/7818/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchProdecRelateOrderIds.java
+END
+PatchDeleteMatProp.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8096/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchDeleteMatProp.java
+END
+PlmMesDataAsync.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8888/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PlmMesDataAsync.java
+END
+PatchProductClassifyData.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/PatchProductClassifyData.java
+END
+ImportSql.java
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/ImportSql.java
+END
+ImportExcelEmployee.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/ImportExcelEmployee.java
+END
+DeleteData.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/DeleteData.java
+END
+TaskExecutorExample.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/7337/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/test/TaskExecutorExample.java
+END

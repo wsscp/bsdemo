@@ -1,0 +1,12 @@
+Ext.define('bsmes.store.OrderProcessStore',{
+	extend:'Oit.app.data.GridStore',
+	model : 'bsmes.model.OrderProcess',
+	autoLoad:false,
+	sorters : [{
+		property : 'seq',
+		direction : 'ASC'
+	}],
+	proxy : {
+		type: 'rest'
+	}
+});

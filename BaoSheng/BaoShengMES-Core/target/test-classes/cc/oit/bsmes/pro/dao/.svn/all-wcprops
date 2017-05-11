@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/BSMES/!svn/ver/8135/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pro/dao
+END
+EquipListDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pro/dao/EquipListDAOTest.java
+END
+ProcessQcDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pro/dao/ProcessQcDAOTest.java
+END
+CraftInitDataTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pro/dao/CraftInitDataTest.java
+END
+ProcessInOutTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/3894/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pro/dao/ProcessInOutTest.java
+END
+ProcessReceiptDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8135/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pro/dao/ProcessReceiptDAOTest.java
+END

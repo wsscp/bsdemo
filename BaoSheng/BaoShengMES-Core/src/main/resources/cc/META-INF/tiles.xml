@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+	 "http://localhost:8080/bsstatic/tiles-config_3_0.dtd" >
+
+<tiles-definitions>
+	<definition name="index" template="/WEB-INF/index.jsp"></definition>
+
+	<definition name="layout_e" template="/WEB-INF/layout/layout_e.jsp">
+		<put-attribute name="import" value="/WEB-INF/layout/import.jsp" />
+	</definition>
+	<definition name="bas.mesClient" extends="layout_e">
+		<put-attribute name="app" value="app_mesClient" />
+		<put-attribute name="center" value="/WEB-INF/views/bas/mesClient/centerTab.jsp" />
+		<put-attribute name="east" value="/WEB-INF/views/bas/mesClient/east.jsp" />
+	</definition>
+    
+    
+	<!-- 自定义HTML页面 -->
+	<definition name="html_*.*.*" template="/WEB-INF/layout/layout_html3.jsp">
+		<put-attribute name="center" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+	</definition>
+	
+    <!-- 自定义HTML页面 -->
+	<definition name="html_*.*" template="/WEB-INF/layout/layout_html.jsp">
+		<put-attribute name="center" value="/WEB-INF/views/{1}/{2}/centerTab.jsp" />
+	</definition>
+	
+    
+    <!-- 中西页面 -->
+	<definition name="layout_w" template="/WEB-INF/layout/layout_w.jsp">
+		<put-attribute name="import" value="/WEB-INF/layout/import.jsp" />
+	</definition>
+
+	<definition name="w_*.*" extends="layout_w">
+		<put-attribute name="app" value="app" />
+		<put-attribute name="center" value="/WEB-INF/views/{1}/{2}/centerTab.jsp" />
+		<put-attribute name="west" value="/WEB-INF/views/{1}/{2}/west.jsp" />
+	</definition>
+
+    <!-- 普通页面 -->
+	<definition name="layout" template="/WEB-INF/layout/layout.jsp">
+		<put-attribute name="import" value="/WEB-INF/layout/import.jsp" />
+	</definition>
+	
+	<definition name="*.*.*" extends="layout">
+		<put-attribute name="app" value="app" />
+		<put-attribute name="center" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+	</definition>
+    
+	<definition name="*.*" extends="layout">
+		<put-attribute name="app" value="app" />
+		<put-attribute name="center" value="/WEB-INF/views/{1}/{2}/centerTab.jsp" />
+	</definition>
+    
+
+</tiles-definitions>

@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view
+END
+WorkOrderReportList.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/5358/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/WorkOrderReportList.js
+END
+MatOAGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/5719/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/MatOAGrid.js
+END
+ProcessWorkOrderJYWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/5803/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/ProcessWorkOrderJYWindow.js
+END
+PriorityWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/5313/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/PriorityWindow.js
+END
+WorkOrderList.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/WorkOrderList.js
+END
+WorkOrderProductList.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/2625/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/WorkOrderProductList.js
+END
+PriorityRightList.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/3009/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/PriorityRightList.js
+END
+PriorityCenter.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/2711/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/PriorityCenter.js
+END
+ProcessWorkOrderGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5719/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/ProcessWorkOrderGrid.js
+END
+WorkOrderMatReqList.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/3088/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/WorkOrderMatReqList.js
+END
+ProcessWorkOrderCLWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/6090/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/ProcessWorkOrderCLWindow.js
+END
+WorkOrderSubList.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5830/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/WorkOrderSubList.js
+END
+PriorityLeftList.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/2711/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/PriorityLeftList.js
+END
+FixedEquipWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/2787/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/FixedEquipWindow.js
+END
+LogisticalRequestView.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/2729/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/LogisticalRequestView.js
+END
+ProcessWorkOrderHTWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/6090/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/ProcessWorkOrderHTWindow.js
+END
+ProcessItemGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/6597/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/ProcessItemGrid.js
+END
+WorkOrderToolsReqList.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/2625/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/view/WorkOrderToolsReqList.js
+END

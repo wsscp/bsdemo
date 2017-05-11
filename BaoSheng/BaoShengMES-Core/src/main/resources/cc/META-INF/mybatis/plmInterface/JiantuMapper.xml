@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.JiantuDAO">
+    <resultMap type="cc.oit.bsmes.interfacePLM.model.Jiantu" id="getMap">
+    </resultMap>
+    
+	<select id="getJiantuByMpartId" parameterType="String" resultMap="getMap">
+		SELECT A.ID,A.NO,A.NAME,A.FNAME,A.PTYPE,A.LOCATION,
+		A.TSIZE,A.FSIZE from JIANTU A,JIANTU_OBJOF B
+	    WHERE A.ID=B.ITEMID2 
+	    AND B.ITEMID1=#{mpartId,jdbcType=VARCHAR}
+		AND A.WKAID<![CDATA[<>]]>'3'
+		AND B.WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<select id="getAllMaterialJiantu" resultMap="getMap">
+		<![CDATA[
+			SELECT M.NO,J.LOCATION,J.FNAME,J.FSIZE,J.PTYPE FROM JIANTU J
+			INNER JOIN JIANTU_OBJOF JO ON(JO.ITEMID2=J.ID AND JO.WKAID<>'3')
+			INNER JOIN MPART M ON (JO.ITEMID1=M.ID AND M.WKAID<>'3')
+			WHERE J.WKAID<>'3' AND M.CSTYPE NOT LIKE '%半成品%'
+		]]>
+	</select>
+	
+	<select id="getJiantuByMatName" parameterType="String" resultMap="getMap">		
+		<![CDATA[
+			SELECT J.ID,J.NO,J.FNAME,J.LOCATION,J.FSIZE FROM MPART M
+			INNER JOIN JIANTU_OBJOF JO ON (JO.ITEMID1=M.ID AND M.WKAID<>'3' AND JO.WKAID<>'3')
+			INNER JOIN JIANTU J ON(JO.ITEMID2=J.ID AND J.WKAID<>'3')
+			WHERE M.NO=#{name,jdbcType=VARCHAR}	
+		]]>	
+	</select>
+	
+	<insert id="insertJiantu" parameterType="cc.oit.bsmes.interfacePLM.model.Jiantu">
+		INSERT INTO JIANTU(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,NO,VER,FNAME,
+		LOCATION,CREATOR,CTIME,MUSER,MTIME,OWNER,STATE,FSIZE,FMTIME)
+		VALUES (#{id},#{del},#{msym},#{wkaid},#{designno},#{bldesignno},
+		#{no},#{ver},#{fname},#{location},'admin',sysdate,'admin',sysdate,
+		#{owner},#{state},#{fsize,jdbcType=INTEGER},sysdate)
+	</insert>
+	
+	<insert id="insertJiantuObjof" parameterType="map">
+		INSERT INTO JIANTU_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,
+		OWNER,STATE,ITEMID1,ITEMTN1,ITEMID2,ITEMTN2) VALUES
+		(#{id},0,'N','1',#{designNo},#{designNo},'admin',sysdate,
+		'admin','A',#{mpartId},'MPART',#{jiantuId},'JIANTU')
+	</insert>
+	
+	<delete id="deleteById" parameterType="String">
+		DELETE FROM JIANTU WHERE ID=#{id,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteObjofByJiantuId" parameterType="String">
+		DELETE FROM JIANTU_OBJOF WHERE ITEMID2=#{id,jdbcType=VARCHAR}
+	</delete>
+</mapper>

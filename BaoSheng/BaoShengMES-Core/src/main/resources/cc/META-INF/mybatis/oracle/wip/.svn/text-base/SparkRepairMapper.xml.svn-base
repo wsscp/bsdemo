@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.SparkRepairDAO">
+
+	<resultMap type="SparkRepair" id="getMap">
+	</resultMap>
+	
+	<!-- 重写列表查询方法 -->
+	<select id="find" parameterType="SparkRepair" resultMap="getMap">
+	    select 
+        <include refid="queryColumns"/>
+        from T_WIP_Spark_Repair
+	    <include refid="getParameter" />
+	</select>
+	
+	<!-- 重写列表查询方法 -->
+	<select id="countFind" parameterType="SparkRepair" resultType="int">
+	    select count(*) from T_WIP_Spark_Repair
+	    <include refid="getParameter" />
+	</select>
+	
+	<sql id="queryColumns">
+		"ID",
+		CONTRACT_NO,
+		WORK_ORDER_NO,
+		PRODUCT_CODE,
+		SPARK_POSITION,
+		EQUIP_CODE,
+		REPAIR_USER_NAME,
+		(select d.name from t_bas_data_dict d where d.terms_code='SPARK_REPAIR_TYPE' and d.code=repair_type) as REPAIR_TYPE,
+		STATUS,
+		REPAIR_TIME,
+		CREATE_USER_CODE,
+		CREATE_TIME,
+		MODIFY_USER_CODE,
+		MODIFY_TIME,
+		(CASE WHEN (CREATE_TIME > (SYSTIMESTAMP - 1/(24*60)*10) AND STATUS='UNCOMPLETED') THEN 1 ELSE 0 END) AS is_Notice
+	</sql>
+	
+	<sql id="getParameter" >
+		<where>
+		    <if test="contractNo != null and contractNo != ''">
+				AND CONTRACT_NO like '%'||#{contractNo}||'%'
+			</if>
+			<if test="workOrderNo != null and workOrderNo != ''">
+				AND WORK_ORDER_NO like '%'||#{workOrderNo}||'%'
+			</if>
+			<if test="productCode != null and productCode != ''">
+				AND PRODUCT_CODE like '%'||#{productCode}||'%'
+			</if>
+			<if test="equipCode != null and equipCode != ''">
+				AND EQUIP_CODE like '%'||#{equipCode}||'%'
+			</if>
+			<if test="repairType != null and repairType != ''">
+				AND REPAIR_TYPE = #{repairType}
+			</if>
+			<if test="statusFindParam != null and statusFindParam.length > 0">
+				AND STATUS IN
+				<foreach collection="statusFindParam" item="status" open="(" separator="," close=")">
+					#{status}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+	
+</mapper>	

@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ProcessDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.Process" id="getMap">
+	</resultMap>
+
+	<select id="getAsyncDataList" parameterType="string" resultMap="getMap">
+	<![CDATA[
+		SELECT 
+		  PRCV.ID AS PRCV_ID, 
+		  PROCESS.*,
+		  NEXTPROCESS.ID AS NEXTPROCESSID
+		FROM 
+		  PROCESS PROCESS
+		  INNER JOIN PROCESS_OBJOF PROCESSO ON  PROCESS.ID = PROCESSO.ITEMID2  AND PROCESSO.ITEMTN2 = 'PROCESS'  AND PROCESSO.DEL = '0'   AND PROCESSO.WKAID <> '3'
+		  INNER JOIN  PRCV PRCV  ON PRCV.ID = PROCESSO.ITEMID1 AND PROCESSO.ITEMTN1 = 'PRCV'  AND  PRCV.DEL = '0'   AND PRCV.WKAID <> '3'
+		  LEFT JOIN PROCESS_PROCESS_OBJOF OBJ ON PROCESS.ID=OBJ.ITEMID1 AND OBJ.ITEMTN1='PROCESS' AND OBJ.DEL = '0' AND OBJ.WKAID <> '3'
+		  LEFT JOIN PROCESS NEXTPROCESS ON NEXTPROCESS.ID=OBJ.ITEMID2 AND OBJ.ITEMTN2='PROCESS'  AND NEXTPROCESS.DEL = '0' 	AND NEXTPROCESS.WKAID <> '3'
+		WHERE 
+		  PROCESS.DEL = '0'
+		  AND PROCESS.WKAID <> '3'
+		  AND PRCV.ID=#{craftsId,jdbcType=VARCHAR}
+		ORDER BY PROCESS.GNO DESC
+	]]>
+	</select>
+
+	<!-- 获取最后一道工序的工序列表 -->
+	<select id="getLastProcessList" parameterType="string"
+		resultMap="getMap">
+	<![CDATA[
+
+		SELECT * FROM  (
+
+		SELECT
+			PRCV.ID AS PRCV_ID,
+			PROCESS.*
+		FROM
+			PRCV PRCV,
+			PROCESS PROCESS,
+			PROCESS_OBJOF PROCESSO
+		WHERE
+			PROCESS.ID = PROCESSO.ITEMID2
+		AND PROCESSO.ITEMTN2 = 'PROCESS'
+		AND PRCV.ID = PROCESSO.ITEMID1
+		AND PROCESSO.ITEMTN1 = 'PRCV'
+		AND PRCV.DEL = '0'
+		AND PRCV.WKAID <> '3'
+		AND PROCESS.DEL = '0'
+		AND PROCESS.WKAID <> '3'
+		AND PROCESSO.DEL = '0'
+		AND PROCESSO.WKAID <> '3'
+		AND PRCV.ID=#{craftsId,jdbcType=VARCHAR}
+		AND PROCESS.ID NOT IN
+							   (
+							   SELECT DISTINCT
+								   P1.ID
+							   FROM
+								   PROCESS_PROCESS_OBJOF OBJ,
+								   PROCESS P1 ,
+								   PROCESS P2,
+								   PRCV PRCV,
+								   PROCESS_OBJOF PROCESSO
+							   WHERE
+								   P1.ID=OBJ.ITEMID1
+							   AND OBJ.ITEMTN1='PROCESS'
+							   AND P2.ID=OBJ.ITEMID2
+							   AND OBJ.ITEMTN2='PROCESS'
+							   AND P1.ID = PROCESSO.ITEMID2
+							   AND PROCESSO.ITEMTN2 = 'PROCESS'
+							   AND PRCV.ID = PROCESSO.ITEMID1
+							   AND PROCESSO.ITEMTN1 = 'PRCV'
+							   AND P1.DEL = '0'
+							   AND P1.WKAID <> '3'
+							   AND P2.DEL = '0'
+							   AND P2.WKAID <> '3'
+							   AND OBJ.DEL = '0'
+							   AND OBJ.WKAID <> '3'
+							   AND PRCV.DEL = '0'
+							   AND PRCV.WKAID <> '3'
+							   AND PROCESSO.DEL = '0'
+							   AND PROCESSO.WKAID <> '3'
+							   AND PRCV.ID=#{craftsId,jdbcType=VARCHAR})
+		ORDER BY
+			PROCESS.GNO DESC
+
+		) T WHERE  ROWNUM <= 1
+
+	]]>
+	</select>
+
+
+	<!-- 获取上道工序的工序列表 <select id="getPrvProcessList" parameterType="string" resultMap="getMap"> 
+		<![CDATA[ SELECT PRCV.ID AS PRCV_ID, P1.*, P2.ID AS NEXTPROCESSID FROM PROCESS_PROCESS_OBJOF 
+		OBJ, PROCESS P1 , PROCESS P2, PRCV PRCV, PROCESS_OBJOF PROCESSO WHERE P1.ID=OBJ.ITEMID1 
+		AND OBJ.ITEMTN1='PROCESS' AND P2.ID=OBJ.ITEMID2 AND OBJ.ITEMTN2='PROCESS' 
+		AND P1.ID = PROCESSO.ITEMID2 AND PROCESSO.ITEMTN2 = 'PROCESS' AND PRCV.ID 
+		= PROCESSO.ITEMID1 AND PROCESSO.ITEMTN1 = 'PRCV' AND P1.DEL = '0' AND P1.WKAID 
+		<> '3' AND P2.DEL = '0' AND P2.WKAID <> '3' AND OBJ.DEL = '0' AND OBJ.WKAID 
+		<> '3' AND PRCV.DEL = '0' AND PRCV.WKAID <> '3' AND PROCESSO.DEL = '0' AND 
+		PROCESSO.WKAID <> '3' AND P2.ID=#{craftsId, jdbcType=VARCHAR} ORDER BY P1.GNO 
+		]]> </select> -->
+	<select id="getByProductAndPrcv" parameterType="map" resultMap="getMap">
+		SELECT
+		*
+		FROM PROCESS PROCE
+		WHERE EXISTS (
+		SELECT PROOBJ.ITEMID2
+		FROM
+		PRODUCT PRO,PRCV PRC,PRCV_OBJOF PROBJ,PROCESS_OBJOF PROOBJ
+		WHERE
+		REPLACE(PRO.NO,' ','') = #{productNo}
+		AND REPLACE(PRC.NO,' ','') =
+		#{prcvNo}
+		AND PROBJ.ITEMID1 = PRO.ID
+		AND PROBJ.ITEMID2 = PRC.ID
+		AND
+		PROOBJ.ITEMID1 = PRC.ID
+		AND PROCE.ID = PROOBJ.ITEMID2
+		) AND GNO =
+		#{proobjgno}
+		AND PROCE.WKAID <![CDATA[<>]]>'3'
+		AND PROCE.DEL='0'
+	</select>
+
+	<select id="checkExists" parameterType="map" resultMap="getMap">
+		SELECT ITEMID1 AS ID FROM MPART_OBJOF WHERE ITEMID1=#{processId}
+		AND
+		ITEMID2=#{mpartInId} AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</select>
+
+	<select id="checkOutExists" parameterType="map" resultMap="getMap">
+		SELECT ITEMID1 AS ID FROM MPART2_OBJOF WHERE ITEMID1=#{processId}
+		AND
+		ITEMID2=#{mpartOutId} AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</select>
+
+
+	<select id="getByPrcvNoAndGno" parameterType="map" resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PROCESS p2
+		WHERE
+		p2.id IN
+		(
+		SELECT
+		p.itemid2
+		FROM
+		PROCESS_OBJOF p
+		WHERE
+		p.itemid1 IN
+		(
+		SELECT
+		p1.id
+		FROM
+		PRCV p1
+		WHERE
+		p1.no=#{prcvNo})) AND
+		GNO=#{gno}
+	</select>
+
+	<select id="getProcessByPrcvId" parameterType="String"
+		resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PROCESS pr
+		WHERE
+		EXISTS
+		(
+		SELECT
+		*
+		FROM
+		PROCESS_OBJOF po,
+		PRCV p,
+		PRCV_OBJOF pro
+		WHERE
+		p.id=#{param,jdbcType=VARCHAR}
+		AND pro.itemid2=p.id
+		AND po.itemid1=p.id
+		AND pr.id=po.itemid2)
+		AND pr.WKAID<![CDATA[<>]]>'3'
+		AND pr.DEL='0'
+
+	</select>
+
+
+	<update id="updateCsValue1" parameterType="cc.oit.bsmes.interfacePLM.model.Process">
+		UPDATE PROCESS SET CSVALUE1 = #{csvalue1,jdbcType=VARCHAR},
+		MTIME=SYSDATE
+		<if test="csvalue2 != null and csvalue2 !=''">
+			,CSVALUE2 = #{csvalue2,jdbcType=VARCHAR}
+		</if>
+		<if test="csvalue3 != null and csvalue3 !=''">
+			,CSVALUE3 = #{csvalue3,jdbcType=VARCHAR}
+		</if>
+		<if test="ptype != null and ptype !=''">
+			,PTYPE = #{ptype,jdbcType=VARCHAR}
+		</if>
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+
+	<update id="updateMpartObj" parameterType="map">
+		UPDATE MPART_OBJOF SET
+		XHNUM = #{mpartConsume},
+		MTIME=SYSDATE
+		<if test="mpartAmount != null and mpartAmount !=''">
+			,BNUM = #{mpartAmount}
+		</if>
+		WHERE ITEMID1 = #{processId} AND ITEMID2=#{mpartInId}
+
+	</update>
+
+	<update id="updateMpartObj2" parameterType="map">
+		UPDATE MPART2_OBJOF
+		SET
+		BNUM = #{mpartAmount},
+		MTIME=SYSDATE
+		WHERE ITEMID1 = #{processId} AND
+		ITEMID2=#{mpartOutId}
+	</update>
+
+	<insert id="insertMpartObj" parameterType="map">
+		INSERT
+		INTO
+		MPART_OBJOF
+		(
+		ID,
+		DEL,
+		MSYM,
+		WKAID,
+		DESIGNNO,
+		BLDESIGNNO,
+		CREATOR,
+		CTIME,
+		OWNER,
+		STATE,
+		ITEMID1,
+		ITEMTN1,
+		ITEMID2,
+		ITEMTN2
+		)
+		VALUES
+		(
+		#{mpartObjofId},
+		'0',
+		'N',
+		'1',
+		#{mpartObjofDesignno},
+		#{mpartObjofDesignno},
+		'MES',
+		SYSDATE,
+		'MES',
+		'A',
+		#{processId},
+		'PROCESS',
+		#{mpartInId},
+		'MPART'
+		)
+	</insert>
+
+	<insert id="insertMpartObj2" parameterType="map">
+		INSERT
+		INTO
+		MPART2_OBJOF
+		(
+		ID,
+		DEL,
+		MSYM,
+		WKAID,
+		DESIGNNO,
+		BLDESIGNNO,
+		CREATOR,
+		CTIME,
+		OWNER,
+		STATE,
+		ITEMID1,
+		ITEMTN1,
+		ITEMID2,
+		ITEMTN2
+		)
+		VALUES
+		(
+		#{mpartObjofId},
+		'0',
+		'N',
+		'1',
+		#{mpartObjofDesignno},
+		#{mpartObjofDesignno},
+		'MES',
+		SYSDATE,
+		'MES',
+		'A',
+		#{processId},
+		'PROCESS',
+		#{mpartOutId},
+		'MPART'
+		)
+	</insert>
+
+	<insert id="insertProcessByCopy" parameterType="map">
+		INSERT INTO
+		PROCESS
+		(ID,
+		DEL,
+		MSYM,
+		WKAID,
+		DESIGNNO,
+		BLDESIGNNO,
+		NO,
+		NAME,
+		VER,
+		PTYPE,
+		ENAME,
+		CREATOR,
+		CTIME,
+		CHKUSR,
+		CHKTIME,
+		DUSER,
+		DELTIME,
+		ALTERUSER,
+		OWNER,
+		STATE,
+		SMEMO,
+		BNUM,
+		OPNUM,
+		STEPNO,
+		STEPNAME,
+		DEPTNO,
+		DEPTNAME,
+		PRET,
+		MACHT,
+		GNO,
+		DETAILS,
+		DEVICENO,
+		DEVICENAME,
+		DEVICMODE,
+		STEPNUM,
+		CZZT,
+		SCCC,
+		SUSER104,
+		SFSCC,
+		KXZGGX,
+		EXECSTATE,
+		CSVALUE1,
+		CSVALUE2,
+		CSVALUE3,
+		CSTYPE,
+		BXGSH,
+		CSVALUE4,
+		CSVALUE5,
+		CSVALUE6,
+		GNOPX)
+		SELECT #{processNewId},
+		DEL,
+		MSYM,
+		WKAID,
+		#{processDesignno},
+		#{processDesignno},
+		NO,
+		NAME,
+		VER,
+		PTYPE,
+		ENAME,
+		'MES',
+		sysdate,
+		CHKUSR,
+		CHKTIME,
+		DUSER,
+		DELTIME,
+		ALTERUSER,
+		'MES',
+		STATE,
+		SMEMO,
+		BNUM,
+		OPNUM,
+		STEPNO,
+		STEPNAME,
+		DEPTNO,
+		DEPTNAME,
+		PRET,
+		MACHT,
+		GNO,
+		DETAILS,
+		DEVICENO,
+		DEVICENAME,
+		DEVICMODE,
+		STEPNUM,
+		CZZT,
+		SCCC,
+		SUSER104,
+		SFSCC,
+		KXZGGX,
+		EXECSTATE,
+		CSVALUE1,
+		CSVALUE2,
+		CSVALUE3,
+		CSTYPE,
+		BXGSH,
+		CSVALUE4,
+		CSVALUE5,
+		CSVALUE6,
+		GNOPX
+		FROM PROCESS
+		WHERE ID=#{processOldId}
+
+	</insert>
+
+	<delete id="deleteProcessByPrcvNo" parameterType="String">
+		DELETE FROM
+		PROCESS P WHERE EXISTS(SELECT * FROM PRCV,PROCESS_OBJOF PO
+		WHERE PO.ITEMID2=P.ID AND PRCV.ID=PO.ITEMID1 AND PRCV.NO=#{param,jdbcType=VARCHAR})
+		AND P.WKAID<![CDATA[<>]]>'3'
+		AND P.DEL='0'
+	</delete>
+	
+	<delete id="deleteMpartByProcessId" parameterType="String">
+		DELETE FROM MPART_OBJOF MO WHERE MO.ITEMID1=#{processId,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteMpart2ByProcessId" parameterType="String">
+		DELETE FROM MPART2_OBJOF MO WHERE MO.ITEMID1=#{processId,jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="getCLProcessByProductId" parameterType="string" resultMap="getMap">
+		<![CDATA[
+			SELECT PS.* FROM PRODUCT
+			INNER JOIN PRCV_OBJOF PO ON(PO.ITEMID1=PRODUCT.ID AND PO.WKAID<>'3')
+			INNER JOIN PRCV ON (PRCV.ID=PO.ITEMID2 AND PRCV.WKAID<>'3')
+			INNER JOIN PROCESS_OBJOF PROO ON(PROO.ITEMID1=PRCV.ID AND PROO.WKAID<>'3')
+			INNER JOIN PROCESS PS ON(PS.ID=PROO.ITEMID2 AND PS.WKAID<>'3')
+			WHERE PRODUCT.ID=#{productId, jdbcType=VARCHAR}
+			AND PS.NAME LIKE '%成缆%'
+		]]>
+	</select>
+	
+	<select id="getExactCLProcessByName" parameterType="map" resultMap="getMap">
+		<![CDATA[
+			SELECT PS.* FROM PRODUCT
+			INNER JOIN PRCV_OBJOF PO ON(PO.ITEMID1=PRODUCT.ID AND PO.WKAID<>'3')
+			INNER JOIN PRCV ON (PRCV.ID=PO.ITEMID2 AND PRCV.WKAID<>'3')
+			INNER JOIN PROCESS_OBJOF PROO ON(PROO.ITEMID1=PRCV.ID AND PROO.WKAID<>'3')
+			INNER JOIN PROCESS PS ON(PS.ID=PROO.ITEMID2 AND PS.WKAID<>'3')
+			WHERE PRODUCT.ID=#{productId}
+			AND PS.NAME=#{productName}
+		]]>
+	</select>
+	
+	<insert id="insertBatch" parameterType="ArrayList">
+		INSERT INTO PROCESS(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,NAME,VER,ENAME,CREATOR,
+		CTIME,OWNER,STATE,GNO,CZZT,SUSER104,SFSCC,KXZGGX,EXECSTATE,CSVALUE1,CSVALUE2,CSVALUE3,
+		CSTYPE,GNOPX)
+		<foreach collection="param" index="index" item="item" separator="union all">
+		select #{item.id,jdbcType=VARCHAR},'0','N','1',#{item.designno,jdbcType=VARCHAR},
+		#{item.designno,jdbcType=VARCHAR},#{item.name,jdbcType=VARCHAR},'1',#{item.ename,jdbcType=VARCHAR},
+		'MES',sysdate,'MES','A',#{item.gno,jdbcType=VARCHAR},'0',#{item.suser104,jdbcType=VARCHAR},
+		#{item.sfscc,jdbcType=INTEGER},#{item.kxzggx,jdbcType=INTEGER},#{item.execstate,jdbcType=VARCHAR},
+		#{item.csvalue1,jdbcType=VARCHAR},#{item.csvalue2,jdbcType=VARCHAR},#{item.csvalue3,jdbcType=VARCHAR},
+		#{item.cstype,jdbcType=VARCHAR},#{item.gnopx,jdbcType=VARCHAR} from dual
+		</foreach>
+	</insert>
+	
+	<select id="getProcessById" parameterType="String" resultMap="getMap">
+		SELECT * FROM PROCESS WHERE ID=#{processId,jdbcType=VARCHAR}
+		AND WKAID <![CDATA[<>]]>'3'
+	</select>
+	
+	<select id="getJueyuanPropById" parameterType="String" resultType="map">
+		<![CDATA[
+			select (case when SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][2][1]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][2][1]\=[^\^]{2,10}',1,1),12)  
+			when SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][2][1]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][2][1]\=[^\^]{2,10}',1,1),12)  else
+			SUBSTR(REGEXP_SUBSTR(CSVALUE3,'[J][C][D]\-[1][1]\-[0][2][1]\=[^\^]{2,10}',1,1),12) end) as STANDARD,
+			(case when SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][4][2]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][4][2]\=[^\^]{2,10}',1,1),12)  
+			when SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][4][2]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][4][2]\=[^\^]{2,10}',1,1),12) else
+			SUBSTR(REGEXP_SUBSTR(CSVALUE3,'[J][C][D]\-[1][1]\-[0][4][2]\=[^\^]{2,10}',1,1),12) end) as MIN,
+			(case when SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][4][6]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][4][6]\=[^\^]{2,10}',1,1),12)  
+			when SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][4][6]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][4][6]\=[^\^]{2,10}',1,1),12)  else
+			SUBSTR(REGEXP_SUBSTR(CSVALUE3,'[J][C][D]\-[1][1]\-[0][4][6]\=[^\^]{2,10}',1,1),12) end) as MAX,
+			(case when SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][4][4]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][C][D]\-[1][1]\-[0][4][4]\=[^\^]{2,10}',1,1),12)  
+			when SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][4][4]\=[^\^]{2,10}',1,1),12) is not NULL
+			then SUBSTR(REGEXP_SUBSTR(CSVALUE2,'[J][C][D]\-[1][1]\-[0][4][4]\=[^\^]{2,10}',1,1),12)  else
+			SUBSTR(REGEXP_SUBSTR(CSVALUE3,'[J][C][D]\-[1][1]\-[0][4][4]\=[^\^]{2,10}',1,1),12) end) as GUID
+			from PROCESS where id=#{processId,jdbcType=VARCHAR}
+		]]>
+	</select>
+	
+</mapper>

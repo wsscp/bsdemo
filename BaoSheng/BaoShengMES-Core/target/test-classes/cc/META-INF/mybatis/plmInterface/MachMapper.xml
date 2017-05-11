@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.MachDAO">
+    <resultMap type="cc.oit.bsmes.interfacePLM.model.Mach" id="getMap">
+    </resultMap>
+
+    <select id="lastUpdateData" parameterType="map" resultType="cc.oit.bsmes.interfacePLM.model.Mach">
+        SELECT
+            ID,
+            NO,
+            NAME,
+            ENAME,
+            MODEL,
+            SPECS,
+            CENTER,
+            FACTORY,
+            USEPRICES,
+            STATE,
+            CTIME,
+            MTIME
+        FROM MACH
+        WHERE DEL='0'
+        AND WKAID <![CDATA[ <>]]> '3'
+        <if test="lastDate != null">
+            AND <![CDATA[(CTIME > #{lastDate} OR MTIME > #{lastDate})]]>
+        </if>
+    </select>
+
+    <select id="getById" parameterType="string" resultType="cc.oit.bsmes.interfacePLM.model.Mach">
+        SELECT
+            ID,
+            NO,
+            NAME,
+            PTYPE
+        FROM MACH
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </select>
+</mapper>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ProcessProcessObjofDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.ProcessProcessObjof"
+		id="getMap">
+	</resultMap>
+
+	<select id="getByPrcvNo" parameterType="String" resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PROCESS_PROCESS_OBJOF
+		WHERE
+		(
+		ITEMID1 IN
+		(
+		SELECT
+		ITEMID2
+		FROM
+		PROCESS_OBJOF
+		WHERE
+		ITEMID1 IN
+		(
+		SELECT
+		ID
+		FROM
+		PRCV
+		WHERE
+		NO=#{param,jdbcType=VARCHAR}))
+		OR ITEMID2 IN
+		(
+		SELECT
+		ITEMID2
+		FROM
+		PROCESS_OBJOF
+		WHERE
+		ITEMID1 IN
+		(
+		SELECT
+		ID
+		FROM
+		PRCV
+		WHERE
+		NO=#{param,jdbcType=VARCHAR})))
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</select>
+
+	<select id="getByPrcvId" parameterType="String" resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PROCESS_PROCESS_OBJOF
+		WHERE
+		(itemid1 IN
+		(
+		SELECT
+		itemid2
+		FROM
+		PROCESS_OBJOF
+		WHERE
+		itemid1=#{param,jdbcType=VARCHAR})
+		OR itemid2 IN
+		(
+		SELECT
+		itemid2
+		FROM
+		PROCESS_OBJOF
+		WHERE
+		itemid1=#{param,jdbcType=VARCHAR}))
+		AND del='0'
+		AND wkaid<![CDATA[<>]]>'3'
+
+	</select>
+
+	<insert id="insertNewProcessProcessObjof" parameterType="cc.oit.bsmes.interfacePLM.model.ProcessProcessObjof">
+		INSERT
+		INTO
+		PROCESS_PROCESS_OBJOF
+		(
+		ID,
+		DEL,
+		MSYM,
+		WKAID,
+		DESIGNNO,
+		BLDESIGNNO,
+		CREATOR,
+		CTIME,
+		OWNER,
+		STATE,
+		ITEMID1,
+		ITEMTN1,
+		ITEMID2,
+		ITEMTN2
+		)
+		VALUES
+		(#{id,jdbcType=VARCHAR},'0','N','1',#{designno,jdbcType=VARCHAR},#{designno,jdbcType=VARCHAR},
+		'MES',SYSDATE,'MES','A',#{itemid1,jdbcType=VARCHAR},'PROCESS',#{itemid2,jdbcType=VARCHAR},'PROCESS'
+		)
+
+	</insert>
+
+	<update id="updateItemId1" parameterType="map">
+		UPDATE PROCESS_PROCESS_OBJOF SET
+		ITEMID1=#{processNewId,jdbcType=VARCHAR}
+		WHERE
+		ITEMID1=#{processOldId,jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+		AND CREATOR='MES'
+	</update>
+
+	<update id="updateItemId2" parameterType="map">
+		UPDATE PROCESS_PROCESS_OBJOF SET
+		ITEMID2=#{processNewId,jdbcType=VARCHAR}
+		WHERE
+		ITEMID2=#{processOldId,jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+		AND CREATOR='MES'
+	</update>
+
+
+	<select id="checkProcess" parameterType="map" resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PROCESS_PROCESS_OBJOF
+		WHERE
+		((
+		ITEMID1=#{processOldId,jdbcType=VARCHAR}
+		OR
+		ITEMID2=#{processOldId,jdbcType=VARCHAR}))
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+		AND CREATOR='MES'
+	</select>
+
+	<delete id="deletePPObjofByPrcvNo" parameterType="String">
+		DELETE FROM
+		PROCESS_PROCESS_OBJOF WHERE (ITEMID1 IN (SELECT P.ID FROM PROCESS P
+		WHERE EXISTS(SELECT * FROM PRCV,PROCESS_OBJOF PO
+		WHERE PO.ITEMID2=P.ID AND PRCV.ID=PO.ITEMID1 AND PRCV.NO=#{param,jdbcType=VARCHAR})) OR ITEMID2
+		IN (SELECT P.ID FROM PROCESS P WHERE EXISTS(SELECT * FROM
+		PRCV,PROCESS_OBJOF PO
+		WHERE PO.ITEMID2=P.ID AND PRCV.ID=PO.ITEMID1 AND PRCV.NO=#{param,jdbcType=VARCHAR})))
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</delete>
+	
+	<insert id="insertBatch" parameterType="ArrayList">
+		INSERT INTO PROCESS_PROCESS_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,
+		OWNER,STATE,ITEMID1,ITEMTN1,ITEMID2,ITEMTN2) 
+		<foreach collection="param" index="index" item="item" separator="union all">
+		select #{item.id ,jdbcType=VARCHAR},'0','N','1',#{item.designno ,jdbcType=VARCHAR},
+		#{item.designno ,jdbcType=VARCHAR},'MES',sysdate,'MES','A',#{item.itemid1 ,jdbcType=VARCHAR},
+		'PROCESS',#{item.itemid2 ,jdbcType=VARCHAR},'PROCESS' FROM DUAL
+		</foreach>
+	</insert>
+
+</mapper>

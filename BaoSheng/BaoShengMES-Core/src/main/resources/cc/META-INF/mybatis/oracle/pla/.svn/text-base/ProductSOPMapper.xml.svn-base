@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.ProductSOPDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.ProductSOP" id="getMap">
+		<result property="productType" column="PRODUCT_TYPE" />
+		<result property="productSpec" column="PRODUCT_SPEC" />
+	</resultMap>
+    
+    <delete id="deleteByOrgCode" parameterType="string">
+        DELETE FROM T_PLA_PRODUCT_SOP WHERE ORG_CODE=#{orgCode}
+    </delete>
+	<select id="find" parameterType="cc.oit.bsmes.pla.model.ProductSOP" resultMap="getMap">
+		SELECT r.ID,s.PRODUCT_TYPE,r.PRODUCT_CODE,s.PRODUCT_SPEC,r.EARLIEST_FINISH_DATE
+		FROM T_PLA_PRODUCT_SOP r,T_PLA_PRODUCT s
+		where r.PRODUCT_CODE=s.PRODUCT_CODE
+		<include refid="getParameter"/>
+		ORDER BY PRODUCT_TYPE ASC 
+	</select>
+	<select id="count" parameterType="cc.oit.bsmes.pla.model.ProductSOP" resultType="int">
+		SELECT COUNT(1)
+		FROM (SELECT r.ID,s.PRODUCT_TYPE,r.PRODUCT_CODE,s.PRODUCT_SPEC,r.EARLIEST_FINISH_DATE
+		FROM T_PLA_PRODUCT_SOP r,T_PLA_PRODUCT s
+		where r.PRODUCT_CODE=s.PRODUCT_CODE
+		<include refid="getParameter"/>
+		ORDER BY PRODUCT_TYPE ASC )
+	</select>
+	<sql id="getParameter">
+		<if test="orgCode!=null and orgCode!=''">
+			AND r.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="productCode!=null and productCode!=''">
+			AND INSTR(r.PRODUCT_CODE,#{productCode,jdbcType=VARCHAR})>0
+		</if>
+		<if test="productType!=null and productType!=''">
+			AND INSTR(s.PRODUCT_TYPE,#{productType,jdbcType=VARCHAR})>0
+		</if>
+	</sql>
+</mapper>

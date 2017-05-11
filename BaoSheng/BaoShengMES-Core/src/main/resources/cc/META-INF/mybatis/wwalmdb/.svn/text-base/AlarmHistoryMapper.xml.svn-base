@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wwalmdb.dao.AlarmHistoryDAO">
+
+	<resultMap type="cc.oit.bsmes.wwalmdb.model.AlarmHistory" id="getMap">
+	</resultMap>
+	
+	<select id="findByEventStamp" parameterType="map" resultMap="getMap">
+		SELECT 
+			  * 
+		FROM v_AlarmHistory
+		WHERE AlarmState IN ('UNACK_ALM','UNACK_RTN')
+		<if test="lastExecuteDate != null">
+			and Description is null AND ( EventStampUTC > #{lastExecuteDate} OR (EventStampUTC =  #{lastExecuteDate} AND MilliSec > #{millisec}))
+			 
+		</if>
+		ORDER BY EventStampUTC,MilliSec
+	</select>
+	
+	<select id="find" parameterType="map" resultMap="getMap">
+		SELECT
+			TOP (#{limit}) *
+		FROM
+			v_AlarmHistory
+		WHERE
+			EVENTSTAMPUTC NOT IN (
+				SELECT
+					TOP (#{start}) EVENTSTAMPUTC
+				FROM
+					v_AlarmHistory
+				<include refid="findParams"/>
+				ORDER BY EVENTSTAMPUTC
+			)
+		<include refid="findParamsWhere"/>
+		ORDER BY EVENTSTAMPUTC
+		
+	</select>
+	
+	<select id="count" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM v_AlarmHistory
+		<include refid="findParams"/>
+	</select>
+	
+	<!-- 
+		E.ALARMSTATE AS ALARM_STATE,
+		E.TAGNAME AS TAG_NAME,
+		E.DESCRIPTION,
+		E.AREA,
+		E.TYPE,
+		E.VALUE,
+		E.CHECKVALUE AS CHECK_VALUE,
+		E.PRIORITY,
+		E.CATEGORY,
+		E.PROVIDER,
+		E.OPERATOR,
+		E.DOMAINNAME AS DOMAIN_NAME,
+		E.EVENTSTAMPUTC AS EVENT_STAMP_UTC
+	 -->
+	<sql id="sqlColumns">
+		*
+	</sql>
+	
+	<sql id="findParams">
+		<where>
+		    <if test="alarmHistory != null">
+				<if test="alarmHistory.alarmState != null and alarmHistory.alarmState != ''">
+					AND ALARMSTATE = #{alarmHistory.alarmState, jdbcType=VARCHAR}
+				</if>
+				<if test="alarmHistory.tagName != null and alarmHistory.tagName != ''">
+					AND TAGNAME like '%' + #{alarmHistory.tagName, jdbcType=VARCHAR} + '%'
+				</if>
+			</if>
+		</where>
+	</sql>
+	<sql id="findParamsWhere">
+	    <if test="alarmHistory != null">
+			<if test="alarmHistory.alarmState != null and alarmHistory.alarmState != ''">
+				AND ALARMSTATE = #{alarmHistory.alarmState, jdbcType=VARCHAR}
+			</if>
+			<if test="alarmHistory.tagName != null and alarmHistory.tagName != ''">
+				AND TAGNAME like '%' + #{alarmHistory.tagName, jdbcType=VARCHAR} + '%'
+			</if>
+		</if>
+	</sql>
+	
+	
+</mapper>

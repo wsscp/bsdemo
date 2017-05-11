@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.MaintainItemDAO">
+	<resultMap type="cc.oit.bsmes.fac.model.MaintainItem" id="getMap">
+	</resultMap>
+	<sql id="queryColumns">
+		m.MODIFY_USER_CODE,
+		m.MODIFY_TIME,
+		m.CREATE_TIME,
+		m.TEMP_ID,
+		m.ID,
+		m.CREATE_USER_CODE,
+		m.DESCRIBE
+	</sql>
+
+    <delete id="deleteByTmplId">
+        DELETE FROM T_FAC_MAINTAIN_ITEM WHERE TEMP_ID=#{tmplId}
+    </delete>
+
+</mapper>

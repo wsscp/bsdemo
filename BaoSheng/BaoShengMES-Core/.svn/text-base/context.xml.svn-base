@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Environment name="databaseDialect" type="java.lang.String" value="org.hibernate.dialect.HSQLDialect" />
+</Context>

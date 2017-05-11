@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.EqipListBzDAO">
+
+	<resultMap type="cc.oit.bsmes.pro.model.EqipListBz" id="getMap">
+	</resultMap>
+	
+	<sql id="queryColumns">
+		e.PROCESS_ID,
+		e.MODIFY_USER_CODE,
+		e.EQUIP_CAPACITY,
+		e.SHUT_DOWN_TIME,
+		e.IS_DEFAULT,
+		e.MODIFY_TIME,
+		e.CREATE_TIME,
+		e.EQUIP_CODE,
+		e.ID,
+		e.SET_UP_TIME,
+		e.CREATE_USER_CODE,
+		e.TYPE
+	</sql>
+	
+	<select id="getByProcessId" resultMap="getMap" parameterType="string">
+		SELECT 
+		  <include refid="queryColumns"/>,
+		  t.NAME EQUIP_NAME
+		FROM 
+		  T_PRO_EQIP_LIST_BZ e 
+		LEFT JOIN 
+		  T_FAC_EQIP_INFO t
+		ON 
+		  e.EQUIP_CODE = t.CODE
+		WHERE 
+		  e.PROCESS_ID=#{processId,jdbcType=VARCHAR}
+		ORDER BY t.CODE
+	</select>
+
+</mapper>

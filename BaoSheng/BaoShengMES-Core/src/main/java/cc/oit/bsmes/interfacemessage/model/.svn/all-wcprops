@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/7834/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/model
+END
+MailSenderInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/7826/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/model/MailSenderInfo.java
+END
+MyAuthenticator.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/7826/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/model/MyAuthenticator.java
+END
+Message.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4952/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/model/Message.java
+END
+SimpleMailSender.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/7834/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/model/SimpleMailSender.java
+END

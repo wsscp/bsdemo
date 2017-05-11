@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EquipCalShiftDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.EquipCalShift" id="getMap"></resultMap>
+	
+	<!-- 根据设备工作日历ID查询设备班次 -->
+	<select id="getEqipCalShiftByCalId" resultMap="getMap" parameterType="string">
+		  SELECT EQIP_CALENDAR_ID,WORK_SHIFT_ID,SHIFT_NAME,SHIFT_START_TIME,SHIFT_END_TIME 
+  		  FROM  T_BAS_EQIP_CAL_SHIFT R,T_BAS_WORK_SHIFT S
+          WHERE R.WORK_SHIFT_ID=S.ID AND  R.EQIP_CALENDAR_ID=#{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findByRequestMap" parameterType="map" resultType="cc.oit.bsmes.bas.model.EquipCalShift">
+		SELECT ID,EQUIP_CODE,NAME,DATE_OF_WORK,
+				SUBSTR(MAX(REPLACE(SYS_CONNECT_BY_PATH(WORK_SHIFT_ID,'—'),'—',',')),2,LENGTH(MAX(REPLACE(SYS_CONNECT_BY_PATH(WORK_SHIFT_ID,'—'),'—',',')))) AS WORK_SHIFT_ID,
+				ORG_CODE FROM   
+      			(SELECT  T.*,ROW_NUMBER() OVER (PARTITION BY ID ORDER BY WORK_SHIFT_ID) AS RN FROM
+       				(SELECT EQIP_CALENDAR_ID AS ID,EQUIP_CODE,NAME,
+    						SUBSTR(DATE_OF_WORK,1,LENGTH(DATE_OF_WORK)-4)||'-'||SUBSTR(DATE_OF_WORK,5,2)||'-'||SUBSTR(DATE_OF_WORK,LENGTH(DATE_OF_WORK)-1, 2) AS DATE_OF_WORK,
+    						WORK_SHIFT_ID,
+							ORG_CODE FROM (
+      							SELECT ES.EQIP_CALENDAR_ID,EC.EQUIP_CODE,EI.NAME,EC.DATE_OF_WORK,WS.SHIFT_NAME AS WORK_SHIFT_ID,EC.ORG_CODE
+        						FROM T_BAS_EQIP_CAL_SHIFT ES 
+					          	LEFT JOIN T_BAS_EQIP_CALENDAR EC 
+					            	ON ES.EQIP_CALENDAR_ID = EC.ID    
+					          	LEFT JOIN T_FAC_EQIP_INFO EI 
+					            	ON  EI.CODE=EC.EQUIP_CODE 
+					          	LEFT JOIN T_BAS_WORK_SHIFT WS 
+					            	ON WS.ID=ES.WORK_SHIFT_ID 
+					      	ORDER BY EC.DATE_OF_WORK)
+    				<where>
+						ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+  							<if test="equipCode != null and equipCode != ''">
+								AND LOWER(EQUIP_CODE) LIKE LOWER(#{equipCode,jdbcType=VARCHAR})
+							</if>
+					</where>) T)
+				START WITH RN=1 
+				CONNECT BY PRIOR RN=RN-1
+				AND PRIOR ID=ID
+		GROUP BY ID,EQUIP_CODE,NAME,DATE_OF_WORK,ORG_CODE
+	</select>
+	
+	<select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT COUNT(EQUIP_CODE) FROM 
+			(SELECT ID,EQUIP_CODE,NAME,DATE_OF_WORK,
+				SUBSTR(MAX(REPLACE(SYS_CONNECT_BY_PATH(WORK_SHIFT_ID,'—'),'—',',')),2,LENGTH(MAX(REPLACE(SYS_CONNECT_BY_PATH(WORK_SHIFT_ID,'—'),'—',',')))) AS WORK_SHIFT_ID,
+				ORG_CODE FROM   
+      			(SELECT  T.*,ROW_NUMBER() OVER (PARTITION BY ID ORDER BY WORK_SHIFT_ID) AS RN FROM
+       				(SELECT EQIP_CALENDAR_ID AS ID,EQUIP_CODE,NAME,
+    						SUBSTR(DATE_OF_WORK,1,LENGTH(DATE_OF_WORK)-4)||'-'||SUBSTR(DATE_OF_WORK,5,2)||'-'||SUBSTR(DATE_OF_WORK,LENGTH(DATE_OF_WORK)-1, 2) AS DATE_OF_WORK,
+    						WORK_SHIFT_ID,
+							ORG_CODE FROM (
+      							SELECT ES.EQIP_CALENDAR_ID,EC.EQUIP_CODE,EI.NAME,EC.DATE_OF_WORK,WS.SHIFT_NAME AS WORK_SHIFT_ID,EC.ORG_CODE
+        						FROM T_BAS_EQIP_CAL_SHIFT ES 
+					          	LEFT JOIN T_BAS_EQIP_CALENDAR EC 
+					            	ON ES.EQIP_CALENDAR_ID = EC.ID    
+					          	LEFT JOIN T_FAC_EQIP_INFO EI 
+					            	ON  EI.CODE=EC.EQUIP_CODE 
+					          	LEFT JOIN T_BAS_WORK_SHIFT WS 
+					            	ON WS.ID=ES.WORK_SHIFT_ID 
+					      	ORDER BY EC.DATE_OF_WORK)
+    				<where>
+						ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+  						<if test="equipCode != null and equipCode != ''">
+							AND LOWER(EQUIP_CODE) LIKE LOWER(#{equipCode,jdbcType=VARCHAR})
+						</if>
+					</where>) T)
+				START WITH RN=1 
+				CONNECT BY PRIOR RN=RN-1
+				AND PRIOR ID=ID
+		GROUP BY ID,EQUIP_CODE,NAME,DATE_OF_WORK,ORG_CODE)
+	</select>
+	
+	<select id="getByEquipCalendarId" parameterType="string" resultMap="getMap">
+		SELECT ID,EQUIP_CODE,NAME,DATE_OF_WORK,
+				SUBSTR(MAX(REPLACE(SYS_CONNECT_BY_PATH(WORK_SHIFT_ID,'—'),'—',',')),2,LENGTH(MAX(REPLACE(SYS_CONNECT_BY_PATH(WORK_SHIFT_ID,'—'),'—',',')))) AS WORK_SHIFT_ID,
+				ORG_CODE FROM   
+      			(SELECT  T.*,ROW_NUMBER() OVER (PARTITION BY ID ORDER BY WORK_SHIFT_ID) AS RN FROM
+       				(SELECT EQIP_CALENDAR_ID AS ID,EQUIP_CODE,NAME,
+    						SUBSTR(DATE_OF_WORK,1,LENGTH(DATE_OF_WORK)-4)||'-'||SUBSTR(DATE_OF_WORK,5,2)||'-'||SUBSTR(DATE_OF_WORK,LENGTH(DATE_OF_WORK)-1, 2) AS DATE_OF_WORK,
+    						WORK_SHIFT_ID,
+							ORG_CODE FROM (
+      							SELECT ES.EQIP_CALENDAR_ID,EC.EQUIP_CODE,EI.NAME,EC.DATE_OF_WORK,WS.SHIFT_NAME AS WORK_SHIFT_ID,EC.ORG_CODE
+        						FROM T_BAS_EQIP_CAL_SHIFT ES 
+					          	LEFT JOIN T_BAS_EQIP_CALENDAR EC 
+					            	ON ES.EQIP_CALENDAR_ID = EC.ID    
+					          	LEFT JOIN T_FAC_EQIP_INFO EI 
+					            	ON  EI.CODE=EC.EQUIP_CODE 
+					          	LEFT JOIN T_BAS_WORK_SHIFT WS 
+					            	ON WS.ID=ES.WORK_SHIFT_ID 
+					            WHERE ES.EQIP_CALENDAR_ID=#{equipCalendarId,jdbcType=VARCHAR}
+					      	ORDER BY EC.DATE_OF_WORK)
+    				) T)
+				START WITH RN=1 
+				CONNECT BY PRIOR RN=RN-1
+				AND PRIOR ID=ID
+		GROUP BY ID,EQUIP_CODE,NAME,DATE_OF_WORK,ORG_CODE
+	</select>
+	
+	<!-- <select id="findByRequestMap" parameterType="map" resultType="EquipCalShift">
+		SELECT 
+		EQIP_CALENDAR_ID AS ID,
+		EQUIP_CODE,
+		NAME,
+		SUBSTR(DATE_OF_WORK,1,LENGTH(DATE_OF_WORK)-4)||'-'||SUBSTR(DATE_OF_WORK,5,2)||'-'||SUBSTR(DATE_OF_WORK,LENGTH(DATE_OF_WORK)-1, 2) AS DATE_OF_WORK,
+		WMSYS.WM_CONCAT(WORK_SHIFT_ID) AS WORK_SHIFT_ID,
+		ORG_CODE
+		FROM (
+			SELECT ES.EQIP_CALENDAR_ID,EC.EQUIP_CODE,EI.NAME,EC.DATE_OF_WORK,WS.SHIFT_NAME AS WORK_SHIFT_ID,EC.ORG_CODE
+				FROM T_BAS_EQIP_CAL_SHIFT ES 
+					LEFT JOIN T_BAS_EQIP_CALENDAR EC 
+						ON ES.EQIP_CALENDAR_ID = EC.ID    
+					LEFT JOIN T_FAC_EQIP_INFO EI 
+						ON  EI.CODE=EC.EQUIP_CODE 
+					LEFT JOIN T_BAS_WORK_SHIFT WS 
+						ON WS.ID=ES.WORK_SHIFT_ID 
+			ORDER BY EC.DATE_OF_WORK)
+		<where>
+			ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+  			<if test="equipCode != null and equipCode != ''">
+				AND LOWER(EQUIP_CODE) LIKE LOWER(#{equipCode,jdbcType=VARCHAR})
+			</if>
+		</where>
+		GROUP BY EQIP_CALENDAR_ID,EQUIP_CODE,NAME,DATE_OF_WORK,ORG_CODE
+	</select> -->
+	
+	<!-- <select id="countByRequestMap" parameterType="map" resultType="int">
+		SELECT COUNT(EQUIP_CODE) FROM (
+			SELECT 
+			EQUIP_CODE,
+			NAME,
+			SUBSTR(DATE_OF_WORK,1,LENGTH(DATE_OF_WORK)-4)||'-'||SUBSTR(DATE_OF_WORK,5,2)||'-'||SUBSTR(DATE_OF_WORK,LENGTH(DATE_OF_WORK)-1, 2) AS DATE_OF_WORK,
+			WMSYS.WM_CONCAT(WORK_SHIFT_ID) AS WORK_SHIFT_ID,
+			ORG_CODE
+			FROM (
+				SELECT EC.EQUIP_CODE,EI.NAME,EC.DATE_OF_WORK,WS.SHIFT_NAME AS WORK_SHIFT_ID,EC.ORG_CODE
+				FROM T_BAS_EQIP_CAL_SHIFT ES 
+					LEFT JOIN T_BAS_EQIP_CALENDAR EC 
+						ON ES.EQIP_CALENDAR_ID = EC.ID    
+					LEFT JOIN T_FAC_EQIP_INFO EI 
+						ON  EI.CODE=EC.EQUIP_CODE 
+					LEFT JOIN T_BAS_WORK_SHIFT WS 
+						ON WS.ID=ES.WORK_SHIFT_ID 
+				ORDER BY EC.DATE_OF_WORK)
+			<where>
+				ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+	  			<if test="equipCode != null and equipCode != ''">
+					AND LOWER(EQUIP_CODE) LIKE LOWER(#{equipCode,jdbcType=VARCHAR})
+ 				</if>
+			</where>	
+			GROUP BY EQUIP_CODE,NAME,DATE_OF_WORK,ORG_CODE)
+			
+	</select> -->
+	
+	<!-- <select id="getByEquipCalendarId" parameterType="string" resultMap="getMap">
+		SELECT 
+		EQIP_CALENDAR_ID AS ID,
+		EQUIP_CODE,
+		NAME,
+		SUBSTR(DATE_OF_WORK,1,LENGTH(DATE_OF_WORK)-4)||'-'||SUBSTR(DATE_OF_WORK,5,2)||'-'||SUBSTR(DATE_OF_WORK,LENGTH(DATE_OF_WORK)-1, 2) AS DATE_OF_WORK,
+		WMSYS.WM_CONCAT(WORK_SHIFT_ID) AS WORK_SHIFT_ID,
+		ORG_CODE
+		FROM (
+			SELECT ES.EQIP_CALENDAR_ID,EC.EQUIP_CODE,EI.NAME,EC.DATE_OF_WORK,WS.SHIFT_NAME AS WORK_SHIFT_ID,EC.ORG_CODE
+				FROM T_BAS_EQIP_CAL_SHIFT ES 
+					LEFT JOIN T_BAS_EQIP_CALENDAR EC 
+						ON ES.EQIP_CALENDAR_ID = EC.ID   
+					LEFT JOIN T_FAC_EQIP_INFO EI 
+						ON  EI.CODE=EC.EQUIP_CODE 
+					LEFT JOIN T_BAS_WORK_SHIFT WS 
+						ON WS.ID=ES.WORK_SHIFT_ID 
+					WHERE ES.EQIP_CALENDAR_ID=#{equipCalendarId,jdbcType=VARCHAR}
+			ORDER BY EC.DATE_OF_WORK)
+		GROUP BY EQIP_CALENDAR_ID,EQUIP_CODE,NAME,DATE_OF_WORK,ORG_CODE
+	</select> -->
+	
+	<update id="deleteByEquipCalendarId" parameterType="string" >
+		DELETE FROM  T_BAS_EQIP_CAL_SHIFT 
+		WHERE EQIP_CALENDAR_ID=#{id,jdbcType=VARCHAR}
+	</update>
+
+</mapper>

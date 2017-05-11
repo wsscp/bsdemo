@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.ord.dao.SalesOrderDAO">
+
+	<resultMap type="SalesOrder" id="getMap">
+	</resultMap>
+	
+	<select id="getCustomerCompany" parameterType="string" resultMap="getMap">
+		SELECT ID,SALES_ORDER_NO,IMPORTANCE,
+			CUSTOMER_COMPANY,CONTRACT_NO,OPERATOR,
+			REMARKS,STATUS,CONFIRM_DATE,CREATE_USER_CODE,
+			MODIFY_USER_CODE,CREATE_TIME,MODIFY_TIME,ORG_CODE 
+			FROM T_ORD_SALES_ORDER WHERE CONTRACT_NO = #{param1,jdbcType=VARCHAR} AND ORG_CODE = #{param2,jdbcType=VARCHAR}
+	</select>
+	
+	
+	<select id="getByContract" parameterType="string" resultMap="getMap">
+		SELECT ID,SALES_ORDER_NO,IMPORTANCE,
+			CUSTOMER_COMPANY,CONTRACT_NO,OPERATOR,
+			REMARKS,STATUS,CONFIRM_DATE,CREATE_USER_CODE,
+			MODIFY_USER_CODE,CREATE_TIME,MODIFY_TIME,ORG_CODE 
+			FROM T_ORD_SALES_ORDER WHERE CONTRACT_NO LIKE '%' || #{param1} AND ORG_CODE = #{param2}
+	</select>
+	
+	<select id="getSalesOrderByContractNo" parameterType="cc.oit.bsmes.ord.model.SalesOrder" resultMap="getMap">
+	   SELECT * FROM T_ORD_SALES_ORDER OSO WHERE OSO.CONTRACT_NO = #{contractNo,jdbcType=VARCHAR}
+     	 AND OSO.ORG_CODE = #{orgCode,jdbcType=VARCHAR} AND ROWNUM=1
+	</select>
+	<select id="getSalesOrderByGW" resultMap="getMap">
+	SELECT T1.ID
+		  FROM T_ORD_SALES_ORDER T1
+		 WHERE T1.CONTRACT_NO LIKE '%GW'
+		AND T1.STATUS = 'IN_PROGRESS'
+	</select>
+	
+</mapper>

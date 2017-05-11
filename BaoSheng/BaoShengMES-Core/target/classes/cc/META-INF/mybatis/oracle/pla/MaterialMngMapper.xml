@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.MaterialMngDAO">
+	<resultMap type="MaterialMng" id="getMap">
+	</resultMap>
+	
+	<select id="findMap" parameterType="map" resultMap="getMap">
+		WITH TEMP AS
+		 (SELECT DISTINCT P.WORK_ORDER_ID, P.MAT_CODE, P.IN_ATTR_DESC
+		    FROM T_PLA_MRP P
+		   WHERE P.MAT_CODE LIKE 'Y%')
+		SELECT T.ID,
+		       T.WORK_ORDER_NO,
+		       T1.EQUIP_ALIAS AS EQUIP_NAME,
+		       T2.NAME AS USER_NAME,
+		       T.MAT_CODE,
+		       T.PLAN_AMOUNT,
+		       T.YAO_LIAO_QUANTITY,
+		       T4.IN_ATTR_DESC,
+		       T3.MAT_NAME,
+		       T.CREATE_TIME,
+		       T.STATUS,
+		       T.FA_LIAO_QUANTITY
+		  FROM T_INV_BORROW_MAT T,
+		       T_FAC_EQIP_INFO  T1,
+		       T_BAS_EMPLOYEE   T2,
+		       T_INV_MAT        T3,
+		       TEMP             T4,
+		       T_WIP_WORK_ORDER T5
+		 WHERE T.STATUS = 'MAT_DOWN'
+		   AND T1.CODE = T.EQUIP_CODE
+		   AND T2.USER_CODE = T.USER_CODE
+		   AND T3.MAT_CODE = T.MAT_CODE
+		   AND T4.MAT_CODE = T.MAT_CODE
+		   AND T.WORK_ORDER_NO = T5.WORK_ORDER_NO
+		   AND T5.ID = T4.WORK_ORDER_ID
+	   	<if test="workOrderNo !=null and workOrderNo !=''">
+			AND T.WORK_ORDER_NO LIKE '%'||#{workOrderNo,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="matCode !=null and matCode !=''">
+			AND T.MAT_CODE LIKE '%'||#{matCode,jdbcType=VARCHAR}||'%'
+		</if>
+		ORDER BY T.CREATE_TIME DESC
+	</select>
+	
+	<select id="countMap" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+				FROM T_INV_BORROW_MAT MAT, T_WIP_WORK_ORDER O
+			WHERE O.WORK_ORDER_NO = MAT.WORK_ORDER_NO
+			AND MAT.STATUS = 'MAT_DOWN'
+	   	<if test="workOrderNo !=null and workOrderNo !=''">
+			AND O.WORK_ORDER_NO LIKE '%'||#{workOrderNo,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="matCode !=null and matCode !=''">
+			AND mat.mat_code LIKE '%'||#{matCode,jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+	
+	<select id="findBuLiaoMap" parameterType="map" resultMap="getMap">
+		select distinct mat.work_order_no,
+           mat.id,
+           info.equip_alias || '[' || info.code || ']' AS equip_name,
+           e.name as user_name,
+           e.user_code as user_code,
+           mat.mat_code,
+          (SELECT MAX(mrp.in_attr_desc) FROM t_pla_mrp mrp WHERE mrp.mat_code = mat.mat_code) AS in_attr_desc,
+           m.mat_name,
+           mat.bu_liao_quantity,
+           mat.modify_time,
+           mat.status,
+           mat.fa_liao_quantity
+      from t_inv_bu_liao mat,
+           t_fac_eqip_info  info,
+           t_bas_employee   e,
+           t_inv_mat m
+     where mat.equip_code = info.code
+       and mat.user_code = e.user_code
+       and mat.mat_code = m.mat_code
+       AND mat.status = 'MAT_BORROW'
+	   	<if test="workOrderNo !=null and workOrderNo !=''">
+			AND mat.work_order_no LIKE '%'||#{workOrderNo,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="matCode !=null and matCode !=''">
+			AND mat.mat_code LIKE '%'||#{matCode,jdbcType=VARCHAR}||'%'
+		</if>
+		order by mat.modify_time desc
+	</select>
+	<select id="countBuLiaoMap"  parameterType="map" resultType="int">
+		select count(*)
+		  from t_inv_bu_liao bu
+		 where bu.status = 'MAT_BORROW'
+ 	<if test="workOrderNo !=null and workOrderNo !=''">
+			AND bu.work_order_no LIKE '%'||#{workOrderNo,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="matCode !=null and matCode !=''">
+			AND bu.mat_code LIKE '%'||#{matCode,jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+	
+	<select id="findFaLiaoMap" parameterType="map" resultMap="getMap">
+		WITH MAT AS
+ (SELECT MAT.WORK_ORDER_NO,
+         MAT.USER_CODE AS USER_CODE,
+         MAT.MAT_CODE,
+         MAT.EQUIP_CODE,
+         'MAT_GETED' AS STATUS,
+         MAT.FA_LIAO_QUANTITY AS FA_YAO_LIAO_QUANTITY,
+         (SELECT WMSYS.WM_CONCAT(BU.FA_LIAO_QUANTITY)
+            FROM T_INV_BU_LIAO BU
+           WHERE BU.WORK_ORDER_NO = MAT.WORK_ORDER_NO
+             AND BU.MAT_CODE = MAT.MAT_CODE
+             AND BU.EQUIP_CODE = MAT.EQUIP_CODE
+             AND BU.STATUS = 'MAT_GETED') AS FA_BU_LIAO_QUANTITY
+    FROM T_INV_BORROW_MAT MAT
+   WHERE MAT.STATUS = 'MAT_GETED'
+  UNION
+  SELECT BU.WORK_ORDER_NO,
+         BU.USER_CODE,
+         BU.MAT_CODE,
+         BU.EQUIP_CODE,
+         'MAT_GETED' AS STATUS,
+         (SELECT MAT.FA_LIAO_QUANTITY
+            FROM T_INV_BORROW_MAT MAT
+           WHERE BU.WORK_ORDER_NO = MAT.WORK_ORDER_NO
+             AND BU.MAT_CODE = MAT.MAT_CODE
+             AND BU.EQUIP_CODE = MAT.EQUIP_CODE
+             AND MAT.STATUS = 'MAT_GETED') AS FA_YAO_LIAO_QUANTITY,
+         WMSYS.WM_CONCAT(BU.FA_LIAO_QUANTITY) AS FA_BU_LIAO_QUANTITY
+    FROM T_INV_BU_LIAO BU
+   WHERE BU.STATUS = 'MAT_GETED'
+   GROUP BY BU.WORK_ORDER_NO, BU.MAT_CODE, BU.EQUIP_CODE, BU.USER_CODE)
+SELECT DISTINCT MAT.WORK_ORDER_NO,
+                INFO.EQUIP_ALIAS || '[' || INFO.CODE || ']' AS EQUIP_NAME,
+                E.NAME AS USER_NAME,
+                E.USER_CODE AS USER_CODE,
+                MAT.MAT_CODE,
+                (SELECT MAX(MRP.IN_ATTR_DESC)
+                   FROM T_PLA_MRP MRP, MAT
+                  WHERE MRP.MAT_CODE = MAT.MAT_CODE) AS IN_ATTR_DESC,
+                M.MAT_NAME,
+                MAT.FA_YAO_LIAO_QUANTITY,
+                MAT.FA_BU_LIAO_QUANTITY,
+                MAT.STATUS
+  FROM MAT,
+       T_FAC_EQIP_INFO  INFO,
+       T_BAS_EMPLOYEE   E,
+       T_INV_MAT        M
+ WHERE MAT.EQUIP_CODE = INFO.CODE
+   AND MAT.USER_CODE = E.USER_CODE
+   AND MAT.MAT_CODE = M.MAT_CODE
+<if test="workOrderNo !=null and workOrderNo !=''">
+			AND mat.work_order_no LIKE '%'||#{workOrderNo,jdbcType=VARCHAR}||'%'
+		</if>
+		<if test="matCode !=null and matCode !=''">
+			AND mat.mat_code LIKE '%'||#{matCode,jdbcType=VARCHAR}||'%'
+		</if>
+	</select>
+	
+	<select id="countFaLiaoMap" parameterType="map" resultType="int">
+	with mat as
+ (select mat.work_order_no,
+       mat.user_code as user_code,
+       mat.mat_code,
+       mat.equip_code,
+       'MAT_GETED' as status,
+       mat.fa_liao_quantity as fa_yao_liao_quantity,
+       (select wmsys.wm_concat(bu.fa_liao_quantity)
+          from t_inv_bu_liao bu
+         where bu.work_order_no = mat.work_order_no
+           and bu.mat_code = mat.mat_code
+           and bu.equip_code = mat.equip_code
+           and bu.status = 'MAT_GETED') as fa_bu_liao_quantity
+  from t_inv_borrow_mat mat
+ where mat.status = 'MAT_GETED'
+union
+select bu.work_order_no,
+       bu.user_code,
+       bu.mat_code,
+       bu.equip_code,
+       'MAT_GETED' as status,
+       (select mat.fa_liao_quantity
+          from t_inv_borrow_mat mat
+         where bu.work_order_no = mat.work_order_no
+           and bu.mat_code = mat.mat_code
+           and bu.equip_code = mat.equip_code
+           and mat.status = 'MAT_GETED') as fa_yao_liao_quantity,
+       wmsys.wm_concat(bu.fa_liao_quantity) as fa_bu_liao_quantity
+  from t_inv_bu_liao bu
+ where bu.status = 'MAT_GETED'
+ group by bu.work_order_no, bu.mat_code, bu.equip_code, bu.user_code)
+   select count(*) from mat
+	</select>
+	
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		select o.id as id,
+		       mrp.mat_code,
+		       sum(mrp.quantity * (mrp.un_finished_length / 1000)) as planAmount,
+		       mrp.in_attr_desc as in_attr_desc,
+		       mat.mat_name as name
+		  from t_wip_work_order o, t_pla_mrp mrp,t_inv_mat_wip mat
+		 where o.id = mrp.work_order_id
+		   and mat.mat_type = 'MATERIALS'
+		   and mrp.mat_code = mat.mat_code
+		   and mat.PROCESS_WIP_ID = mrp.process_id
+		   and o.work_order_no = #{param1}
+		 group by o.id,mrp.mat_code,mat.mat_name,mrp.in_attr_desc
+	</select>
+	
+	<select id="getBuLiaoByWorkOrderNo" parameterType="string" resultMap="getMap">
+		select mat.plan_amount,
+		       mat.yao_liao_quantity,
+		       mat.fa_liao_quantity,
+		       mat.material_name as mat_name,
+		       mat.work_order_no,
+		       mat.mat_code,
+		       mat.id
+		  from t_inv_borrow_mat mat
+		 where mat.work_order_no = #{param1}
+	</select>
+	
+	<select id="getReport" parameterType="map" resultMap="getMap">
+	WITH A AS
+ (SELECT SUM(M.FA_LIAO_QUANTITY) AS FA_YAO_LIAO_QUANTITY,
+         SUM(M.YAO_LIAO_QUANTITY) AS YAO_LIAO_QUANTITY,
+         TO_CHAR(MIN(M.MODIFY_TIME), 'yyyy-MM-dd') AS DEMANDTIME,
+         M.MAT_CODE AS MAT_CODE
+    FROM T_INV_BORROW_MAT M
+   WHERE M.STATUS = 'MAT_GETED'
+     <if test="demandTime !=null and demandTime !=''">
+		AND TO_CHAR(M.MODIFY_TIME, 'yyyy-MM-dd') = #{demandTime,jdbcType=VARCHAR}
+	 </if>
+	 <if test="matCode !=null and matCode !=''">
+		AND M.MAT_CODE = #{matCode,jdbcType=VARCHAR}
+	 </if>
+   GROUP BY M.MAT_CODE),
+B AS
+ (SELECT SUM(B.BU_LIAO_QUANTITY) AS BU_LIAO_QUANTITY,
+         SUM(B.FA_LIAO_QUANTITY) AS FA_BU_LIAO_QUANTITY,
+         TO_CHAR(MIN(B.MODIFY_TIME), 'yyyy-MM-dd') AS DEMANDTIME,
+         B.MAT_CODE AS MAT_CODE
+    FROM T_INV_BU_LIAO B
+   WHERE B.STATUS = 'MAT_GETED'
+  	 <if test="demandTime !=null and demandTime !=''">
+		AND TO_CHAR(B.MODIFY_TIME, 'yyyy-MM-dd') = #{demandTime,jdbcType=VARCHAR}
+	 </if>
+	 <if test="matCode !=null and matCode !=''">
+		AND B.MAT_CODE = #{matCode,jdbcType=VARCHAR}
+	 </if>
+   GROUP BY B.MAT_CODE)
+SELECT (NVL(A.FA_YAO_LIAO_QUANTITY, 0) + NVL(B.FA_BU_LIAO_QUANTITY, 0)) AS FA_LIAO_QUANTITY,
+       (NVL(A.YAO_LIAO_QUANTITY, 0) + NVL(B.BU_LIAO_QUANTITY, 0)) AS YAO_LIAO_QUANTITY,
+       A.MAT_CODE,
+       A.DEMANDTIME,
+       (SELECT MRP.IN_ATTR_DESC
+          FROM T_PLA_MRP MRP
+         WHERE A.MAT_CODE = MRP.MAT_CODE AND ROWNUM=1) AS IN_ATTR_DESC,
+       C.MAT_NAME
+  FROM A
+  INNER JOIN T_INV_MAT C
+    ON A.MAT_CODE = C.MAT_CODE
+  LEFT JOIN B
+    ON A.MAT_CODE = B.MAT_CODE
+	</select>
+	
+	<select id="getReportCount" parameterType="map" resultType="int">
+		SELECT count(SUM(M.FA_LIAO_QUANTITY))
+    FROM T_INV_BORROW_MAT M
+   WHERE M.STATUS = 'MAT_GETED'
+     <if test="demandTime !=null and demandTime !=''">
+		AND TO_CHAR(M.MODIFY_TIME, 'yyyy-MM-dd') = #{demandTime,jdbcType=VARCHAR}
+	 </if>
+	 <if test="matCode !=null and matCode !=''">
+		AND M.MAT_CODE = #{matCode,jdbcType=VARCHAR}
+	 </if>
+   GROUP BY M.MAT_CODE
+	</select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.EquipRepairRecordDAO">
+
+	<resultMap type="cc.oit.bsmes.fac.model.EquipRepairRecord" id="getMap"></resultMap>
+	<select id="getEventInfo" parameterType="string" resultMap="getMap">
+		SELECT R.EQUIP_TROUBLE_DESCRIBETION AS EQUIP_TROUBLE_DESCRIBETION,
+           R.EQUIP_TROUBLE_ANALYZE AS EQUIP_TROUBLE_ANALYZE,
+           R.REPAIR_MEASURES AS REPAIR_MEASURES,
+           R.START_REPAIR_TIME AS START_REPAIR_TIME,
+           R.FINISH_REPAIR_TIME AS FINISH_REPAIR_TIME,
+           R.FAILURE_MODEL AS FAILURE_MODEL,
+           R.REPAIR_MAN AS REPAIR_MAN,
+           R.SEQ,
+           E.NAME AS EQUIP_MODEL_STANDARD,
+           E.EQUIP_ALIAS AS EQUIP_NAME,
+           I.CREATE_TIME AS CREATE_TIME,
+           B.NAME AS PROTECT_MAN,
+           R.ID
+      FROM T_EVE_EQUIP_REPAIR_RECORD R,
+           T_EVE_EVENT_INFO          I,
+           T_FAC_EQIP_INFO           E,
+           T_BAS_EMPLOYEE            B
+     WHERE I.EQUIP_CODE = E.CODE
+       AND R.EVENT_INFO_ID = I.ID
+       AND R.CREATE_USER_CODE = B.USER_CODE
+	   AND R.EVENT_INFO_ID = #{param1}
+	 ORDER BY R.SEQ ASC
+	</select>
+	<select id="getByEventInfoId" parameterType="string" resultType="int">
+	SELECT COUNT(*) FROM T_EVE_EQUIP_REPAIR_RECORD R WHERE R.EVENT_INFO_ID = #{param1}
+	
+	</select>
+	
+	<select id="getCheckData" parameterType="string" resultMap="getMap">
+			SELECT D.EQUIP_ALIAS,
+		       D.NAME                       AS EQUIP_NAME,
+		       D.CODE                       AS EQUIP_CODE,
+		       A.CREATE_TIME,
+		       C.NAME                       AS USER_NAME,
+		       B.SEQ,
+		       B.REPAIR_MEASURES,
+		       B.EQUIP_TROUBLE_ANALYZE,
+		       B.EQUIP_TROUBLE_DESCRIBETION,
+		       B.FAILURE_MODEL,
+		       B.REPAIR_MAN,
+		       B.FINISH_REPAIR_TIME,
+		       B.START_REPAIR_TIME,
+		       B.ID,
+		       A.EVALUATE
+		  FROM T_EVE_EVENT_INFO          A,
+		       T_EVE_EQUIP_REPAIR_RECORD B,
+		       T_BAS_EMPLOYEE            C,
+		       T_FAC_EQIP_INFO           D
+		 WHERE A.ID = B.EVENT_INFO_ID
+		   AND A.EQUIP_CODE = D.CODE
+		   AND A.CREATE_USER_CODE = C.USER_CODE
+		   AND A.ID = #{param1}
+		   ORDER BY B.SEQ
+	</select>
+</mapper> 

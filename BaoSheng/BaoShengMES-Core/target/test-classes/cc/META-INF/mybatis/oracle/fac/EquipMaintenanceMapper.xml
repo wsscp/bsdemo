@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.EquipMaintenanceDAO">
+
+	<resultMap type="cc.oit.bsmes.fac.model.EquipMaintenance" id="getMap">
+			 <result property="equipCode" column="EQUIP_CODE" />
+			  <result property="eventContent" column="EVENT_CONTENT" />
+		 	 <result property="equipName" column="EQUIP_NAME" />
+		 	 <result property="createTime" column="CREATE_TIME" />
+		 	 <result property="responsed" column="RESPONSED" />
+		 	 <result property="responseTime" column="RESPONSE_TIME" />
+		 	 <result property="responseTimes" column="RESPONSE_TIMES" />
+		 	 <result property="complete" column="COMPLETED" />
+		 	 <result property="completeTime" column="COMPLETE_TIME" />
+		 	 <result property="completeTimes" column="COMPLETE_TIMES" />
+	</resultMap>
+	<select id="find" parameterType="EquipMaintenance" resultMap="getMap">
+		SELECT R.EQUIP_CODE,R.CREATE_TIME,R.EVENT_CONTENT,S.NAME AS EQUIP_NAME,TMPA.RESPONSED,TMPA.RESPONSE_TIME,TMPA.RESPONSE_TIMES,
+				TMPB.COMPLETED, TMPB.COMPLETE_TIME,TMPB.COMPLETE_TIMES
+		FROM  T_EVE_EVENT_INFO R LEFT JOIN T_FAC_EQIP_INFO S ON(R.EQUIP_CODE=S.CODE) 
+		   LEFT JOIN (SELECT A.EVENT_INFO_ID,A.CREATE_USER_CODE AS RESPONSED,A.CREATE_TIME AS RESPONSE_TIME,
+          					  ROUND((TO_DATE(TO_CHAR(A.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss')-
+    							  TO_DATE(TO_CHAR(O.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'))*1440) AS RESPONSE_TIMES 
+       				 	FROM T_EVE_EVENT_PROCESS_LOG A,T_EVE_EVENT_INFO O WHERE A.TYPE='RESPONDED' AND A.EVENT_INFO_ID=O.ID) TMPA 
+       	   ON(TMPA.EVENT_INFO_ID=R.ID)
+      	   LEFT JOIN (SELECT B.EVENT_INFO_ID,B.CREATE_USER_CODE AS COMPLETED,B.CREATE_TIME AS COMPLETE_TIME,
+          					 ROUND((TO_DATE(TO_CHAR(B.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss')-
+    						 TO_DATE(TO_CHAR(V.CREATE_TIME,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'))*1440) AS COMPLETE_TIMES 
+        			  FROM T_EVE_EVENT_PROCESS_LOG B,T_EVE_EVENT_INFO V WHERE B.TYPE='COMPLETED' AND B.EVENT_INFO_ID=V.ID )TMPB 
+           ON(TMPB.EVENT_INFO_ID=R.ID)
+		   WHERE R.EVENT_TYPE_ID IN (SELECT ID FROM T_EVE_EVENT_TYPE WHERE CODE='EQIP')
+			<include refid="getParameter"/>
+			<if test="responsed !=null and responsed !='' ">
+				AND INSTR(TMPA.RESPONSED, #{responsed,jdbcType=VARCHAR})>0
+			</if>
+			<if test="completeTime !=null and completeTime !='' ">
+				AND TMPB.COMPLETE_TIME <![CDATA[>]]> #{completeTime,jdbcType=TIMESTAMP} 
+			</if>
+			ORDER BY R.CREATE_TIME DESC
+	</select>
+	<select id="count" parameterType="EquipMaintenance" resultType="int">
+		SELECT COUNT(1) FROM T_EVE_EVENT_INFO R 
+		LEFT JOIN (SELECT * FROM T_EVE_EVENT_PROCESS_LOG WHERE TYPE='RESPONDED') TEMPA
+		ON(R.ID=TEMPA.EVENT_INFO_ID)
+		LEFT JOIN (SELECT * FROM T_EVE_EVENT_PROCESS_LOG WHERE TYPE='COMPLETED') TEMPB
+		ON(R.ID=TEMPB.EVENT_INFO_ID)
+	    WHERE R.EVENT_TYPE_ID IN (SELECT ID FROM T_EVE_EVENT_TYPE WHERE CODE='EQIP') <include refid="getParameter"/>
+		<if test="responsed !=null and responsed !='' ">
+			AND INSTR(TEMPA.CREATE_USER_CODE, #{responsed,jdbcType=VARCHAR})>0
+		</if>
+		<if test="completeTime !=null and completeTime !='' ">
+			AND TEMPB.CREATE_TIME <![CDATA[>]]> #{completeTime,jdbcType=TIMESTAMP} 
+		</if>
+	</select>
+	<sql id="getParameter">
+		<if test="equipCode !=null and equipCode !='' ">
+			AND R.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR} 
+		</if>
+		<if test="status !=null and status !='' ">
+			AND R.EVENT_STATUS = #{status,jdbcType=VARCHAR} 
+		</if>
+		<if test="createTime !=null and createTime !='' ">
+			AND R.CREATE_TIME <![CDATA[>]]> #{createTime,jdbcType=TIMESTAMP} 
+		</if>
+	</sql>
+	
+	<select id="queryEquipEvent" parameterType="string" resultMap="getMap">
+		SELECT R.CREATE_TIME,
+		       R.EVENT_CONTENT,
+		       S.EQUIP_ALIAS AS EQUIP_NAME,
+		       R.ID AS ID,
+		       R.EQUIP_CODE,
+		       S.NAME AS EQUIP_MODEL_STANDARD,
+		       (SELECT E.NAME FROM T_BAS_EMPLOYEE E WHERE E.USER_CODE = R.CREATE_USER_CODE) AS USER_NAME,
+		       (SELECT E.NAME FROM T_BAS_EMPLOYEE E WHERE E.USER_CODE = TMPA.RESPONSED) AS RESPONSED,
+		       TMPA.RESPONSE_TIME,
+		       TMPA.RESPONSE_TIMES,
+		       (SELECT E.NAME FROM T_BAS_EMPLOYEE E WHERE E.USER_CODE = TMPB.COMPLETED) AS COMPLETED,
+		       TMPB.COMPLETE_TIME,
+		       TMPB.COMPLETE_TIMES
+		  FROM T_EVE_EVENT_INFO R
+		  LEFT JOIN T_FAC_EQIP_INFO S
+		    ON (R.EQUIP_CODE = S.CODE)
+		  LEFT JOIN (SELECT A.EVENT_INFO_ID,
+		                    A.CREATE_USER_CODE AS RESPONSED,
+		                    A.CREATE_TIME AS RESPONSE_TIME,
+		                    ROUND((TO_DATE(TO_CHAR(A.CREATE_TIME,
+		                                           'yyyy-mm-dd hh24:mi:ss'),
+		                                   'yyyy-mm-dd hh24:mi:ss') -
+		                          TO_DATE(TO_CHAR(O.CREATE_TIME,
+		                                           'yyyy-mm-dd hh24:mi:ss'),
+		                                   'yyyy-mm-dd hh24:mi:ss')) * 1440) AS RESPONSE_TIMES
+		               FROM T_EVE_EVENT_PROCESS_LOG A, T_EVE_EVENT_INFO O
+		              WHERE A.TYPE = 'RESPONDED'
+		                AND A.EVENT_INFO_ID = O.ID) TMPA
+		    ON (TMPA.EVENT_INFO_ID = R.ID)
+		  LEFT JOIN (SELECT B.EVENT_INFO_ID,
+		                    B.CREATE_USER_CODE AS COMPLETED,
+		                    B.CREATE_TIME AS COMPLETE_TIME,
+		                    ROUND((TO_DATE(TO_CHAR(B.CREATE_TIME,
+		                                           'yyyy-mm-dd hh24:mi:ss'),
+		                                   'yyyy-mm-dd hh24:mi:ss') -
+		                          TO_DATE(TO_CHAR(V.CREATE_TIME,
+		                                           'yyyy-mm-dd hh24:mi:ss'),
+		                                   'yyyy-mm-dd hh24:mi:ss')) * 1440) AS COMPLETE_TIMES
+		               FROM T_EVE_EVENT_PROCESS_LOG B, T_EVE_EVENT_INFO V
+		              WHERE B.TYPE = 'COMPLETED'
+		                AND B.EVENT_INFO_ID = V.ID) TMPB
+		    ON (TMPB.EVENT_INFO_ID = R.ID)
+		 WHERE R.EVENT_TYPE_ID IN
+		       (SELECT ID
+		          FROM T_EVE_EVENT_TYPE
+		         WHERE CODE IN ('EQIP', 'MAINTAIN_DAILY', 'MAINTAIN'))
+		   AND R.EQUIP_CODE = #{param1}
+		ORDER BY R.CREATE_TIME DESC
+	</select>
+	
+</mapper>

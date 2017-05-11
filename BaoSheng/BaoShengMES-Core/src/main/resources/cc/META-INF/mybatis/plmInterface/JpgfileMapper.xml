@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.JpgfileDAO">
+    <resultMap type="cc.oit.bsmes.interfacePLM.model.Jpgfile" id="getMap">
+    </resultMap>
+	<select id="getByJpgfileId" parameterType="String" resultMap="getMap">
+		SELECT * FROM JPGFILE
+		WHERE ID=#{jpgfileId, jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<insert id="insertJpgFile" parameterType="cc.oit.bsmes.interfacePLM.model.Jpgfile" >
+		INSERT INTO JPGFILE(ID,DESIGNNO,BLDESIGNNO,WKAID,DEL,OWNER,
+		CREATOR,CTIME,DATA) VALUES
+		(#{id},'1','1','1','0','adm','adm',sysdate,#{data})
+	</insert>
+	
+</mapper>

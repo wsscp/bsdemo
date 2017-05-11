@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.OrderProcessPRDAO">
+
+    <resultMap type="cc.oit.bsmes.pla.model.OrderProcessPR" id="getMap">
+    </resultMap>
+
+	<!-- 特殊工艺：获取工序的投入原料 
+	<select id="getSpecialProcessIn" parameterType="string" resultMap="getMap">
+		WITH MAT_DESC_TEMP AS (
+			SELECT TMP.MAT_CODE AS MATCODE,
+		      		 TMP.MAT_NAME AS MATNAME,
+			         WMSYS.WM_CONCAT(TMP.PROP_NAME || ':' || TMP.PROP_TARGET_VALUE) AS MATDESC
+			   FROM (SELECT DISTINCT M.MAT_CODE,
+			                        M.MAT_NAME,
+			                        D.PROP_NAME,
+			                        P.PROP_TARGET_VALUE
+			          FROM T_INV_MAT M, T_INV_MAT_PROP P, T_INV_TEMPLET_DETAIL D
+			         WHERE P.MAT_ID = M.ID
+			           AND P.TEMPLET_DETAIL_ID = D.ID
+			           AND (D.PROP_NAME LIKE '%颜色%' OR D.PROP_NAME IN ('宽度',
+					                        '厚度',
+					                        '材质',
+					                        '尺寸',
+					                        '规格',
+					                        '单丝直径',
+					                        '单丝标准直径',
+					                        '成品电线最大外径',
+					                        '成品电线最小外径',
+					                        '成品电线标准外径',
+					                        '结构'))
+			           AND M.MAT_CODE IN (
+			               SELECT O.MAT_CODE FROM T_PRO_PROCESS_IN_OUT O WHERE O.PRODUCT_PROCESS_ID = #{param1}
+			               UNION
+			               SELECT TARGET_VALUE FROM T_PLA_ORDER_PROCESS_PR WHERE PROCESS_ID = #{param1} AND SALES_ORDER_ITEM_ID = #{param2} AND TYPE='投入原料'
+			           )
+			         ORDER BY D.PROP_NAME, P.PROP_TARGET_VALUE) TMP
+			  GROUP BY TMP.MAT_CODE, TMP.MAT_NAME
+			  ORDER BY MATDESC
+		)
+		SELECT T.*, 
+		       (SELECT TEMP.MATDESC FROM MAT_DESC_TEMP TEMP WHERE T.CODE = TEMP.MATCODE) AS OLD_DESC,
+		       (SELECT TEMP.MATDESC FROM MAT_DESC_TEMP TEMP WHERE T.TARGETVALUE = TEMP.MATCODE) AS NEW_DESC
+		 FROM (
+			SELECT GET_UUID() AS ID,
+			       M.MAT_CODE AS CODE,
+			       M.MAT_NAME AS NAME,
+			       M.MAT_CODE AS TARGETVALUE,
+			       '投入原料' AS TYPE,
+			       M.MAT_CODE AS MAT_CODE,
+			       M.MAT_NAME AS MAT_NAME,
+			       O.IN_OR_OUT AS IN_OR_OUT,
+			       O.PRODUCT_PROCESS_ID AS PROCESS_ID,
+			       M.MAT_NAME AS NEW_MAT_NAME,
+			       #{param2} AS SALES_ORDER_ITEM_ID
+			  FROM T_PRO_PROCESS_IN_OUT_WIP O, T_INV_MAT_WIP M
+			 WHERE O.MAT_CODE = M.MAT_CODE
+			   AND O.IN_OR_OUT = 'IN'
+			   AND M.MAT_TYPE = 'MATERIALS'
+			   AND O.ID = M.PROCESS_IN_OUT_WIP_ID
+			   AND O.PRODUCT_PROCESS_ID = #{param1}
+			   AND NOT EXISTS (SELECT 1 
+			                   FROM T_PLA_ORDER_PROCESS_PR PR 
+			                   WHERE PR.SALES_ORDER_ITEM_ID = #{param2}
+			                         AND PR.PROCESS_ID = O.PRODUCT_PROCESS_ID
+			                         AND PR.CODE = O.MAT_CODE
+			                         AND PR.TYPE='投入原料')
+			UNION ALL 
+			SELECT PR.ID AS ID,
+			       PR.CODE AS CODE,
+			       PR.NAME AS NAME,
+			       PR.TARGET_VALUE AS TARGETVALUE,
+			       PR.TYPE AS TYPE,
+			       PR.MAT_CODE AS MAT_CODE,
+			       PR.MAT_NAME AS MAT_NAME,
+			       PR.IN_OR_OUT AS IN_OR_OUT,
+			       PR.PROCESS_ID AS PROCESS_ID,
+			       M.MAT_NAME AS NEW_MAT_NAME,
+			       PR.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID
+			  FROM T_PLA_ORDER_PROCESS_PR PR, T_INV_MAT M
+			 WHERE PR.TYPE = '投入原料'
+			   AND PR.TARGET_VALUE = M.MAT_CODE
+			   AND PR.PROCESS_ID = #{param1}
+			   AND PR.SALES_ORDER_ITEM_ID = #{param2}) T
+	    ORDER BY T.NAME
+	</select>	   
+	-->
+	<!-- 特殊工艺：获取工序的QC   
+    <select id="getSpecialProcessQc" parameterType="string" resultMap="getMap">
+		SELECT * FROM (
+	  		SELECT GET_UUID() AS ID,
+			       MAX(B.PROP_CODE) AS CODE,
+			       B.PROP_NAME AS NAME,
+			       MAX(A.PROP_TARGET_VALUE) AS TARGETVALUE,
+			       '物料属性' AS TYPE,
+			       MAX(C.MAT_CODE) AS MAT_CODE,
+			       C.MAT_NAME,
+			       D.IN_OR_OUT,
+			       MAX(D.PRODUCT_PROCESS_ID) AS PROCESS_ID,
+			       #{param2} AS SALES_ORDER_ITEM_ID
+			  FROM T_INV_MAT_PROP_WIP       A,
+			       T_INV_TEMPLET_DETAIL B,
+			       T_INV_MAT_WIP            C,
+			       T_PRO_PROCESS_IN_OUT_WIP D
+			 WHERE A.TEMPLET_DETAIL_ID = B.ID
+			   AND C.ID = A.MAT_ID
+			   AND D.MAT_CODE = C.MAT_CODE
+			   AND D.PRODUCT_PROCESS_ID = #{param1}
+			   AND C.PROCESS_IN_OUT_WIP_ID = D.ID
+			   AND (B.PROP_NAME IN ('宽度',
+			                        '厚度',
+			                        '材质',
+			                        '尺寸',
+			                        '规格',
+			                        '单丝直径',
+			                        '单丝标准直径',
+			                        '成品电线最大外径',
+			                        '成品电线最小外径',
+			                        '成品电线标准外径',
+			                        '结构') OR B.PROP_NAME LIKE '%颜色%')
+			 GROUP BY B.PROP_NAME, C.MAT_NAME, D.IN_OR_OUT) T
+		WHERE NOT EXISTS (SELECT 1 
+		                   FROM T_PLA_ORDER_PROCESS_PR PR 
+		                   WHERE PR.SALES_ORDER_ITEM_ID = #{param2}
+		                         AND PR.PROCESS_ID = T.PROCESS_ID
+		                         AND PR.CODE = T.MAT_CODE
+		                         AND PR.TYPE='投入原料')
+		    AND NOT EXISTS (SELECT 1 
+		                   FROM T_PLA_ORDER_PROCESS_PR PR 
+		                   WHERE PR.SALES_ORDER_ITEM_ID = #{param2}
+		                         AND PR.PROCESS_ID = T.PROCESS_ID
+		                         AND PR.CODE = T.CODE
+		                         AND PR.TYPE='物料属性')
+		UNION ALL
+		SELECT * FROM (
+			SELECT GET_UUID() AS ID,
+			       MAX(CHECK_ITEM_CODE) AS CODE,
+			       CHECK_ITEM_NAME AS NAME,
+			       MAX(ITEM_TARGET_VALUE) AS TARGETVALUE,
+			       '质量参数' AS TYPE,
+			       '' AS MATCODE,
+			       '' AS MATNAME,
+			       '' AS IN_OR_OUT,
+			       MAX(QC.PROCESS_ID) AS PROCESS_ID,
+			       #{param2} AS SALES_ORDER_ITEM_ID
+			  FROM T_PRO_PROCESS_QC_WIP QC
+			 WHERE QC.PROCESS_ID = #{param1}
+			   AND QC.CHECK_ITEM_NAME in ('绝缘标称厚度',
+			                           '绝缘最小厚度',
+			                           '绝缘最大厚度',
+			                           '绝缘标称外径',
+			                           '导体结构',
+			                           'I-导体结构',
+			                           '包带搭盖率',
+			                           '铠装后外径',
+			                           '成缆后外径',
+			                           '绕包后外径',
+			                           '绞合外径',
+			                           '指导厚度',
+			                           '护套标称厚度',
+			                           '护套厚度',
+			                           '标准印字内容',
+			                           '结构')
+			 GROUP BY CHECK_ITEM_NAME) T
+		WHERE NOT EXISTS (SELECT 1 
+		                   FROM T_PLA_ORDER_PROCESS_PR PR 
+		                   WHERE PR.SALES_ORDER_ITEM_ID = #{param2}
+		                         AND PR.PROCESS_ID = T.PROCESS_ID
+		                         AND PR.CODE = T.CODE
+		                         AND PR.TYPE='质量参数')         
+		UNION ALL 
+		SELECT PR.ID AS ID,
+		       PR.CODE AS CODE,
+		       PR.NAME AS NAME,
+		       PR.TARGET_VALUE AS TARGETVALUE,
+		       PR.TYPE AS TYPE,
+		       PR.MAT_CODE AS MAT_CODE,
+		       PR.MAT_NAME AS MAT_NAME,
+		       PR.IN_OR_OUT AS IN_OR_OUT,
+		       PR.PROCESS_ID AS PROCESS_ID,
+		       PR.SALES_ORDER_ITEM_ID AS SALES_ORDER_ITEM_ID
+		  FROM T_PLA_ORDER_PROCESS_PR PR
+		 WHERE PR.TYPE IN ('物料属性', '质量参数')
+		   AND PR.PROCESS_ID = #{param1} 
+		   AND PR.SALES_ORDER_ITEM_ID = #{param2}
+    </select>
+    -->	 
+    
+</mapper>

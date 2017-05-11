@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao
+END
+CustomerOrderItemDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/1903/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao/CustomerOrderItemDAOTest.java
+END
+CustomerOrderDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/1905/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao/CustomerOrderDAOTest.java
+END
+OrderTaskDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao/OrderTaskDAOTest.java
+END
+ProductSOPTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7626/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao/ProductSOPTest.java
+END
+MaterialRequirementPlanListDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao/MaterialRequirementPlanListDAOTest.java
+END
+CustomerOrderDataInitTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/pla/dao/CustomerOrderDataInitTest.java
+END

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessQcEqipBzDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessQcEqipBz" id="getMap">
+	</resultMap>
+	<sql id="queryColumns">
+		p.MODIFY_USER_CODE,
+		p.MODIFY_TIME,
+		p.CREATE_TIME,
+		p.QC_ID,
+		p.AC_EQUIP_CODE,
+		p.EQUIP_CODE,
+		p.ID,
+		p.CREATE_USER_CODE,
+		p.EQUIP_ID
+	</sql>
+</mapper>

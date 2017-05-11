@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/10656/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service
+END
+ProductLineInfoImport.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/5638/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/ProductLineInfoImport.java
+END
+PLMDataSyncTaskTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/6710/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/PLMDataSyncTaskTest.java
+END
+ProcessInfoImport.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/6136/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/ProcessInfoImport.java
+END
+ProductImportFromPLMCheck.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/7642/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/ProductImportFromPLMCheck.java
+END
+AddPrcvXmlTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/10498/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/AddPrcvXmlTask.java
+END
+MpartDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/6136/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/MpartDAOTest.java
+END
+ProductImportFromPLM.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/10656/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/ProductImportFromPLM.java
+END
+PLMProductTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/5553/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/interfacePLM/service/PLMProductTest.java
+END

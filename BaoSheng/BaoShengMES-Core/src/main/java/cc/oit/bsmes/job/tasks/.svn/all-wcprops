@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BSMES/!svn/ver/11875/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks
+END
+ShortScheduleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/ShortScheduleTask.java
+END
+AlarmProcessTaskBack.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/AlarmProcessTaskBack.java
+END
+OaScheduleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8216/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/OaScheduleTask.java
+END
+MaintainScheduleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/MaintainScheduleTask.java
+END
+PushFinshOrderToERPTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/10168/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/PushFinshOrderToERPTask.java
+END
+SOPScheduleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/SOPScheduleTask.java
+END
+CanShukuTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/10178/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/CanShukuTask.java
+END
+PLMPrcvAsyncTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/6499/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/PLMPrcvAsyncTask.java
+END
+InitRedisCacheData.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/6203/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/InitRedisCacheData.java
+END
+EquipStatusProcessTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/11181/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/EquipStatusProcessTask.java
+END
+EquipUpdateTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/6392/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/EquipUpdateTask.java
+END
+WorkOrderExtensionAlarmTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/WorkOrderExtensionAlarmTask.java
+END
+PLMProductTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8878/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/PLMProductTask.java
+END
+AlarmProcessTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/9894/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/AlarmProcessTask.java
+END
+EventScheduleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7262/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/EventScheduleTask.java
+END
+EquipEnergyMonitorTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/11875/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/EquipEnergyMonitorTask.java
+END
+PlanScheduleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8217/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/PlanScheduleTask.java
+END
+EventScheduleProcess.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/7262/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/EventScheduleProcess.java
+END
+BZProcessTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6455/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/tasks/BZProcessTask.java
+END

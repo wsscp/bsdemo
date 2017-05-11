@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/4918/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect
+END
+SqlHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/SqlHelper.java
+END
+MySql5Dialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/MySql5Dialect.java
+END
+DialectParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4918/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/DialectParser.java
+END
+Dialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/4918/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/Dialect.java
+END
+MySql5PageHepler.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/MySql5PageHepler.java
+END
+SortHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/SortHelper.java
+END
+OracleDialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/OracleDialect.java
+END
+SqlServerDialect.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/4918/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/dialect/SqlServerDialect.java
+END

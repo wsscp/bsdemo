@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.ResourcesDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.Resources" id="getMap">
+	</resultMap>
+	<select id="getByParentId" resultType="cc.oit.bsmes.bas.model.Resources" parameterType="string">
+		SELECT T.*,
+		       CASE
+		         WHEN (
+		           SELECT COUNT(1) FROM T_BAS_RESOURCE C WHERE C.PARENT_ID = T.ID
+		           ) > 0 THEN
+		          1
+		         ELSE
+		          0
+		       END AS HAS_CHILD
+		FROM T_BAS_RESOURCE T WHERE T.PARENT_ID = #{parentId} AND T.IS_SHOW = '0'
+		ORDER BY  T.SEQ
+	</select>
+	
+	<select id="countByParentId" resultType="int" parameterType="string">
+		SELECT count(1) FROM T_BAS_RESOURCE WHERE PARENT_ID = #{parentId} AND IS_SHOW = '0'
+	</select>
+
+	<select id="getMenuByParentId" resultType="cc.oit.bsmes.bas.model.Resources" parameterType="string">
+		SELECT T.*,
+		       CASE
+		         WHEN (
+		           SELECT COUNT(1) FROM T_BAS_RESOURCE C WHERE C.PARENT_ID = T.ID
+		           ) > 0 THEN
+		          1
+		         ELSE
+		          0
+		       END AS HAS_CHILD
+		FROM T_BAS_RESOURCE T WHERE T.PARENT_ID = #{parentId} AND T.TYPE = 'MENU' AND T.IS_SHOW = '0'
+		ORDER BY  T.SEQ
+	</select>
+
+	<select id="getParentById" resultType="cc.oit.bsmes.bas.model.Resources" parameterType="string">
+		SELECT T.*
+		FROM T_BAS_RESOURCE T
+		WHERE T.ID = (SELECT PARENT_ID
+		FROM T_BAS_RESOURCE
+		WHERE ID = #{id})
+		AND T.IS_SHOW = '0'
+		ORDER BY T.SEQ
+	</select>
+	
+	<select id="getByRoleIds" resultType="cc.oit.bsmes.bas.model.Resources" >
+		SELECT T.ID,
+		  T.PARENT_ID,
+          T.NAME,
+          T.URI,
+          T.TYPE,
+          T.DESCRIPTION,
+          T.SEQ,
+		  MAX(RR.ROLE_QUERY) AS ROLE_QUERY,
+		  MAX(RR.ROLE_CREATE) AS ROLE_CREATE,
+		  MAX(RR.ROLE_DELETE) AS ROLE_DELETE,
+		  MAX(RR.ROLE_EDIT) AS ROLE_EDIT
+		FROM 
+		  T_BAS_RESOURCE T,
+		  T_BAS_ROLE_RESOURCE RR
+		WHERE T.ID = RR.RESOURCE_ID
+		  AND <foreach collection="list" item="roleId"  open="RR.ROLE_ID IN (" separator="," close=")">  
+    			#{roleId,jdbcType=VARCHAR} 
+			  </foreach>
+	   group by T.ID,
+		  T.PARENT_ID,
+          T.NAME,
+          T.URI,
+          T.TYPE,
+          T.DESCRIPTION,
+          T.SEQ
+	   ORDER BY T.SEQ 
+	</select>
+	
+	<update id="updateSeqById" flushCache="true" >
+		UPDATE T_BAS_RESOURCE T SET T.SEQ = #{param2} WHERE T.ID = #{param1} AND T.IS_SHOW = '0'
+	</update>
+</mapper>

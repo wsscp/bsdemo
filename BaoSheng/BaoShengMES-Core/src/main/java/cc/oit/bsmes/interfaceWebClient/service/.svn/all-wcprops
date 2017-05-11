@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/6046/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/service
+END
+ProQualitySumService.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/service/ProQualitySumService.java
+END
+EquipSummaryService.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/service/EquipSummaryService.java
+END
+ProOutputService.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/service/ProOutputService.java
+END
+FacSummaryService.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/service/FacSummaryService.java
+END

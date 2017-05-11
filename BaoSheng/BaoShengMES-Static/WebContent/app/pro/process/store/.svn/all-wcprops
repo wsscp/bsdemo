@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pro/process/store
+END
+ProcessReceiptStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/1612/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pro/process/store/ProcessReceiptStore.js
+END
+ProcessInOutStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5596/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pro/process/store/ProcessInOutStore.js
+END
+ProcessEquipListStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5593/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pro/process/store/ProcessEquipListStore.js
+END
+ProcessStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pro/process/store/ProcessStore.js
+END
+ProcessQcStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pro/process/store/ProcessQcStore.js
+END

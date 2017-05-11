@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/12111/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac
+END
+MaintainTemplateMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/7490/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/MaintainTemplateMapper.xml
+END
+MaintainRecordItemMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/4009/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/MaintainRecordItemMapper.xml
+END
+EquipInfoMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/12111/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/EquipInfoMapper.xml
+END
+MaintainItemMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/3872/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/MaintainItemMapper.xml
+END
+MaintainRecordMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/11084/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/MaintainRecordMapper.xml
+END
+SparePartMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/9006/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/SparePartMapper.xml
+END
+ProductEquipMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/4633/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/ProductEquipMapper.xml
+END
+EquipMaintainStateMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/4508/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/EquipMaintainStateMapper.xml
+END
+EquipRepairRecordMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/9982/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/EquipRepairRecordMapper.xml
+END
+StatusHistoryMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/11420/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/StatusHistoryMapper.xml
+END
+WorkTaskMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/7776/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/WorkTaskMapper.xml
+END
+EquipImageMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/7758/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/EquipImageMapper.xml
+END
+EquipMaintenanceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/10860/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/fac/EquipMaintenanceMapper.xml
+END

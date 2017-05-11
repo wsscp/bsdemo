@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/BSMES/!svn/ver/12126/trunk/BaoSheng/BaoShengMES-Core/src/main/resources
+END
+quartz.properties
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/2984/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/quartz.properties
+END
+redis.properties
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/6186/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/redis.properties
+END
+transactions.properties
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/9251/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/transactions.properties
+END
+spring-beans.xml
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/10168/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/spring-beans.xml
+END

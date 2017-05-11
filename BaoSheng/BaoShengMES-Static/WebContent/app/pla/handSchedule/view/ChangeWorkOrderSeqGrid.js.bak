@@ -1,0 +1,280 @@
+/**
+ * 调整生产单加工顺序
+ */
+
+Ext.define('bsmes.view.ChangeWorkOrderSeqGrid', {
+	extend : 'Oit.app.view.Grid',
+	alias : 'widget.changeWorkOrderSeqGrid',
+	store : 'ChangeWorkOrderSeqStore',
+	defaultEditingPlugin : false,
+	hasPaging : false,
+	height : document.body.scrollHeight - 115,
+	columns : [{
+				text : '生产<br/>单号',
+				dataIndex : 'workOrderNo',
+				flex : 1.2,
+				minWidth : 60,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					var show = value.substring(8, 14);
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return show;
+				}
+			}, {
+				text : '合同号 - 型号规格 - 合同长度',
+				dataIndex : 'contractNo',
+				menuDisabled : true,
+				flex : 6,
+				minWidth : 300,
+				sortable : false,
+				renderer : function(value, metaData, record) {
+					var machine = value.split(",");
+					var res = '';
+					for (var i = 0; i < machine.length; i++) {
+						res = res + machine[i] + "<br/>";
+					}
+					metaData.tdAttr = 'data-qtip="' + res + '"';
+					return res;
+				}
+			}, {
+				text : '生产线',
+				dataIndex : 'equipName',
+				flex : 5,
+				minWidth : 250,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					var machine = value.split(",");
+					var res = '', res1 = '';
+					for (var i = 0; i < machine.length; i++) {
+						res = res + '<a style="color:blue;cursor:pointer;" onclick="intoMachine(\'' + machine[i]
+								+ '\')">' + machine[i] + '</a>' + '<br/>';
+						res1 = res1 + machine[i] + '<br/>';
+					}
+					metaData.tdAttr = 'data-qtip="' + res1 + '"';
+					return res;
+				}
+			}, {
+				text : '工序',
+				dataIndex : 'processName',
+				flex : 1.6,
+				minWidth : 80,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					// metaData.style = "white-space:normal;padding:5px
+					// 5px 5px
+					// 5px;";
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return value;
+				}
+			}, {
+				text : '特殊分<br/>盘要求',
+				dataIndex : 'specialReqSplit',
+				flex : 1.7,
+				minWidth : 85,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					// metaData.style = "white-space:normal;padding:5px
+					// 5px 5px
+					// 5px;";
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return value;
+				}
+			}, {
+				text : '总任务数',
+				dataIndex : 'orderLength',
+				flex : 1.2,
+				minWidth : 60,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					// metaData.style = "white-space:normal;padding:5px
+					// 5px 5px
+					// 5px;";
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return value;
+				}
+			}, {
+				text : '下发<br/>日期',
+				dataIndex : 'releaseDate',
+				xtype : 'datecolumn',
+				flex : 1.2,
+				minWidth : 60,
+				sortable : false,
+				menuDisabled : true,
+				format : 'm-d'
+			}, {
+				text : '要求完<br/>成日期',
+				dataIndex : 'requireFinishDate',
+				xtype : 'datecolumn',
+				format : 'm-d',
+				flex : 1.2,
+				minWidth : 60,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : '实际完<br/>成日期',
+				dataIndex : 'realEndTime',
+				xtype : 'datecolumn',
+				format : 'm-d',
+				flex : 1.2,
+				minWidth : 60,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : '完成<br/>进度',
+				dataIndex : 'percent',
+				flex : 1,
+				minWidth : 50,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					var html = '<a style="color:blue;cursor:pointer;" onclick="showPercentDetail(\''
+							+ record.get('workOrderNo') + '\', \'\', \'\')">' + value + '%</a>';
+					metaData.tdAttr = 'data-qtip="' + value + '%"';
+					return html;
+				}
+			}, {
+				text : '是否<br/>急件',
+				dataIndex : 'isDispatch',
+				flex : 1,
+				minWidth : 50,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value) {
+					switch (value) {
+						case true :
+							return '是';
+						default :
+							return '否';
+					}
+				}
+			}, {
+				text : '状态',
+				dataIndex : 'status',
+				flex : 1.2,
+				minWidth : 60,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value) {
+					switch (value) {
+						case 'TO_AUDIT' :
+							return Oit.msg.pla.handSchedule.statusName.toAudit;
+						case 'TO_DO' :
+							return Oit.msg.pla.handSchedule.statusName.toDo;
+						case 'IN_PROGRESS' :
+							return Oit.msg.pla.handSchedule.statusName.inProgress;
+							// case 'CANCELED' :
+							// return
+							// Oit.msg.pla.handSchedule.statusName.canceled;
+						case 'FINISHED' :
+							return Oit.msg.pla.handSchedule.statusName.finished;
+						case 'PAUSE' :
+							return Oit.msg.pla.handSchedule.statusName.pause;
+						default :
+							return '';
+					}
+				}
+			}],
+	tbar : [{
+		xtype : 'form',
+		layout : 'hbox',
+		items : [{
+			fieldLabel : '选择工段',
+			labelWidth : 70,
+			width : 350,
+			xtype : 'radiogroup',
+			vertical : true,
+			margins : '0 30 0 10',
+			defaults : { // 设置样式：label的宽度
+				width : 80
+			},
+			items : [{
+						boxLabel : '绝缘',
+						name : 'processCode',
+						inputValue : '绝缘',
+						checked : true
+					}, {
+						boxLabel : '成缆',
+						name : 'processCode',
+						inputValue : '成缆'
+					}, {
+						boxLabel : '编织',
+						name : 'processCode',
+						inputValue : '编织'
+					},{
+						boxLabel : '护套',
+						name : 'processCode',
+						inputValue : '护套'
+					}],
+			listeners : {
+				change : function(radoi, newValue, oldValue, eOpts) {
+					var equipCode = Ext.ComponentQuery.query('changeWorkOrderSeqGrid form combobox[name="equipCode"]')[0];
+					equipCode.clearValue();
+					equipCode.getStore().load({
+								params : {
+									'processCode' : newValue
+								}
+							});
+				}
+			}
+		}, {
+			xtype : 'combobox',
+			fieldLabel : '选择生产线',
+			labelWidth : 80,
+			displayField : 'name',
+			valueField : 'code',
+			name : 'equipCode',
+			width : 450,
+			store : new Ext.data.Store({
+						fields : ['code', {
+									name : 'name',
+									type : 'string',
+									convert : function(value, record) {
+										if (record.get('equipAlias') == '') {
+											return value + '[' + record.get('code') + ']';
+										} else {
+											return record.get('equipAlias') + '-' + value + '[' + record.get('code')
+													+ ']';
+										}
+									}
+								}, 'equipAlias'],
+						proxy : {
+							type : 'rest',
+							url : '../wip/processTraceReport/equip',
+							extraParams : {
+								'processCode' : '绝缘'
+							}
+						}
+					}),
+			listeners : {
+				change : function(combo, newValue, oldValue, eOpts) {
+					var me = this;
+					var changeWorkOrderSeqGrid = Ext.ComponentQuery.query('changeWorkOrderSeqGrid')[0];
+					changeWorkOrderSeqGrid.getStore().load({
+								params : {
+									equipCode : newValue
+								}
+							});
+				}
+			}
+		}]
+	}, '->', {
+		itemId : 'move',
+		text : Oit.msg.pla.customerOrderItem.button.move
+	}, {
+		itemId : 'down',
+		text : Oit.msg.pla.customerOrderItem.button.down
+	}, {
+		itemId : 'top',
+		text : Oit.msg.pla.customerOrderItem.button.top
+	}, {
+		itemId : 'end',
+		text : Oit.msg.pla.customerOrderItem.button.end
+	}, {
+		itemId : 'save'
+	}]
+});

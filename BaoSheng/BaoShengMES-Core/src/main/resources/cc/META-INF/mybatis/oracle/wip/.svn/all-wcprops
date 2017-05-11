@@ -1,0 +1,185 @@
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/12090/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip
+END
+ReportMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/12063/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ReportMapper.xml
+END
+RealCostMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4822/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/RealCostMapper.xml
+END
+MaterialTraceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/5800/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/MaterialTraceMapper.xml
+END
+WorkOrderMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/12064/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/WorkOrderMapper.xml
+END
+WorkOrderEquipRelationMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/BSMES/!svn/ver/6992/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/WorkOrderEquipRelationMapper.xml
+END
+TurnOverReportMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/7483/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/TurnOverReportMapper.xml
+END
+MonthReportMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/7286/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/MonthReportMapper.xml
+END
+SparkRepairMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/5380/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/SparkRepairMapper.xml
+END
+ProductStatusMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/5800/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ProductStatusMapper.xml
+END
+DebugMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2026/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/DebugMapper.xml
+END
+WorkCusorderRelationMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/7359/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/WorkCusorderRelationMapper.xml
+END
+ApplyMatMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/10562/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ApplyMatMapper.xml
+END
+SemiFinishedProductsMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/BSMES/!svn/ver/12090/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/SemiFinishedProductsMapper.xml
+END
+FinishOrderItemMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/10168/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/FinishOrderItemMapper.xml
+END
+ReceiptMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/8912/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ReceiptMapper.xml
+END
+ReportTaskMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/5800/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ReportTaskMapper.xml
+END
+DailyReportMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/11776/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/DailyReportMapper.xml
+END
+ProductTraceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/12016/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ProductTraceMapper.xml
+END
+EventTraceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/8966/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/EventTraceMapper.xml
+END
+WorkOrderOperateLogMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/BSMES/!svn/ver/10452/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/WorkOrderOperateLogMapper.xml
+END
+SpecialCraftsTraceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/10882/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/SpecialCraftsTraceMapper.xml
+END
+UserWorkHoursMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/9215/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/UserWorkHoursMapper.xml
+END
+SectionMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/4562/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/SectionMapper.xml
+END
+StoreManageMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/7784/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/StoreManageMapper.xml
+END
+OnoffRecordMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/11663/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/OnoffRecordMapper.xml
+END
+MatUsageMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/7603/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/MatUsageMapper.xml
+END
+ScrapMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4562/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ScrapMapper.xml
+END
+TurnOverMatDetailMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/BSMES/!svn/ver/7362/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/TurnOverMatDetailMapper.xml
+END
+ReportUserMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/8815/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/ReportUserMapper.xml
+END
+WorkOrderReportMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/BSMES/!svn/ver/7240/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/wip/WorkOrderReportMapper.xml
+END

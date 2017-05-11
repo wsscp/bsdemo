@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- mes的DAO包路径   MODEL包路径 -->
+    <bean id="daoPackage" class="java.lang.String">
+        <constructor-arg value="
+          cc.oit.bsmes.bas.dao,
+	      cc.oit.bsmes.fac.dao,
+		  cc.oit.bsmes.inv.dao,
+		  cc.oit.bsmes.ord.dao,
+		  cc.oit.bsmes.pla.dao,
+		  cc.oit.bsmes.pro.dao,
+		  cc.oit.bsmes.wip.dao,
+		  cc.oit.bsmes.eve.dao,
+		  cc.oit.bsmes.sin.dao,
+		  cc.oit.bsmes.interfacemessage.dao,
+		  cc.oit.bsmes.job.base.dao,
+		  cc.oit.bsmes.sin.dao,
+		  cc.oit.bsmes.common.log.dao,
+		  cc.oit.bsmes.interfaceWebClient.dao
+		  "/>
+    </bean>
+    <bean id="modelPackage" class="java.lang.String">
+        <constructor-arg value="
+          cc.oit.bsmes.bas.model,
+          cc.oit.bsmes.fac.model,
+          cc.oit.bsmes.inv.model,
+          cc.oit.bsmes.ord.model,
+          cc.oit.bsmes.pla.model,
+          cc.oit.bsmes.pro.model,
+          cc.oit.bsmes.wip.model,
+          cc.oit.bsmes.eve.model,
+          cc.oit.bsmes.sin.model,
+          cc.oit.bsmes.interfacemessage.model,
+          cc.oit.bsmes.job.base.model,
+          cc.oit.bsmes.common.log.model,
+          cc.oit.bsmes.interfaceWebClient.model
+          "/>
+    </bean>
+    
+    <!-- mes库的历史库的DAO包路径   MODEL包路径 -->
+    <bean id="hisDaoPackage" class="java.lang.String">
+        <constructor-arg value="
+		  cc.oit.bsmes.history.pla.dao,
+          cc.oit.bsmes.history.wip.dao
+		  "/>
+    </bean>
+    <bean id="hisModelPackage" class="java.lang.String">
+        <constructor-arg value="
+          cc.oit.bsmes.history.pla.model,
+          cc.oit.bsmes.history.wip.model
+          "/>
+    </bean>
+
+	<!-- mybatis分页插件配置：分页排序的拦截器 -->
+    <bean id="plugins" class="java.util.ArrayList">
+        <constructor-arg>
+            <list>
+                <bean class="cc.oit.bsmes.common.mybatis.interceptor.SqlInterceptor" />
+                <bean class="cc.oit.bsmes.common.mybatis.interceptor.SortListInterceptor" />
+            </list>
+        </constructor-arg>
+    </bean>
+</beans>

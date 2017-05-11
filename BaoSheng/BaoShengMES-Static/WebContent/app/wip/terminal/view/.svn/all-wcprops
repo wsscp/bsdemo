@@ -1,0 +1,407 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/12133/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view
+END
+CheckOrderView.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8417/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckOrderView.js
+END
+ProductReportDetailGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/11575/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProductReportDetailGrid.js
+END
+HandleEquipValidWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/9260/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/HandleEquipValidWindow.js
+END
+CheckOrderJYView.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/8415/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckOrderJYView.js
+END
+ReportQAEntryWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/5022/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportQAEntryWindow.js
+END
+ChangeEquipUserCVWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8005/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ChangeEquipUserCVWindow.js
+END
+ChangeOrderWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ChangeOrderWindow.js
+END
+CheckGridWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckGridWindow.js
+END
+TerminalMainView.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/11711/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TerminalMainView.js
+END
+AgreementGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/5705/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/AgreementGrid.js
+END
+ReportGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/11762/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportGrid.js
+END
+ReportUserValidWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4784/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportUserValidWindow.js
+END
+CheckGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/12114/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckGrid.js
+END
+PrintPreviewWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/10664/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/PrintPreviewWindow.js
+END
+GetMaterialWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8572/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/GetMaterialWindow.js
+END
+TaskInfoGridJY.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/11712/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TaskInfoGridJY.js
+END
+CheckOperationManual.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/11201/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckOperationManual.js
+END
+CheckOrderWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/6998/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckOrderWindow.js
+END
+TaskInfoGridCL.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/11299/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TaskInfoGridCL.js
+END
+SupplementMaterialWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/8377/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/SupplementMaterialWindow.js
+END
+ShiftRecordWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/7333/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ShiftRecordWindow.js
+END
+HandleEquipAlarmWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4800/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/HandleEquipAlarmWindow.js
+END
+DailyCheckGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/DailyCheckGrid.js
+END
+ProcessQAEntryWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProcessQAEntryWindow.js
+END
+TriggerEquipAlarmWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TriggerEquipAlarmWindow.js
+END
+InvLocationWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6665/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/InvLocationWindow.js
+END
+ProcessQAEntryList.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/12133/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProcessQAEntryList.js
+END
+TaskInfoGridHT.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/11298/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TaskInfoGridHT.js
+END
+ReportHTJYGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10888/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportHTJYGrid.js
+END
+TerminalMultipleView.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8450/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TerminalMultipleView.js
+END
+TodayMatPlanView.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/8549/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TodayMatPlanView.js
+END
+MatBatchGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/3409/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/MatBatchGrid.js
+END
+ReportDetailView.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4800/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportDetailView.js
+END
+TurnOverMaterialWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TurnOverMaterialWindow.js
+END
+WorkOrderNoInfoGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/9207/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/WorkOrderNoInfoGrid.js
+END
+ChangeOrderValid.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/9968/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ChangeOrderValid.js
+END
+MultiReportDetailView.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7166/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/MultiReportDetailView.js
+END
+ReportSectionGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6386/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportSectionGrid.js
+END
+ShiftRecordView.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8797/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ShiftRecordView.js
+END
+SparkRepairListWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5099/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/SparkRepairListWindow.js
+END
+ReportQAEntryList.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/12114/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportQAEntryList.js
+END
+RepairTypeWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5099/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/RepairTypeWindow.js
+END
+SparkRepairList.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/6936/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/SparkRepairList.js
+END
+TaskInfoGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/6892/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TaskInfoGrid.js
+END
+ApplyMaterials.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/10579/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ApplyMaterials.js
+END
+SignView.js
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/10886/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/SignView.js
+END
+DebugInfoView.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/DebugInfoView.js
+END
+VirtualKeyBoardWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/4957/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/VirtualKeyBoardWindow.js
+END
+TaskInfoDetail.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/8572/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TaskInfoDetail.js
+END
+MaterialGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/9206/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/MaterialGrid.js
+END
+CheckOrderJYWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/6996/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/CheckOrderJYWindow.js
+END
+ReportDetailGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/8815/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportDetailGrid.js
+END
+ChangeWorkOrderEquipWin.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/9337/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ChangeWorkOrderEquipWin.js
+END
+ReportView.js
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/11598/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ReportView.js
+END
+VirtualKeyBoard.js
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/4891/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/VirtualKeyBoard.js
+END
+ProcessQcGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/8517/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProcessQcGrid.js
+END
+TerminalSingleView.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8888/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/TerminalSingleView.js
+END
+ChangeOrderView.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/10560/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ChangeOrderView.js
+END
+ProductReportDetailsView.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/11205/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProductReportDetailsView.js
+END
+EquipView.js
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/11761/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/EquipView.js
+END
+MultiReportDetailGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/7632/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/MultiReportDetailGrid.js
+END
+ProductionRecordView.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProductionRecordView.js
+END
+HandleEquipAlarmGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/9423/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/HandleEquipAlarmGrid.js
+END
+HandleEquipAlarmDetailWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/5118/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/HandleEquipAlarmDetailWindow.js
+END
+FinishRepairValidWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/9456/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/FinishRepairValidWindow.js
+END
+ProcessReceiptGrid.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8517/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/ProcessReceiptGrid.js
+END
+UserIntoDetailValidWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/6936/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/terminal/view/UserIntoDetailValidWindow.js
+END

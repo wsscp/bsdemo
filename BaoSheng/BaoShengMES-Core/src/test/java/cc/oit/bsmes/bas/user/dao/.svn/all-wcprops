@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/BSMES/!svn/ver/5788/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/user/dao
+END
+UserDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/5788/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/user/dao/UserDAOTest.java
+END
+RoleDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/user/dao/RoleDAOTest.java
+END

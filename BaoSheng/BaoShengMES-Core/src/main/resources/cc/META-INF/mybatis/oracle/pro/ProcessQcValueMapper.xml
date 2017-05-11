@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessQcValueDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessQcValue" id="getMap">
+		<result property="processName" column="NAME"/>
+	</resultMap>
+	
+	<sql id="sqlColumns"> 
+        A.ID,
+	    A.CONTRACT_NO,
+	    A.SALES_ORDER_NO,
+	    A.CUSTOMER_ORDER_NO,
+	    A.CUST_PRODUCT_TYPE,
+	    A.CUST_PRODUCT_SPEC,
+	    A.PRODUCT_CODE,
+	    A.PRODUCT_TYPE,
+	    A.PRODUCT_SPEC,
+	    A.WORK_ORDER_NO,
+	    A.CRAFTS_ID,
+	    A.PROCESS_ID,
+	    A.PROCESS_CODE,
+	    A.SAMPLE_BARCODE,
+	    A.CHECK_ITEM_CODE,
+	    V.CHECK_ITEM_NAME,
+	    A.EQIP_CODE,
+	    A.QC_VALUE,
+	    A.QC_RESULT,
+	    A.CHECK_EQIP_CODE,
+	    A.TYPE,
+	    A.CREATE_USER_CODE,
+	    A.CREATE_TIME,
+	    A.MODIFY_USER_CODE,
+	    A.MODIFY_TIME
+	</sql>
+	<sql id="sqlSimpleColumns">          
+           A.CONTRACT_NO,
+           A.SALES_ORDER_NO,
+           A.CUSTOMER_ORDER_NO,
+           A.CUST_PRODUCT_TYPE,
+           A.CUST_PRODUCT_SPEC,
+           A.PRODUCT_CODE,
+           A.PRODUCT_TYPE,
+           A.PRODUCT_SPEC,
+           A.WORK_ORDER_NO,
+           A.PROCESS_ID,
+           A.PROCESS_CODE,
+           A.SAMPLE_BARCODE,
+           A.CHECK_ITEM_CODE,
+           A.EQIP_CODE,
+           A.QC_VALUE,
+           A.QC_RESULT,
+           A.TYPE,
+           A.CHECK_EQIP_CODE,
+           A.MODIFY_USER_CODE,
+           A.MODIFY_TIME
+	</sql>
+	<sql id="getParameter">
+		<if test="contractNo!=null and contractNo!=''">
+		  AND INSTR(A.CONTRACT_NO,#{contractNo,jdbcType=VARCHAR})>0
+		</if>
+		<if test="workOrderNo!=null and workOrderNo!=''">				 
+		  AND INSTR(A.WORK_ORDER_NO,#{workOrderNo,jdbcType=VARCHAR})>0
+		</if>
+		<if test="productCode!=null and productCode!=''">
+		  AND INSTR(A.PRODUCT_CODE,#{productCode,jdbcType=VARCHAR})>0
+		</if>
+		<if test="type != null and type != ''">
+		  AND A.TYPE=#{type,jdbcType=VARCHAR}
+		</if>
+		<if test="custProductType != null and custProductType != ''">
+		  AND A.CUST_PRODUCT_TYPE = #{custProductType, jdbcType=VARCHAR}
+		</if>
+		<if test="custProductSpec != null and custProductSpec != ''">
+		  AND A.CUST_PRODUCT_SPEC = #{custProductSpec, jdbcType=VARCHAR}
+		</if>
+		<if test="processCode != null and processCode != ''">
+		  AND A.PROCESS_CODE = #{processCode, jdbcType=VARCHAR}
+		</if>
+		<if test="eqipCode != null and eqipCode != ''">
+		  AND A.EQIP_CODE = #{eqipCode, jdbcType=VARCHAR}
+		</if>
+		<if test="startTime != null and startTime != ''">
+		  AND A.CREATE_TIME >= #{startTime, jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime != null and endTime != ''">
+		  AND A.CREATE_TIME <![CDATA[ <= ]]> #{endTime, jdbcType=TIMESTAMP}
+		</if>
+	</sql>
+	
+    <!-- 主页查询列表数据 -->
+	<select id="find" parameterType="cc.oit.bsmes.pro.model.ProcessQcValue" resultMap="getMap">
+		SELECT <include refid="sqlColumns"/>,
+		<!--
+		FROM T_PRO_PROCESS_QC_VALUE A,T_PRO_PROCESS_QC V
+		WHERE A.CHECK_ITEM_CODE=V.CHECK_ITEM_CODE AND A.PROCESS_ID=V.PROCESS_ID
+		 -->
+		  P.NAME AS PROCESS_NAME,
+		  S.OPERATOR,
+		  E.NAME AS EQUIP_NAME,
+		  E.EQUIP_ALIAS,
+		  DD.NAME AS USERNAME
+		FROM T_PRO_PROCESS_QC_VALUE A
+         INNER JOIN T_PRO_PROCESS_QC V
+            ON A.CHECK_ITEM_CODE = V.CHECK_ITEM_CODE
+           AND A.PROCESS_ID = V.PROCESS_ID
+          LEFT JOIN T_PLA_CUSTOMER_ORDER C
+            ON A.CUSTOMER_ORDER_NO = C.CUSTOMER_ORDER_NO
+          LEFT JOIN T_ORD_SALES_ORDER S
+            ON C.SALES_ORDER_ID = S.ID
+          LEFT JOIN T_PRO_PROCESS_INFO P
+            ON A.PROCESS_CODE = P.CODE
+          LEFT JOIN T_FAC_EQIP_INFO E
+            ON A.EQIP_CODE = E.CODE
+          LEFT JOIN T_BAS_EMPLOYEE DD 
+    	    ON A.CREATE_USER_CODE=DD.USER_CODE 
+		WHERE  E.TYPE = 'PRODUCT_LINE'
+		<include refid="getParameter"/>
+	</select>
+	
+	<!-- 主页查询计数 -->
+	<select id="count" parameterType="cc.oit.bsmes.pro.model.ProcessQcValue" resultType="int">
+		SELECT COUNT(1)
+		FROM T_PRO_PROCESS_QC_VALUE A,T_PRO_PROCESS_QC V
+		WHERE A.CHECK_ITEM_CODE=V.CHECK_ITEM_CODE AND A.PROCESS_ID=V.PROCESS_ID
+		<include refid="getParameter"/>
+	</select>
+	
+	<select id="findDistinctByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT 
+			q.CHECK_ITEM_CODE,
+			MAX(q.WORK_ORDER_NO) AS WORK_ORDER_NO,
+			MAX(q.PROCESS_ID) AS PROCESS_ID,
+			MAX(q.QC_VALUE) AS QC_VALUE,
+			MAX(q.QC_RESULT) AS QC_RESULT,
+			MAX(q.CHECK_EQIP_CODE) AS CHECK_EQIP_CODE
+		FROM T_PRO_PROCESS_QC_VALUE	q
+		WHERE q.WORK_ORDER_NO = #{workOrderNo}
+		GROUP BY q.CHECK_ITEM_CODE
+	</select>
+	
+	<insert id="saveProcessQcValue" parameterType="string">
+		CALL SAVE_PROCESS_QC_VALUE( #{param1,jdbcType=VARCHAR},
+                                    #{param2,jdbcType=VARCHAR},
+                                    #{param3,jdbcType=VARCHAR},
+                                    #{param4,jdbcType=VARCHAR},
+                                    #{param5,jdbcType=VARCHAR},
+                                    #{param6,jdbcType=VARCHAR},
+                                    #{param7,jdbcType=VARCHAR},
+                                    #{param8,jdbcType=VARCHAR},
+                                    #{param9,jdbcType=INTEGER})
+	</insert>
+
+	<select id="checkExistsInputQcValueByWoNo" parameterType="map" resultType="int">
+        SELECT
+            COUNT(ID)
+        FROM T_PRO_PROCESS_QC_VALUE
+        WHERE WORK_ORDER_NO = #{woNo}
+        AND TYPE = #{type}
+		<if test="type != 'IN_CHECK'">
+            AND COIL_NUM = #{coilNum}
+		</if>
+	</select>
+	<select id="getLastByWorkOrderNoAndType" parameterType="string" resultType='cc.oit.bsmes.pro.model.ProcessQcValue'>
+        SELECT * FROM (
+           SELECT TYPE ,MAX(CREATE_TIME) as CREATE_TIME
+           FROM  T_PRO_PROCESS_QC_VALUE
+           WHERE WORK_ORDER_NO=#{workOrderNo}
+    	   	AND TYPE IN ('IN_CHECK','OUT_CHECK','MIDDLE_CHECK')
+           GROUP BY TYPE)
+	</select>
+
+	<update id="updateDA" parameterType="string" flushCache="true">
+		UPDATE T_PRO_PROCESS_QC_VALUE SET SAMPLE_BARCODE = #{param1} WHERE SAMPLE_BARCODE IS NULL AND WORK_ORDER_NO = #{param2}
+	</update>
+
+	
+	<select id="getQaList" parameterType="string" resultMap='getMap'>
+		SELECT * FROM T_PRO_PROCESS_QC_VALUE R
+		WHERE R.MODIFY_TIME <![CDATA[ <= ]]>#{endTime,jdbcType=VARCHAR}
+		AND R.MODIFY_TIME>=#{startTime,jdbcType=VARCHAR}
+		<include refid = "getParameter1"/>
+	</select>
+	
+	
+	<select id="countQaList" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM T_PRO_PROCESS_QC_VALUE R
+		WHERE R.MODIFY_TIME <![CDATA[ <= ]]>#{endTime,jdbcType=VARCHAR}
+		AND R.MODIFY_TIME>=#{startTime,jdbcType=VARCHAR}
+		<include refid = "getCount"/>
+	</select>
+	
+	<sql id="getParameter1">
+		<if test="type!=null and type!=''">
+			AND R.TYPE=#{type,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<sql id="getCount">
+		<if test="type!=null and type!=''">
+			AND R.TYPE=#{type,jdbcType=VARCHAR}
+		</if>
+	</sql>
+
+	
+	<select id="queryProcessQcValueCoilNum" parameterType="string" resultType="string">
+		SELECT MAX(COIL_NUM)
+		FROM T_PRO_PROCESS_QC_VALUE
+		WHERE WORK_ORDER_NO = #{param1}
+		AND TYPE = #{param2}
+		AND EQIP_CODE = #{param3}
+	</select>
+
+</mapper>

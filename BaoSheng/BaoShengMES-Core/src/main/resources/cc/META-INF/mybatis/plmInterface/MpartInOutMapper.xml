@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.MpartInOutDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.MpartInOut"
+		id="getMap">
+	</resultMap>
+
+	<select id="getAsyncDataList" parameterType="string"
+		resultType="cc.oit.bsmes.interfacePLM.model.MpartInOut">
+      <![CDATA[
+	    SELECT 
+	      PROCESS.ID AS PROCESS_ID,
+	      MPART.*, 
+	      MPARTO.XHNUM AS QUANTITY,
+	      'IN' AS IN_OUT
+        FROM
+          PROCESS PROCESS, 
+          MPART MPART, 
+          MPART_OBJOF MPARTO
+        WHERE 
+          PROCESS.ID = MPARTO.ITEMID1
+          AND MPARTO.ITEMTN1 = 'PROCESS'
+          AND MPART.ID = MPARTO.ITEMID2
+          AND MPARTO.ITEMTN2 = 'MPART'      
+          AND PROCESS.DEL = '0'
+          AND PROCESS.WKAID <> '3'         
+          AND MPART.DEL = '0'
+          AND MPART.WKAID <> '3'
+          AND MPART.NAME IS NOT NULL
+          AND MPARTO.DEL = '0'
+          AND MPARTO.WKAID <> '3'
+          AND MPARTO.DEL = '0'
+          AND MPARTO.WKAID <> '3'
+          AND PROCESS.ID=#{processId,jdbcType=VARCHAR}
+        UNION ALL   
+        SELECT 
+          PROCESS.ID AS PROCESSID,
+          MPART.*, 
+          NULL AS QUANTITY,
+          'OUT' AS IN_OUT
+        FROM 
+          PROCESS PROCESS, 
+          MPART MPART, 
+          MPART2_OBJOF MPARTO
+        WHERE 
+          PROCESS.ID = MPARTO.ITEMID1
+          AND MPARTO.ITEMTN1 = 'PROCESS'
+          AND MPART.ID = MPARTO.ITEMID2
+          AND MPARTO.ITEMTN2 = 'MPART'
+          AND PROCESS.DEL = '0'
+          AND PROCESS.WKAID <> '3'
+          AND MPART.DEL = '0'
+          AND MPART.WKAID <> '3'
+          AND MPART.NAME IS NOT NULL
+          AND MPARTO.DEL = '0'
+          AND MPARTO.WKAID <> '3'
+          AND PROCESS.ID=#{processId,jdbcType=VARCHAR}
+      ]]>
+	</select>
+	<select id="getRealMpart" parameterType="map" resultMap="getMap">
+		SELECT ID,NO,NAME,CTIME,MTIME,CSTYPE,CSVALUE1,SMEMO,CSVALUE2,CSVALUE3
+		FROM MPART
+		WHERE DEL='0' AND NO IS NOT NULL
+		AND WKAID <![CDATA[ <>]]>
+		'3'
+		<if test="lastDate != null">
+			AND <![CDATA[(CTIME > #{lastDate} OR MTIME > #{lastDate})]]>
+		</if>
+	</select>
+
+
+
+
+	<update id="update" parameterType="cc.oit.bsmes.interfacePLM.model.MpartInOut">
+		UPDATE MPART SET
+		<if test="dxid != null and dxid !=''">
+			DXID = #{dxid,jdbcType=VARCHAR},
+		</if>
+
+		NO = #{no,jdbcType=VARCHAR}
+
+		WHERE ID = #{id,jdbcType=VARCHAR}
+
+
+	</update>
+
+	<select id="getAll" resultMap="getMap">
+		SELECT
+		*
+		FROM MPART
+	</select>
+
+	<select id="find" parameterType="cc.oit.bsmes.interfacePLM.model.MpartInOut"
+		resultMap="getMap">
+		SELECT
+		*
+		FROM MPART WHERE NO=#{no,jdbcType=VARCHAR} AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</select>
+
+	<update id="update" parameterType="cc.oit.bsmes.interfacePLM.model.MpartInOut">
+		UPDATE MPART
+		<set>
+			<if test="yanse != null and yanse !=''">
+				YANSE = #{yanse,jdbcType=VARCHAR},
+			</if>
+			NO = #{no,jdbcType=VARCHAR}
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateCsvalue1" parameterType="cc.oit.bsmes.interfacePLM.model.MpartInOut">
+		UPDATE MPART
+		<set>
+			MTIME=SYSDATE
+			<if test="csvalue1 != null and csvalue1 !=''">
+				,CSVALUE1 = #{csvalue1,jdbcType=VARCHAR}
+			</if>
+			<if test="csvalue2 != null and csvalue2 !=''">
+				,CSVALUE2 = #{csvalue2,jdbcType=VARCHAR}
+			</if>
+			<if test="csvalue3 != null and csvalue3 !=''">
+				,CSVALUE3 = #{csvalue3,jdbcType=VARCHAR}
+			</if>
+			<if test="yanse != null and yanse !=''">
+				, YANSE = #{yanse,jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<select id="getAllMpartByProductId" parameterType="String"
+		resultMap="getMap">		
+		<![CDATA[
+		SELECT M.* FROM PRODUCT P
+		INNER JOIN PRCV_OBJOF PO ON (PO.ITEMID1=P.ID AND PO.WKAID<>'3')
+		INNER JOIN PRCV ON (PRCV.ID=PO.ITEMID2 AND PRCV.WKAID<>'3')
+		INNER JOIN PROCESS_OBJOF PRO ON(PRO.ITEMID1=PRCV.ID AND PRO.WKAID<>'3')
+		INNER JOIN PROCESS ON(PROCESS.ID=PRO.ITEMID2 AND PROCESS.WKAID<>'3')
+		INNER JOIN MPART_OBJOF MO ON(MO.ITEMID1=PROCESS.ID AND MO.WKAID<>'3')
+		INNER JOIN MPART M ON(MO.ITEMID2=M.ID AND M.WKAID<>'3')
+		WHERE P.ID=#{productId,jdbcType=VARCHAR}	
+		AND M.CSTYPE LIKE '%半成品%'	
+		]]>
+		
+	</select>
+	
+	<select id="getAllDaoti" resultMap="getMap">
+		<![CDATA[
+			SELECT NO,NAME,DIAOTIE,CSVALUE1,CSVALUE2,CSVALUE3,CSTYPE
+		    FROM MPART WHERE (CSTYPE='导体' OR CSTYPE='单丝')
+		    AND WKAID<>'3'  
+		    AND DIAOTIE IS NOT NULL
+		]]>
+	</select>
+	
+	<select id="getMpartByName" parameterType="String" resultMap="getMap">
+		<![CDATA[
+			SELECT * FROM MPART WHERE NO=#{name,jdbcType=VARCHAR}
+			AND WKAID<>'3'
+		]]>
+	</select>
+	
+	<select id="getAllDaotiMpart" resultMap="getMap">
+		SELECT * FROM MPART WHERE (CSTYPE='导体' or CSTYPE='单丝')
+		AND WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<select id="getFieldsByMpartNo" parameterType="String" resultType="map">
+		<![CDATA[
+			SELECT SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][S]\-[0][0][2]\-[0][0][3]\=[^\^]{2,10}',1,1),12) AS DIA,
+			SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][S]\-[0][0][3]\-[0][1][0]\=[^\^]{2,10}',1,1),12) AS WEIGHT,
+			SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][S]\-[0][0][1]\-[0][0][9]\=[^\^]{2,10}',1,1),12) AS STRU
+			FROM MPART WHERE WKAID<>'3'
+			AND CSTYPE='单丝'
+			AND NO=#{mpartNo,jdbcType=VARCHAR}
+		]]>
+	</select>
+	
+	<select id="getFieldsByMpartNoDT" parameterType="String" resultType="map">
+		<![CDATA[
+			SELECT NO, SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][T]\-[0][0][1]\-[0][0][5]\=[^\^]{2,10}',1,1),12) AS DIA,
+			SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][T]\-[0][0][2]\-[0][0][2]\=[^\^]{2,10}',1,1),12) AS MDIA,
+			SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][T]\-[0][0][3]\-[0][0][2]\=[^\^]{2,10}',1,1),12) AS WEIGHT,
+			SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[D][T]\-[0][0][1]\-[0][0][2]\=[^\^]{2,10}',1,1),12) AS STRU
+			FROM MPART WHERE WKAID<>'3'
+			AND CSTYPE='导体'
+			AND NO=#{mpartNo,jdbcType=VARCHAR}			
+		]]>
+	</select>
+	
+	<select id="getMaterialJYByProcessId" parameterType="String" resultMap="getMap">
+		SELECT * FROM MPART WHERE ID IN
+		(SELECT ITEMID2 FROM MPART_OBJOF WHERE ITEMID1=#{processId,jdbcType=VARCHAR}
+		AND WKAID <![CDATA[<>]]>'3') AND CSTYPE='绝缘护套'
+	</select>
+	
+	<select id="getMatJYSpecById" parameterType="String" resultType="map">
+		SELECT SUBSTR(REGEXP_SUBSTR(CSVALUE1,'[J][Y]\-[0][0][2]\-[0][0][1]\=[^\^]{2,10}',1,1),12) AS SPEC
+	    FROM MPART WHERE WKAID <![CDATA[<>]]> '3'
+	    AND ID=#{mpartId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductProcessWipDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProductProcessWip" id="getMap">
+		<result property="id" column="ID" />
+	</resultMap>
+
+	<sql id="processColumns">
+		P."ID",
+		P.PROCESS_CODE,
+		P.PROCESS_NAME,
+		P.SEQ,
+		P.PRODUCT_CRAFTS_ID,
+		P.PROCESS_TIME,
+		P.SET_UP_TIME,
+		P.SHUT_DOWN_TIME,
+		P.FULL_PATH,
+		P.NEXT_PROCESS_ID,
+		P.SAME_PRODUCT_LINE,
+		P.IS_OPTION,P.IS_DEFAULT_SKIP,
+		P.CREATE_USER_CODE,P.CREATE_TIME,P.MODIFY_USER_CODE,P.MODIFY_TIME
+	</sql>
+	<sql id="findByCraftsIdAndParamCondition">
+		FROM T_PRO_PRODUCT_PROCESS_WIP P
+		INNER JOIN T_PRO_PRODUCT_CRAFTS_WIP C ON P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN T_PRO_PRODUCT_PROCESS_WIP NEXT ON P.NEXT_PROCESS_ID = NEXT.ID
+		<where>
+			<if test="processCode != null and processCode != '' ">
+				AND P.PROCESS_CODE LIKE  #{processCode}
+			</if>
+			<if test="processName != null and processName != '' ">
+				AND P.PROCESS_NAME LIKE  #{processName}
+			</if>
+			<if test="productCraftsId != null and productCraftsId != '' ">
+				AND C.ID = #{productCraftsId}
+			</if>
+			<if test="nextProcessId != null and nextProcessId != '' ">
+				AND P.NEXT_PROCESS_ID = #{nextProcessId}
+			</if>
+		</where>
+	</sql>
+		
+	<!-- 用于列表查询的SQL语句 -->
+	<select id="findByCraftsIdAndParam" resultMap="getMap">
+		SELECT 
+		<include refid="processColumns"/> ,
+			C.CRAFTS_NAME,
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+	
+	<!-- 用于查询列表条数的SQL语句 -->
+	<select id="countByCraftsIdAndParam" resultType="int">
+		SELECT 
+			COUNT(1)
+		<include refid="findByCraftsIdAndParamCondition"/>
+	</select>
+	
+	<select id="getOldPorcessIdById" parameterType="string" resultType="string">
+	   SELECT OLD_PROCESS_ID FROM T_PRO_PRODUCT_PROCESS_WIP WHERE ID = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 查看工艺流程详情 -->
+	<select id="getByProductCraftsIdAsc" parameterType="string" resultMap="getMap">
+		SELECT <include refid="processColumns"/>,  
+			NEXT.PROCESS_NAME AS NEXT_PROCESS_NAME,
+			(SELECT  WMSYS.WM_CONCAT(t.EQUIP_CODE) FROM (SELECT * FROM T_PRO_EQIP_LIST_WIP l WHERE l.IS_DEFAULT='1' ORDER BY l.EQUIP_CODE ) t WHERE t.PROCESS_ID=P.ID) AS EQUIP_CODE_ARRAY , 
+		    (SELECT  WMSYS.WM_CONCAT(t.NAME || '[' || t.CODE || ']') FROM (SELECT e.*,l.PROCESS_ID FROM T_PRO_EQIP_LIST_WIP l, T_FAC_EQIP_INFO E WHERE l.EQUIP_CODE=E.CODE AND l.IS_DEFAULT='1' ORDER BY l.equip_code) t WHERE t.PROCESS_ID=P.ID)  AS EQUIP_NAME_ARRAY 
+		FROM T_PRO_PRODUCT_PROCESS_WIP P
+		INNER JOIN
+		    T_PRO_PRODUCT_CRAFTS_WIP C
+		ON
+		    P.PRODUCT_CRAFTS_ID = C.ID
+		LEFT JOIN
+		    T_PRO_PRODUCT_PROCESS_WIP NEXT
+		ON
+		    P.NEXT_PROCESS_ID = NEXT.ID
+		WHERE P.PRODUCT_CRAFTS_ID=#{productCraftsId,jdbcType=VARCHAR}
+		ORDER BY TO_NUMBER(P.SEQ) ASC
+	</select>
+	
+	<update id="updateModifyRemarks" parameterType="map">
+	    UPDATE T_PRO_PRODUCT_PROCESS_WIP 
+	    SET MODIFY_REMARKS= #{modifyRemarks, jdbcType=VARCHAR},
+	    MODIFY_USER_CODE= #{modifyUserCode, jdbcType=VARCHAR},
+	    MODIFY_TIME= #{modifyTime, jdbcType=DATE}
+	    WHERE ID = #{productProcessId, jdbcType=VARCHAR}
+
+	</update>
+
+    <insert id="insertAll" parameterType="java.util.List">
+         INSERT INTO T_PRO_PRODUCT_PROCESS_WIP(ID,PROCESS_CODE,PROCESS_NAME,SEQ,CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,
+         PRODUCT_CRAFTS_ID,PROCESS_TIME,SET_UP_TIME,SHUT_DOWN_TIME,FULL_PATH,NEXT_PROCESS_ID,SAME_PRODUCT_LINE,IS_OPTION,IS_DEFAULT_SKIP,OLD_PROCESS_ID)
+        <foreach collection="productProcessList" item="item" index="index" 
+			  separator="union all">
+			  SELECT
+			  #{item.id,jdbcType=VARCHAR},#{item.processCode,jdbcType=VARCHAR},
+			  #{item.processName,jdbcType=VARCHAR},#{item.seq,jdbcType=VARCHAR},
+			  sysdate, 'Service', 
+			  sysdate, 'Service', 
+			  #{item.productCraftsId,jdbcType=VARCHAR},#{item.processTime,jdbcType=VARCHAR},
+			  #{item.setUpTime,jdbcType=VARCHAR},#{item.shutDownTime,jdbcType=VARCHAR},
+			  #{item.fullPath,jdbcType=VARCHAR},#{item.nextProcessId,jdbcType=VARCHAR},
+			  #{item.sameProductLine,jdbcType=VARCHAR},#{item.isOption,jdbcType=VARCHAR},#{item.isDefaultSkip,jdbcType=VARCHAR},
+			  #{item.oldProcessId,jdbcType=VARCHAR}
+			  FROM DUAL
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteDate" parameterType="string">
+       DELETE FROM T_PRO_PRODUCT_PROCESS_WIP WHERE PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+    </delete>
+
+</mapper>

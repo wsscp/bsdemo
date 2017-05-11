@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.AmoebaDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.Amoeba" id="getMap">
+	</resultMap>
+	
+	<sql id="sqlColumns">
+		E."ID",
+		E.COL00,
+		E.COL01,
+		E.COL02,
+		E.COL03,
+		E.COL04,
+		E.COL05,
+		E.COL06,
+		E.COL07,
+		E.COL08,
+		E.COL09,
+		E.COL10,
+		E.COL11,
+		E.COL12,
+		E.COL13,
+		E.COL14,
+		E.COL15,
+		E.COL16,
+		E.COL17,
+		E.COL18,
+		E.COL19,
+		E.COL20,
+		E.COL21,
+		E.COL22,
+		E.COL23,
+		E.COL24,
+		E.COL25,
+		E.COL26,
+		E.COL27,
+		E.COL28,
+		E.COL29,
+		E.COL30,
+		E.CREATE_USER_CODE,
+		E.CREATE_TIME,
+		E.MODIFY_USER_CODE,
+		E.MODIFY_TIME
+	</sql>
+	
+	<sql id="findParams">
+		<where>
+			<if test="col01 != null and col01 != ''">
+				AND E.COL01 = #{col01,jdbcType=VARCHAR}
+			</if>
+			<if test="col02 != null and col02 != ''">
+				AND E.COL02 = #{col02,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="find" resultMap="getMap">
+		SELECT <include refid="sqlColumns" />
+		FROM T_BAS_AMOEBA E
+		<include refid="findParams" />
+	</select>
+	
+	<select id="count" resultType="int">
+		SELECT COUNT(*)
+		FROM T_BAS_AMOEBA E
+		<include refid="findParams" />
+	</select>    
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ModDAO">
+    <resultMap type="cc.oit.bsmes.interfacePLM.model.Mod" id="getMap">
+    </resultMap>
+    
+	<select id="getByProductId" parameterType="map" resultMap="getMap">
+		SELECT A.*
+		FROM MOD A,MOD_OBJOF B,PRODUCT C
+		WHERE A.ID=B.ITEMID2 AND B.ITEMID1=C.ID AND C.ID=#{productId}
+		AND C.WKAID<![CDATA[<>]]>'3'
+		AND A.WKAID<![CDATA[<>]]>'3'
+		AND B.WKAID<![CDATA[<>]]>'3'
+	</select>
+	
+	<insert id="insertMod" parameterType="cc.oit.bsmes.interfacePLM.model.Mod">
+		INSERT INTO MOD(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,NO,NAME,VER,FNAME,
+		LOCATION,CREATOR,CTIME,MUSER,MTIME,OWNER,STATE,FSIZE,FMTIME,FMSTATE)
+		VALUES(#{id},'0','N','1',#{designno},#{bldesignno},
+		#{no},#{name},'1',#{fname},#{location},'admin',sysdate,'admin',sysdate,
+		'admin','A',#{fsize,jdbcType=INTEGER},sysdate,'0')
+	</insert>
+	
+	<insert  id="insertModObjof" parameterType="map">
+		INSERT INTO MOD_OBJOF(ID,DEL,MSYM,WKAID,DESIGNNO,BLDESIGNNO,CREATOR,CTIME,
+		OWNER,STATE,ITEMID1,ITEMTN1,ITEMID2,ITEMTN2) VALUES
+		(#{id},0,'N','1',#{designNo},#{designNo},'admin',sysdate,
+		'admin','A',#{productId},'PRODUCT',#{modId},'MOD')
+	</insert>
+	
+	<select id="getByProductNo" parameterType="String" resultMap="getMap">
+		<![CDATA[
+			SELECT ID,NO,NAME,FNAME,LOCATION FROM MOD
+			WHERE NO=#{no,jdbcType=VARCHAR} AND WKAID<>'3'
+		]]>
+	</select>
+	
+	<delete id="deleteByProductNo" parameterType="String">
+		DELETE FROM MOD WHERE NO=#{no,jdbcType=VARCHAR}
+	</delete>
+	
+	<delete id="deleteObjofByProductId" parameterType="String">
+		DELETE FROM MOD_OBJOF WHERE ITEMID1=#{id,jdbcType=VARCHAR}
+	</delete>
+	
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.history.wip.dao.HisWorkOrderDAO">
+
+	<resultMap type="cc.oit.bsmes.history.wip.model.HisWorkOrder" id="getMap">
+	</resultMap>
+
+	<!-- 查询订单的生产单数量 -->
+	<select id="countByOrderItemId" parameterType="string" resultType="int">
+		SELECT count(*)
+		  FROM T_WIP_WORK_ORDER WO, T_WIP_WO_CUSORDER_RELATION CR
+		 WHERE WO.ID = CR.WORK_ORDER_ID
+		   AND WO.STATUS <![CDATA[<>]]> 'CANCELED'
+		   AND CR.CUS_ORDER_ITEM_ID = #{orderItemId, jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

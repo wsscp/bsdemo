@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/BSMES/!svn/ver/5827/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/dao
+END
+EquipCalendarDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/dao/EquipCalendarDAOTest.java
+END
+MesClientManEqipDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/dao/MesClientManEqipDAOTest.java
+END
+ParmsMappingDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/5827/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/dao/ParmsMappingDAOTest.java
+END
+EmployeeDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5788/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/dao/EmployeeDAOTest.java
+END
+MesClientDAOTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/test/java/cc/oit/bsmes/bas/dao/MesClientDAOTest.java
+END

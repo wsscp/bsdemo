@@ -1,0 +1,13 @@
+Ext.define('bsmes.store.HandScheduleCLStore', {
+			extend : 'Oit.app.data.GridStore',
+			model : 'bsmes.model.WorkOrder',
+			autoLoad : false,
+			sorters : [{
+						property : 'releaseDate',
+						direction : 'DESC'
+					}],
+			proxy : {
+				type : 'rest',
+				url : 'handSchedule/listCL'
+			}
+		});

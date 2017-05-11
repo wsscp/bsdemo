@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.PrcvDAO">
+	<resultMap type="cc.oit.bsmes.interfacePLM.model.Prcv" id="getMap">
+	</resultMap>
+
+	<select id="getAsyncDataList" parameterType="date"
+		resultType="cc.oit.bsmes.interfacePLM.model.Prcv">
+	  SELECT * FROM(
+	  SELECT * FROM (
+	  <![CDATA[
+	    SELECT 
+	      PRODUCT.NO AS PRODUCT_NO, 
+	      PRCV.*
+	    FROM 
+	      PRODUCT   PRODUCT,
+	      PRCV        PRCV,
+	      PRCV_OBJOF  PRCVO
+	    WHERE PRODUCT.ID = PRCVO.ITEMID1
+	    AND 
+	      PRCVO.ITEMTN1 = 'PRODUCT'
+	      AND PRCV.ID = PRCVO.ITEMID2
+	      AND PRCVO.ITEMTN2 = 'PRCV'
+	      AND PRODUCT.DEL='0' 
+	      AND PRODUCT.WKAID<>'3'
+	      AND PRCV.DEL='0' 
+	      AND PRCV.WKAID<>'3'
+	      AND PRCVO.DEL='0' 
+	      AND PRCVO.WKAID<>'3'
+	      AND INSTR(LOWER(PRCV.NO),'san')=0 
+	      AND PRCV.SYNC_MARK='1'
+      ]]>
+		<if test="lastDate != null">
+			AND <![CDATA[decode( PRCV.MTIME,null,PRCV.CTIME,PRCV.MTIME) > #{lastDate} ]]>
+		</if>
+		<![CDATA[
+		UNION 
+	      SELECT 
+	      PRODUCT.NO AS PRODUCT_NO, 
+	      PRCV.*
+	    FROM 
+	      PRODUCT   PRODUCT,
+	      PRCV        PRCV,
+	      PRCV_OBJOF  PRCVO
+	      WHERE PRODUCT.ID = PRCVO.ITEMID1
+	      AND 
+	      PRCVO.ITEMTN1 = 'PRODUCT'
+	      AND PRCV.ID = PRCVO.ITEMID2
+	      AND PRCVO.ITEMTN2 = 'PRCV'
+	      AND PRODUCT.DEL='0' 
+	      AND PRODUCT.WKAID<>'3'
+	      AND PRCV.DEL='0' 
+	      AND PRCV.WKAID<>'3'
+	      AND PRCVO.DEL='0' 
+	      AND PRCVO.WKAID<>'3'
+	      AND PRCV.SYNC_MARK='1'
+	      AND PRCV.SMEMO='未导入'			
+		]]>		
+		 )
+		ORDER BY decode(MTIME,null,CTIME,MTIME) ASC NULLS FIRST)
+		WHERE ROWNUM <![CDATA[<=]]>10  
+	</select>
+
+	<!-- MES 同步 PLM 根据产品编码获取PLM工艺信息 -->
+	<select id="getPrcvArrayByProductCodeArray" parameterType="map"
+		resultType="cc.oit.bsmes.interfacePLM.model.Prcv">
+	  <![CDATA[
+	    SELECT 
+	      PRODUCT.NO AS PRODUCT_NO, 
+	      PRCV.*
+	    FROM 
+	      PRODUCT   PRODUCT,
+	      PRCV        PRCV,
+	      PRCV_OBJOF  PRCVO
+	    WHERE PRODUCT.ID = PRCVO.ITEMID1
+	    AND 
+	      PRCVO.ITEMTN1 = 'PRODUCT'
+	      AND PRCV.ID = PRCVO.ITEMID2
+	      AND PRCVO.ITEMTN2 = 'PRCV'
+	      AND PRODUCT.DEL='0' 
+	      AND PRODUCT.WKAID<>'3'
+	      AND PRCV.DEL='0' 
+	      AND PRCV.WKAID<>'3'
+	      AND PRCVO.DEL='0' 
+	      AND PRCVO.WKAID<>'3'
+      ]]>
+		AND PRODUCT.NO IN
+		<foreach collection="productCodeArray" item="productCode"
+			open="(" separator="," close=")">
+			#{productCode, jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+	<update id="updateLoNameFsize" parameterType="map">
+		UPDATE PRCV SET
+		LOCATION=#{location},FNAME=#{fname},FSIZE=#{fsize}
+		WHERE
+		ID=#{nPrcvId}
+	</update>
+
+	<update id="updatePrcvModifyTime" parameterType="string">
+		UPDATE PRCV PP SET PP.MTIME=SYSDATE WHERE PP.ID IN (
+		SELECT ITEMID2
+		FROM PRODUCT P,PRCV_OBJOF PO
+		WHERE P.ID=PO.ITEMID1
+		AND P.DEL = '0'
+		AND P.WKAID = '1'
+		AND P.NO = #{productCode, jdbcType=VARCHAR})
+	</update>
+
+
+	<select id="getPrcvByProductNo" parameterType="String"
+		resultMap="getMap">
+	      <![CDATA[
+	    SELECT 
+	      PRODUCT.NO AS PRODUCT_NO, 
+	      PRCV.*
+	    FROM 
+	      PRODUCT   PRODUCT,
+	      PRCV        PRCV,
+	      PRCV_OBJOF  PRCVO
+	    WHERE PRODUCT.ID = PRCVO.ITEMID1
+	    AND 
+	      PRCVO.ITEMTN1 = 'PRODUCT'
+	      AND PRCV.ID = PRCVO.ITEMID2
+	      AND PRCVO.ITEMTN2 = 'PRCV'
+	      AND PRODUCT.DEL='0' 
+	      AND PRODUCT.WKAID<>'3'
+	      AND PRCV.DEL='0' 
+	      AND PRCV.WKAID<>'3'
+	      AND PRCVO.DEL='0' 
+	      AND PRCVO.WKAID<>'3'
+	      AND PRODUCT.NO=#{param,jdbcType=VARCHAR}
+      ]]>
+	</select>
+
+
+	<select id="getPrcvByNo" parameterType="String" resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PRCV pr
+		WHERE
+		REPLACE(NO,' ','')=#{param,jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+		AND EXISTS
+		(
+		SELECT
+		*
+		FROM
+		PRCV_OBJOF po
+		WHERE
+		po.itemid2=pr.id)
+	</select>
+
+	<select id="checkExistPrcvObjof" parameterType="map" resultMap="getMap">
+		SELECT
+		*
+		FROM
+		PRCV pr
+		WHERE
+		REPLACE(NO,' ','')=#{newPrcvNo}
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+		AND EXISTS
+		(
+		SELECT
+		*
+		FROM
+		PRCV_OBJOF po
+		WHERE
+		po.itemid2=pr.id
+		AND
+		po.itemid1=#{productId})
+	</select>
+
+	<select id="checkPrcvByNo" parameterType="String" resultMap="getMap">
+		SELECT * FROM PRCV PR WHERE REPLACE(PR.NO,' ','')=#{param,jdbcType=VARCHAR}
+		AND EXISTS (SELECT * FROM PROCESS_OBJOF
+		PO,PRCV_OBJOF POB,PRODUCT P WHERE PO.ITEMID1=PR.ID
+		AND PR.ID=POB.ITEMID2 AND POB.WKAID<![CDATA[<>]]>'3'
+		AND POB.ITEMID1=P.ID)
+		AND PR.WKAID<![CDATA[<>]]>'3'
+		AND PR.DEL='0'
+	</select>
+
+	<select id="checkNoUseData" parameterType="String" resultMap="getMap">
+		SELECT * FROM PRCV PR WHERE REPLACE(PR.NO,'
+		','')=#{param,jdbcType=VARCHAR}
+		AND EXISTS (SELECT * FROM PROCESS_OBJOF
+		PO,PRCV_OBJOF PRO WHERE PO.ITEMID1=PR.ID
+		AND PRO.ITEMID2=PR.ID)
+		AND
+		PR.WKAID<![CDATA[<>]]>'3'
+		AND PR.DEL='0'
+		AND PR.CREATOR<![CDATA[<>]]>'MES'
+	</select>
+
+	<select id="getAllMesPrcv" resultMap="getMap">
+		<!-- SELECT PRCV.* FROM PRCV INNER JOIN PRCV_OBJOF PO ON PRCV.ID=PO.ITEMID2
+		INNER JOIN PRODUCT P ON P.ID=PO.ITEMID1 AND P.DESCRIBE IS NULL WHERE
+		PRCV.CREATOR='MES'
+		AND PRCV.WKAID<![CDATA[<>]]>'3'
+		AND PRCV.DEL='0'
+		AND INSTR(PRCV.LOCATION,PRCV.ID)=0
+        AND PRCV.CTIME<![CDATA[>]]>TO_DATE('2015-10-21 00:00:01','yyyy-mm-dd HH24:mi:ss')
+        AND PRCV.CTIME<![CDATA[<]]>TO_DATE('2015-10-23 00:00:01','yyyy-mm-dd HH24:mi:ss') -->
+        SELECT PRCV.* FROM PRCV INNER JOIN PRCV_OBJOF PO ON PRCV.ID=PO.ITEMID2
+		INNER JOIN PRODUCT P ON P.ID=PO.ITEMID1 AND P.DESCRIBE IS NULL WHERE
+		PRCV.CREATOR='MES'
+		AND PRCV.WKAID<![CDATA[<>]]>'3'
+		AND PRCV.DEL='0'
+		AND INSTR(PRCV.LOCATION,PRCV.ID)=0
+		and prcv.no in
+		('CZ50200450108-001',
+'CZ50200450006-001',
+'CZ50200450018-001',
+'CZ50200450032-001',
+'CZ50200450044-001',
+'CZ50200450058-001',
+'CZ50200450071-001',
+'CZ50200450083-001',
+'CZ50200450109-001',
+'CZ50200450008-001',
+'CZ50200450020-001',
+'CZ50200450033-001',
+'CZ50200450046-001',
+'CZ50200450111-001',
+'CZ50200450212-001',
+'CZ50200450009-001',
+'CZ50200450035-001',
+'CZ50200450088-001',
+'CZ50200450163-001',
+'CZ50200450112-001',
+'CZ50200450136-001')
+        
+	</select>
+	
+	<select id="checkPrcvContain" parameterType="string" resultMap="getMap">
+	    SELECT * FROM PRCV PR WHERE REPLACE(PR.NO,' ','')=#{param,jdbcType=VARCHAR}
+	    AND CREATOR<![CDATA[<>]]>'MES'
+	    AND WKAID<![CDATA[<>]]>'3'
+	    AND INSTR(FNAME,NO)=0
+	</select>
+	
+	<update id="changePrcvFname" parameterType="string">
+	    UPDATE (SELECT * FROM PRCV PR WHERE REPLACE(PR.NO,' ','')=#{param,jdbcType=VARCHAR}
+	    AND CREATOR<![CDATA[<>]]>'MES'
+	    AND WKAID<![CDATA[<>]]>'3'
+	    AND INSTR(FNAME,NO)=0)
+	    SET FNAME=NO||'.sfm'
+	</update>
+	
+	<select id="getSingleMesPrcv" parameterType="string" resultMap="getMap">
+		SELECT PRCV.* FROM PRCV INNER JOIN PRCV_OBJOF PO ON PRCV.ID=PO.ITEMID2
+		INNER JOIN PRODUCT P ON P.ID=PO.ITEMID1 AND P.DESCRIBE IS NULL WHERE
+		PRCV.CREATOR='MES'
+		AND PRCV.WKAID<![CDATA[<>]]>'3'
+		AND PRCV.DEL='0'
+		AND INSTR(PRCV.LOCATION,PRCV.ID)=0
+		AND PRCV.NO = #{prcvNo,jdbcType=VARCHAR}
+        <!-- and prcv.id='01_76699BF6C7DC4EB5BB0C7D1852009AED' -->
+	</select>
+
+	<insert id="insertPrcvByCopy" parameterType="Map">
+		INSERT
+		INTO
+		PRCV
+		(
+		ID,
+		DEL,
+		MSYM,
+		WKAID,
+		DESIGNNO,
+		BLDESIGNNO,
+		NO,
+		NAME,
+		ENAME,
+		DRTNAME,
+		VER,
+		PTYPE,
+		CREATOR,
+		CTIME,
+		MUSER,
+		MTIME,
+		CHKUSR,
+		CHKTIME,
+		DUSER,
+		DELTIME,
+		ALTERUSER,
+		OWNER,
+		STATE,
+		SMEMO,
+		SCCC,
+		CZZT,
+		SEL,
+		MODNAME,
+		LOCATION,
+		FNAME,
+		FILEVER,
+		FSIZE,
+		FMTIME,
+		FMSTATE,
+		TFNAME,
+		TLOCATION,
+		TFMSTATE,
+		PFNAME,
+		PLOCATION,
+		PFMSTATE
+		)
+		SELECT #{prcvNewId},
+		DEL,
+		MSYM,
+		WKAID,
+		#{prcvDesignno},
+		#{prcvDesignno},
+		#{newPrcvNo},
+		NAME,
+		ENAME,
+		DRTNAME,
+		VER,
+		PTYPE,
+		'MES',
+		sysdate,
+		'MES',
+		sysdate,
+		CHKUSR,
+		CHKTIME,
+		DUSER,
+		DELTIME,
+		ALTERUSER,
+		'MES',
+		STATE,
+		SMEMO,
+		SCCC,
+		CZZT,
+		SEL,
+		MODNAME,
+		LOCATION,
+		FNAME,
+		FILEVER,
+		FSIZE,
+		FMTIME,
+		FMSTATE,
+		TFNAME,
+		TLOCATION,
+		TFMSTATE,
+		PFNAME,
+		PLOCATION,
+		PFMSTATE FROM PRCV WHERE
+		ID=#{prcvOldid}
+	</insert>
+
+	<delete id="deletePrcvByPrcvNo" parameterType="String">
+		DELETE FROM PRCV
+		WHERE NO=#{param,jdbcType=VARCHAR}
+		AND WKAID<![CDATA[<>]]>'3'
+		AND DEL='0'
+	</delete>
+
+	<select id="getNoNotExistsInMes" resultMap="getMap">
+		 <![CDATA[
+		  WITH PNO AS(
+SELECT NO
+  FROM PRODUCT PR
+ WHERE EXISTS (SELECT 1
+          FROM PRCV_OBJOF    PRCVO,
+               PROCESS_OBJOF PROO,
+               MPART_OBJOF   MPO,
+               MPART2_OBJOF  MP2O
+         WHERE PRCVO.ITEMID1 = PR.ID
+           AND PROO.ITEMID1 = PRCVO.ITEMID2
+           AND MPO.ITEMID1 = PROO.ITEMID2
+           AND MP2O.ITEMID1 = PROO.ITEMID2)
+           AND PR.WKAID<>'3'
+           AND PR.DEL='0'
+           AND NOT EXISTS(SELECT 1 FROM T_PRO_PRODUCT_CRAFTS ppc WHERE ppc.PRODUCT_CODE=pr.no)
+           AND UPPER(PR.NO) NOT LIKE '%SAN%')          
+           SELECT PNO.NO AS PRODUCT_NO,PRCV.* FROM PNO,PRODUCT P,PRCV_OBJOF PRO,
+           PRCV WHERE P.NO=PNO.NO
+           AND P.ID=PRO.ITEMID1 
+           AND PRO.ITEMID2=PRCV.ID 
+           AND PRCV.NO NOT LIKE 'BS%' 
+           AND REPLACE(PRCV.NO,' ','') LIKE '%-001'           
+		  ]]>
+	</select>
+
+	<select id="getPrcvByPrcvNoAndProNo" parameterType="Map"
+		resultMap="getMap">
+		SELECT * FROM PRCV PR WHERE REPLACE(PR.NO,' ','')=#{prcvNo}
+		AND EXISTS
+		(SELECT
+		* FROM PROCESS_OBJOF
+		PO,PRCV_OBJOF PRO,PRODUCT P WHERE
+		PO.ITEMID1=PR.ID
+		AND PRO.ITEMID2=PR.ID
+		AND PRO.ITEMID1=P.ID
+		AND
+		P.NO=#{productNo})
+		AND PR.WKAID<![CDATA[<>]]>'3'
+		AND PR.DEL='0'
+	</select>
+
+	<select id="updateModifyTimeByPrcvId" parameterType="String">
+		UPDATE PRCV
+		SET MTIME=SYSDATE
+		WHERE ID=#{prcvId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateSmemo" parameterType="String">
+		UPDATE PRCV SET SMEMO='已导入'
+		WHERE ID=#{prcvId, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getAllUnSynPrcv" resultType="map">
+		SELECT * FROM SYN_LOG 
+	</select>
+	
+	<select id="getRelatedPrcvByMpart" parameterType="String" resultMap="getMap">
+		<![CDATA[
+		SELECT * FROM PRCV WHERE ID IN
+		(SELECT PRCV.ID FROM MPART M 
+		INNER JOIN MPART_OBJOF MO ON(MO.ITEMID2=M.ID AND M.WKAID<>'3' AND MO.WKAID<>'3')
+		INNER JOIN PROCESS PP ON (MO.ITEMID1=PP.ID AND PP.WKAID<>'3')
+		INNER JOIN PROCESS_OBJOF PPO ON (PPO.ITEMID2=PP.ID AND PPO.WKAID<>'3')
+		INNER JOIN PRCV ON(PPO.ITEMID1=PRCV.ID AND PRCV.WKAID<>'3')
+		WHERE M.NO=#{mpartNo, jdbcType=VARCHAR}
+		GROUP BY PRCV.ID) AND INSTR(NO,'V')=0		
+		]]>
+	</select>
+	
+	<select id="getAllVersionPrcv" parameterType="String" resultMap="getMap">
+		SELECT * FROM PRCV WHERE WKAID <![CDATA[<>]]>'3'
+		AND INSTR(NO,#{prcvNo, jdbcType=VARCHAR})>0
+		AND INSTR(NO,'_V')>0
+	</select>
+
+</mapper>

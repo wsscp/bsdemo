@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.MaintainTemplateDAO">
+	<resultMap type="cc.oit.bsmes.fac.model.MaintainTemplate" id="getMap">
+	</resultMap>
+ 
+    <sql id="queryColumns">
+        m.MODIFY_USER_CODE,
+        m.MODEL,
+        m.MODIFY_TIME,
+        m.CREATE_TIME,
+        m.ID,
+        m.ORG_CODE,
+        m.CREATE_USER_CODE,
+        m.TRIGGER_CYCLE,
+        m.TRIGGER_TYPE,
+        m.TYPE,
+        m.TIME,
+        m.DESCRIBE,
+        m.EQIP_CATEGORY
+    </sql>
+ 	<select id="find" parameterType="MaintainTemplate" resultMap="getMap">
+ 		SELECT <include refid="queryColumns"/>
+ 		FROM T_FAC_MAINTAIN_TEMPLATE m
+ 		<include refid="getParameter"/>
+ 	</select>
+ 	<select id="count" parameterType="MaintainTemplate" resultType="int">
+ 		SELECT COUNT(1)
+ 		FROM T_FAC_MAINTAIN_TEMPLATE m
+ 		<include refid="getParameter"/>
+ 	</select>
+ 	<sql id="getParameter">
+ 		<where>
+ 			<if test="orgCode !=null and orgCode!=''">
+ 				AND ORG_CODE=#{orgCode}
+ 			</if>
+ 		</where>
+ 	</sql>
+</mapper>

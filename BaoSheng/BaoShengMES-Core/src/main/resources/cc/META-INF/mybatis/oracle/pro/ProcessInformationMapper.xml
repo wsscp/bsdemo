@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessInformationDAO">
+
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessInformation" id="getMap">
+	</resultMap>	
+	<select id="getSection" parameterType="map"  resultMap="getMap">
+	    select SECTION, section_seq from      
+	        (select  t.section,max(section_seq) as section_seq from T_PRO_PROCESS_INFO t where org_code= #{orgCode,jdbcType=VARCHAR}
+        group by t.section  )   order by  section_seq asc 
+	</select>
+	<select id="getBySection" resultMap="getMap" parameterType="map" >
+		SELECT ID,CODE,NAME FROM T_PRO_PROCESS_INFO WHERE SECTION=#{section,jdbcType=VARCHAR} and org_code=#{orgCode,jdbcType=VARCHAR} order by section_seq  asc
+	</select>
+	
+	<!-- 模糊查询 根据name或者code -->
+	<select id="findByCodeOrName" parameterType="map" resultType="cc.oit.bsmes.pro.model.ProcessInformation">
+		SELECT DISTINCT CODE, NAME, SECTION, SECTION_SEQ FROM T_PRO_PROCESS_INFO PI
+		<where>
+			<if test="codeOrName!=null and codeOrName!=''">
+ 		 		AND (UPPER(PI.CODE) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}) OR UPPER(PI.NAME) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}))
+			</if>
+		</where>
+ 		ORDER BY PI.SECTION_SEQ
+	</select>
+
+	<select id="getByCode" parameterType="string" resultType="cc.oit.bsmes.pro.model.ProcessInformation">
+          SELECT ID,CODE,NAME,SECTION FROM T_PRO_PROCESS_INFO WHERE CODE = #{param1}
+	</select>
+    
+	<!-- 排产页面：获取工序根据工段和订单ID 
+	SELECT NN.ID,
+			   NN.CODE,
+		       NN.NAME,
+		       NN.SECTION,
+		       NN.NEXTSECTION,
+		       NN.SEQ,
+		       DECODE(NN.NAME, '护套-挤出', '(' || NN.OUTNAME || ')', '') AS ALIASNAME
+		  FROM (SELECT TT.ID,
+		  			   TT.CODE,
+		               TT.NAME,
+		               TT.SEQ,
+		               TT.SECTION,
+		               NVL(TT.SECTION_SEQ, 99) AS NEXTSECTION,
+		               TT.OUTNAME,
+		               ROW_NUMBER() OVER(PARTITION BY TT.ID, TT.CODE, TT.NAME ORDER BY TT.SEQ) AS SERIALNUM
+		          FROM (SELECT DISTINCT P.ID,
+		          					    P.PROCESS_CODE AS CODE,
+		                                P.PROCESS_NAME AS NAME,
+		                                P.SEQ,
+		                                PI.SECTION_SEQ AS SECTION,
+		                                NPI.NEXTSECTION AS NEXTSECTION,
+		                                REPLACE(REPLACE((SELECT M.MAT_NAME
+		                                                  FROM T_PRO_PROCESS_IN_OUT_WIP IO,
+		                                                       T_INV_MAT_WIP            M
+		                                                 WHERE IO.MAT_CODE =
+		                                                       M.MAT_CODE
+		                                                   AND IO.ID =
+		                                                       M.PROCESS_IN_OUT_WIP_ID
+		                                                   AND IO.PRODUCT_PROCESS_ID = P.ID
+		                                                   AND IO.IN_OR_OUT = 'OUT'
+		                                                   AND M.MAT_TYPE =
+		                                                       'SEMI_FINISHED_PRODUCT'
+		                                                   AND ROWNUM = 1),
+		                                                '护套半成品',
+		                                                ''),
+		                                        '印字半成品',
+		                                        '内') AS OUTNAME
+		                  FROM T_PRO_PRODUCT_PROCESS_WIP P
+		                 INNER JOIN T_PRO_PROCESS_INFO PI
+		                    ON P.PROCESS_CODE = PI.CODE
+		                 INNER JOIN T_PRO_PRODUCT_CRAFTS_WIP C
+		                    ON P.PRODUCT_CRAFTS_ID = C.ID
+		                 INNER JOIN T_PLA_CUSTOMER_ORDER_ITEM I
+		                    ON C.ID = I.CRAFTS_ID
+		                  LEFT JOIN T_PRO_PRODUCT_PROCESS_WIP NP
+		                    ON P.PRODUCT_CRAFTS_ID = NP.PRODUCT_CRAFTS_ID
+		                   AND P.NEXT_PROCESS_ID = NP.ID
+		                  LEFT JOIN T_PRO_PROCESS_INFO NPI
+		                    ON NP.PROCESS_CODE = NPI.CODE
+		                 WHERE P.SAME_PRODUCT_LINE = '0'
+		                   AND PI.SECTION_SEQ = #{section, jdbcType=INTEGER}
+		                   AND I.ID IN 
+		                   <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+						       #{id, jdbcType=VARCHAR} 
+						   </foreach>
+						 ) TT) NN
+		 WHERE NN.SERIALNUM = 1
+		 ORDER BY TO_CHAR(NN.SEQ)
+		 -->
+	<select id="getOrderProcessBySection" parameterType="map" resultType="map">
+		SELECT NN.ID,
+			   NN.CODE,
+		       NN.NAME,
+		       NN.SECTION,
+		       NN.NEXTSECTION,
+		       NN.SEQ,
+		       DECODE(NN.NAME, '护套-挤出', '(' || NN.OUTNAME || ')', '') AS ALIASNAME
+		  FROM (SELECT DISTINCT P.ID,
+				    P.PROCESS_CODE AS CODE,
+                    P.PROCESS_NAME AS NAME,
+                    P.SEQ,
+                    PI.SECTION_SEQ AS SECTION,
+                    NVL(NPI.SECTION_SEQ, 99) AS NEXTSECTION,
+                    REPLACE(REPLACE((SELECT M.MAT_NAME
+                                      FROM T_PRO_PROCESS_IN_OUT_WIP IO,
+                                           T_INV_MAT_WIP            M
+                                     WHERE IO.MAT_CODE =
+                                           M.MAT_CODE
+                                       AND IO.ID =
+                                           M.PROCESS_IN_OUT_WIP_ID
+                                       AND IO.PRODUCT_PROCESS_ID = P.ID
+                                       AND IO.IN_OR_OUT = 'OUT'
+                                       AND M.MAT_TYPE =
+                                           'SEMI_FINISHED_PRODUCT'
+                                       AND ROWNUM = 1),
+                                    '护套半成品',
+                                    ''),
+                            '印字半成品',
+                            '内') AS OUTNAME
+			      FROM T_PRO_PRODUCT_PROCESS_WIP P
+			     INNER JOIN T_PRO_PROCESS_INFO PI
+			        ON P.PROCESS_CODE = PI.CODE
+			     INNER JOIN T_PRO_PRODUCT_CRAFTS_WIP C
+			        ON P.PRODUCT_CRAFTS_ID = C.ID
+			     INNER JOIN T_PLA_CUSTOMER_ORDER_ITEM I
+			        ON C.ID = I.CRAFTS_ID
+			      LEFT JOIN T_PRO_PRODUCT_PROCESS_WIP NP
+			        ON P.PRODUCT_CRAFTS_ID = NP.PRODUCT_CRAFTS_ID
+			       AND P.NEXT_PROCESS_ID = NP.ID
+			      LEFT JOIN T_PRO_PROCESS_INFO NPI
+			        ON NP.PROCESS_CODE = NPI.CODE
+			     WHERE P.SAME_PRODUCT_LINE = '0'
+			       AND PI.SECTION_SEQ = #{section, jdbcType=INTEGER}
+			       AND I.ID IN 
+			       <foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+				       #{id, jdbcType=VARCHAR} 
+				   </foreach>
+			) NN
+		 ORDER BY NN.SEQ
+	</select>
+	
+	<!-- 根据订单ID获取该工序成缆工序的绞向 -->
+	<select id="getCableFace" parameterType="string" resultType="map">
+		SELECT DISTINCT QC.CHECK_ITEM_NAME AS NAME, QC.ITEM_TARGET_VALUE AS VALUE
+		FROM T_PRO_PROCESS_QC_WIP          QC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P,
+		       T_PRO_PRODUCT_CRAFTS_WIP      C,
+		       T_PLA_CUSTOMER_ORDER_ITEM OI
+		WHERE QC.PROCESS_ID = P.ID
+		   AND P.PRODUCT_CRAFTS_ID = C.ID
+		   AND C.ID = OI.CRAFTS_ID
+		   AND (QC.CHECK_ITEM_NAME = '层2绞向' OR QC.CHECK_ITEM_NAME = '绞向' OR
+		       QC.CHECK_ITEM_NAME = '层1绞向' OR QC.CHECK_ITEM_NAME = '层3绞向' OR
+		       QC.CHECK_ITEM_NAME = '层4绞向' OR QC.CHECK_ITEM_NAME = '绞合方向')
+		   AND OI.ID = #{orderItemId, jdbcType=VARCHAR}
+		   AND P.PROCESS_CODE = 'Cabling'
+		   AND QC.ITEM_TARGET_VALUE IS NOT NULL
+	    ORDER BY NAME DESC
+	</select>
+	<!-- 根据订单ID获取该工序成缆工序的线芯排列 -->
+	<select id="getCableOrder" parameterType="string" resultType="map">
+		SELECT DISTINCT QC.CHECK_ITEM_NAME AS NAME, QC.ITEM_TARGET_VALUE AS VALUE
+		FROM T_PRO_PROCESS_QC_WIP          QC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P
+		WHERE QC.PROCESS_ID = P.ID
+		   AND QC.CHECK_ITEM_NAME = '线芯排列'
+		   AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		   AND P.ID = #{processId, jdbcType=VARCHAR}
+	    ORDER BY NAME DESC
+	</select>
+	<!-- 根据订单ID获取该工序单绞工序的节距 -->
+	<select id="getWringDist" parameterType="string" resultType="map">
+		SELECT DISTINCT QC.CHECK_ITEM_NAME AS NAME, QC.ITEM_TARGET_VALUE AS VALUE
+		FROM T_PRO_PROCESS_QC_WIP          QC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P
+		WHERE QC.PROCESS_ID = P.ID
+		   AND QC.CHECK_ITEM_NAME = '节距'
+		   AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		   AND P.ID = #{processId, jdbcType=VARCHAR}
+	    ORDER BY NAME DESC
+	</select>
+	<!-- 根据订单ID获取该工序包带搭盖率 -->
+	<select id="getCoverRate" parameterType="string" resultType="map">
+		SELECT DISTINCT QC.CHECK_ITEM_NAME AS NAME, QC.ITEM_TARGET_VALUE AS VALUE
+		FROM T_PRO_PROCESS_QC_WIP          QC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P
+		WHERE QC.PROCESS_ID = P.ID
+		   AND QC.CHECK_ITEM_NAME = '包带搭盖率'
+		   AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		   AND P.ID = #{processId, jdbcType=VARCHAR}
+	    ORDER BY NAME DESC
+	</select>
+	<!-- 根据订单ID获取该工序编织密度 -->
+	<select id="getBraidDensity" parameterType="string" resultType="map">
+		SELECT DISTINCT QC.CHECK_ITEM_NAME AS NAME, QC.ITEM_TARGET_VALUE AS VALUE
+		FROM T_PRO_PROCESS_QC_WIP          QC,
+		       T_PRO_PRODUCT_PROCESS_WIP     P
+		WHERE QC.PROCESS_ID = P.ID
+		   AND QC.CHECK_ITEM_NAME = '编织密度'
+		   AND QC.ITEM_TARGET_VALUE IS NOT NULL
+		   AND P.ID = #{processId, jdbcType=VARCHAR}
+	    ORDER BY NAME DESC
+	</select>
+
+</mapper>

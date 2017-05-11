@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.MaintainRecordDAO">
+	<resultMap type="cc.oit.bsmes.fac.model.MaintainRecord" id="getMap">
+	</resultMap>
+	<sql id="queryColumns">
+		m.MODIFY_USER_CODE,
+		m.MODIFY_TIME,
+		m.CREATE_TIME,
+		m.TMPL_ID,
+		m.EQUIP_CODE,
+		m.STATUS,
+		m.ID,
+		m.TYPE,
+		m.START_TIME,
+		m.FINISH_TIME,
+		m.CREATE_USER_CODE
+	</sql>
+
+    <select id="getLatest" resultMap="getMap">
+        SELECT <include refid="queryColumns" /> FROM (
+            SELECT <include refid="queryColumns" /> FROM T_FAC_MAINTAIN_RECORD m
+            WHERE EQUIP_CODE=#{equipCode} AND TYPE=#{maintainTemplateType}
+            ORDER BY FINISH_TIME DESC) m
+        WHERE ROWNUM=1
+    </select>
+	
+	 <select id="getDailyCheck" parameterType="cc.oit.bsmes.fac.model.MaintainRecord" resultType="cc.oit.bsmes.fac.model.MaintainRecord">
+    	SELECT R.EQUIP_CODE,R.START_TIME,R.FINISH_TIME,R.STATUS,S.DESCRIBE,S.VALUE,S.IS_PASSED,S.REMARKS
+    	FROM T_FAC_MAINTAIN_RECORD R,T_FAC_MAINTAIN_RECORD_ITEM S
+    	WHERE R.ID=S.RECORD_ID AND R.TYPE='DAILY' <include refid="getParameter" />
+    	ORDER BY R.EQUIP_CODE,S.RECORD_ID,R.START_TIME DESC 
+    </select>
+    
+     <select id="getLatestByEquipLine" parameterType="string" resultMap="getMap">
+    	 SELECT * FROM (SELECT
+	 		<include refid = "queryColumns"/>
+		 FROM T_FAC_MAINTAIN_RECORD m WHERE
+		 EQUIP_CODE = (SELECT a.CODE FROM T_FAC_EQIP_INFO a WHERE ID IN (
+				SELECT EQUIP_ID FROM T_FAC_PRODUCT_EQIP 
+				WHERE PRODUCT_LINE_ID = (SELECT ID FROM T_FAC_EQIP_INFO WHERE CODE =  #{param1}))
+			)
+		 	AND TYPE =  #{param2}
+			AND FINISH_TIME IS NOT NULL
+			ORDER BY
+		 FINISH_TIME DESC)WHERE ROWNUM = 1
+    </select>
+    
+     <select id="countDailyChecks" parameterType="cc.oit.bsmes.fac.model.MaintainRecord" resultType="int">
+    	SELECT COUNT(1)
+    	FROM T_FAC_MAINTAIN_RECORD R,T_FAC_MAINTAIN_RECORD_ITEM S
+    	WHERE R.ID=S.RECORD_ID AND  R.TYPE='DAILY' <include refid="getParameter" />
+    </select>
+    
+    <select id="getDailyCheckFinishTime" parameterType="String" resultType="Date">
+    	SELECT FINISH_TIME 
+    	FROM (SELECT * FROM T_FAC_MAINTAIN_RECORD WHERE EQUIP_CODE = #{param1} AND STATUS = 'FINISHED' ORDER BY FINISH_TIME DESC)
+    	WHERE ROWNUM = 1
+    	
+    </select>
+   
+   <sql id="getParameter">
+   	 	<if test="equipCode!=null and equipCode!=''">
+    		AND R.EQUIP_CODE=#{equipCode,jdbcType=VARCHAR}
+	    </if>
+	</sql>
+</mapper>

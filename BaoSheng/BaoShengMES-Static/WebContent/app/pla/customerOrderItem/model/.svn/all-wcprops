@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/10490/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/model
+END
+CustomerOrderItemInfo.js
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/1782/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/model/CustomerOrderItemInfo.js
+END
+ProcessReceipt.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/1332/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/model/ProcessReceipt.js
+END
+CustomerOrderItem.js
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/10490/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/model/CustomerOrderItem.js
+END
+CustomerOrder.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/10490/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/model/CustomerOrder.js
+END
+SetPriority.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/3008/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/model/SetPriority.js
+END

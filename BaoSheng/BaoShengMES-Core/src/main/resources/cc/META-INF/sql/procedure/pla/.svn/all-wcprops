@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/11094/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla
+END
+INIT_ORDERTASK.sql
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/7825/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/INIT_ORDERTASK.sql
+END
+CANCEL_WORK_ORDER.sql
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/1376/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/CANCEL_WORK_ORDER.sql
+END
+PAUSE_WO_BY_RELACTION_SEQ.sql
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/8926/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/PAUSE_WO_BY_RELACTION_SEQ.sql
+END
+FINISH_ORDER_ITEM.sql
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/9736/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/FINISH_ORDER_ITEM.sql
+END
+UPDATE_INV_OA_USE_LOG.sql
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/1376/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/UPDATE_INV_OA_USE_LOG.sql
+END
+FINISH_WORK_ORDE.sql
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/11094/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/FINISH_WORK_ORDE.sql
+END
+CHANGE_EQUIP_STATUS.sql
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/6819/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/CHANGE_EQUIP_STATUS.sql
+END
+ACCEPT_WORK_ORDER.sql
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/7350/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/ACCEPT_WORK_ORDER.sql
+END
+DELETE_CUS_ORDER_ITEM_DEC.sql
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/3129/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/DELETE_CUS_ORDER_ITEM_DEC.sql
+END
+SP_SET_RELATION_SEQ.sql
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/10735/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/SP_SET_RELATION_SEQ.sql
+END
+AUDIT_WORK_ORDER.sql
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/4063/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/AUDIT_WORK_ORDER.sql
+END
+SPLIT_CUSTOMER_ORDER.sql
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/1376/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/SPLIT_CUSTOMER_ORDER.sql
+END
+UPDATE_ORDER_OATIME.sql
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/7899/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/UPDATE_ORDER_OATIME.sql
+END
+DELETE_ITEM_PRO_DEC.sql
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/7472/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/DELETE_ITEM_PRO_DEC.sql
+END
+DELETE_CUSTOMER_ORDER.sql
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/3703/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/DELETE_CUSTOMER_ORDER.sql
+END
+CANCEL_CUSTOMER_ORDER_ITEM.sql
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/1376/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/sql/procedure/pla/CANCEL_CUSTOMER_ORDER_ITEM.sql
+END

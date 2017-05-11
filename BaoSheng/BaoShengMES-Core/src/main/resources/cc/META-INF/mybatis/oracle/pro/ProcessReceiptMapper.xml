@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessReceiptDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessReceipt" id="getMap">
+	</resultMap>
+	
+	<sql id="sqlColumns"> 
+		R."ID",
+		R.RECEIPT_CODE,
+		R.SUB_RECEIPT_CODE,
+		R.RECEIPT_NAME,
+		R.SUB_RECEIPT_NAME,
+		R.RECEIPT_TARGET_VALUE,
+		R.RECEIPT_MAX_VALUE,
+		R.RECEIPT_MAX_VALUE,
+		R.RECEIPT_MIN_VALUE,
+		R.DATA_TYPE,
+		R.DATA_UNIT,
+		R.EQIP_LIST_ID,
+		R.EQUIP_CODE,
+		R.HAS_PIC,
+		R.MARKS,
+		R.NEED_DA,
+		R.NEED_IS,
+		R.NEED_SHOW,
+		R.NEED_ALARM,
+		R.VALUE_DOMAIN,
+		R.EQIP_LIST_ID,
+		R.FREQUENCE,
+		R.CREATE_USER_CODE,
+		R.CREATE_TIME,
+		R.MODIFY_USER_CODE,
+		R.MODIFY_TIME
+	</sql>
+	
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT 
+			<include refid="sqlColumns"/>,
+            (
+                SELECT
+                  WR.RECEIPT_TARGET_VALUE
+                FROM T_WIP_RECEIPT WR
+                WHERE WR.RECEIPT_ID = R.ID
+                  AND WR.WORK_ORDER_ID = W.ID
+                  AND WR.CREATE_TIME = (
+                        SELECT MAX(T.CREATE_TIME)
+                        FROM T_WIP_RECEIPT T
+                        WHERE T.RECEIPT_CODE = WR.RECEIPT_CODE
+                        AND T.RECEIPT_ID = WR.RECEIPT_ID
+                        AND T.WORK_ORDER_ID = WR.WORK_ORDER_ID)
+            ) AS setValue
+		FROM T_PRO_PROCESS_RECEIPT R,T_WIP_WORK_ORDER W, T_PRO_EQIP_LIST L
+		WHERE W.PROCESS_ID = L.PROCESS_ID 
+		AND L.EQUIP_CODE = #{param2}
+		AND L.ID = R.EQIP_LIST_ID 
+		AND W.WORK_ORDER_NO = #{param1}
+        AND R.NEED_SHOW = '1'
+	</select>
+	
+	<!-- 工艺参数报表： 获取设备的工艺参数实时数据 -->
+	<select id="getByEquipCodeAndProcessCode" parameterType="map" resultMap="getMap">
+		SELECT 
+            DISTINCT
+		    R.PARM_NAME AS RECEIPT_NAME,
+		    R.PARM_CODE AS RECEIPT_CODE,
+		    R.EQUIP_CODE
+		  FROM T_INT_EQUIP_MES_WW_MAPPING R
+		 WHERE R.NEED_DA = 1
+		   AND R.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+		 ORDER BY NLSSORT(R.PARM_NAME, 'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="getByEquipCodeAndProcessCodeAndReceiptCode" parameterType="map" resultMap="getMap">
+		SELECT R."ID",
+		       R.PARM_CODE,
+		       R.PARM_Name,
+		       R.DATA_TYPE,
+		       R.EQUIP_CODE,
+		       R.NEED_DA,
+		       R.NEED_IS,
+		       R.NEED_SHOW,
+		       10 AS FREQUENCE
+		  FROM t_int_equip_mes_ww_mapping R
+		 WHERE R.NEED_DA = 1
+		   AND R.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		   AND R.PARM_CODE = #{receiptCode, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByEquipCodeAndReceiptCode" parameterType="map" resultMap="getMap">
+		SELECT R."ID",
+		       R.PARM_CODE,
+		       R.PARM_Name,
+		       R.DATA_TYPE,
+		       R.EQUIP_CODE,
+		       R.NEED_DA,
+		       R.NEED_IS,
+		       R.NEED_SHOW
+		  FROM t_int_equip_mes_ww_mapping R
+		 WHERE R.EQUIP_CODE = #{equipCode, jdbcType=VARCHAR}
+		   AND R.PARM_CODE = #{receiptCode, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByEquipListId" parameterType="string" resultMap="getMap">
+	    SELECT * FROM T_PRO_PROCESS_RECEIPT PR WHERE EXISTS(
+	        SELECT 1 FROM T_PRO_EQIP_LIST EL WHERE
+	        PR.EQIP_LIST_ID = EL.ID
+	        AND EL.PROCESS_ID IN
+	        <foreach collection="processIds" item="item"  open="(" separator="," close=")">
+                   #{item, jdbcType=VARCHAR}
+            </foreach>
+	    )
+	</select>
+	
+	<select id="getByEquipIdAndReceiptCode" parameterType="string" resultMap="getMap">
+        SELECT
+            <include refid="sqlColumns"/>
+        FROM T_PRO_PROCESS_RECEIPT R
+        WHERE  R.EQIP_LIST_ID = #{param1}
+        AND R.RECEIPT_CODE =  #{param2}
+	</select>
+
+    <select id="getDaByEquipCodeAndProcessId" parameterType="string" resultMap="getMap">
+        SELECT
+            <include refid="sqlColumns"/>
+        FROM T_PRO_PROCESS_RECEIPT_WIP R
+        LEFT JOIN T_PRO_EQIP_LIST_WIP L ON R.EQIP_LIST_ID = L.ID
+        WHERE  L.EQUIP_CODE = #{param1}
+        AND L.PROCESS_ID =  #{param2}
+        AND R.NEED_IS = '1'
+    </select>
+    <select id="getByEqipListId" parameterType="string" resultMap="getMap">
+		SELECT 
+			<include refid="sqlColumns"/>
+		FROM T_PRO_PROCESS_RECEIPT R
+		WHERE R.EQIP_LIST_ID = #{eqipListId}
+	</select>
+    
+      <select id="getByProcessId" parameterType="string" resultMap="getMap">
+        SELECT <include refid="sqlColumns"/>
+		  FROM T_PRO_PROCESS_RECEIPT R,
+		       T_PRO_EQIP_LIST       T2
+		 WHERE R.EQIP_LIST_ID = T2.ID
+  		 AND T2.PROCESS_ID =  #{processId}
+         AND R.NEED_IS = '1'
+    </select>
+  
+ 
+	    <insert id="insertBatchInterface" parameterType="ArrayList"> 
+			 INSERT INTO    T_PRO_PROCESS_RECEIPT
+			    (
+			        ID,
+			        RECEIPT_CODE,
+			        SUB_RECEIPT_CODE,
+			        RECEIPT_NAME,
+			        SUB_RECEIPT_NAME,
+			        RECEIPT_TARGET_VALUE,
+			        RECEIPT_MAX_VALUE,
+			        RECEIPT_MIN_VALUE,
+			        DATA_TYPE,
+			        DATA_UNIT,
+			        HAS_PIC,
+			        MARKS,
+			        NEED_DA,
+			        NEED_IS,
+			        NEED_SHOW,
+			        CREATE_TIME,
+			        CREATE_USER_CODE,
+			        MODIFY_TIME,
+			        MODIFY_USER_CODE,
+			        NEED_ALARM,
+			        VALUE_DOMAIN,
+			        EQIP_LIST_ID,
+			        EQUIP_CODE,
+			        FREQUENCE,
+			        AC_EQUIP_CODE,
+			        EMPH_SHOW
+			    ) 
+			  <foreach collection="list" item="item" index="index" 
+			  separator="union all"> 
+			  select 
+			   #{item.id,jdbcType=VARCHAR},  #{item.receiptCode,jdbcType=VARCHAR}, #{item.subReceiptCode,jdbcType=VARCHAR},
+			  #{item.receiptName,jdbcType=VARCHAR},   #{item.subReceiptName,jdbcType=VARCHAR}, 
+			  #{item.receiptTargetValue,jdbcType=VARCHAR}, #{item.receiptMaxValue,jdbcType=VARCHAR},  #{item.receiptMinValue,jdbcType=VARCHAR},
+			  #{item.dataType,jdbcType=VARCHAR}, #{item.dataUnit,jdbcType=VARCHAR},  #{item.hasPic,jdbcType=CHAR},
+			  #{item.marks,jdbcType=VARCHAR}, #{item.needDa,jdbcType=CHAR},  #{item.needIs,jdbcType=CHAR},
+			  #{item.needShow,jdbcType=CHAR}, sysdate,  'PLM',sysdate,'PLM',
+			  #{item.needAlarm,jdbcType=CHAR}, #{item.valueDomain,jdbcType=VARCHAR},  #{item.eqipListId,jdbcType=VARCHAR},   
+			  #{item.equipCode,jdbcType=VARCHAR}, #{item.frequence,jdbcType=DECIMAL},#{item.acEquipCode,jdbcType=VARCHAR},#{item.emphShow,jdbcType=VARCHAR}
+			  
+			   from dual
+			  </foreach>
+			  
+	   </insert>	   
+    
+ 
+    <select id="updateReceiptQc" parameterType="string" statementType="CALLABLE">
+		CALL SP_UPDATE_EQUIP_QC(#{craftsCode})
+	</select>
+	
+	<select id="findReceiptMap" resultType="map">
+       select * from T_EQUIP_MAP where nom <![CDATA[>]]>12000 and nom <![CDATA[<=]]> 15000
+	</select>
+	
+	<insert id="insertBatch" parameterType="ArrayList"> 
+			  insert into T_PRO_PROCESS_RECEIPT ( ID, RECEIPT_CODE , SUB_RECEIPT_CODE, RECEIPT_NAME ,SUB_RECEIPT_NAME ,RECEIPT_TARGET_VALUE , RECEIPT_MAX_VALUE , RECEIPT_MIN_VALUE,
+			  DATA_TYPE, DATA_UNIT, HAS_PIC , MARKS, NEED_DA, NEED_IS, NEED_SHOW, CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,NEED_ALARM,VALUE_DOMAIN,EQIP_LIST_ID,EQUIP_CODE,
+			  FREQUENCE,AC_EQUIP_CODE, EMPH_SHOW)   
+			  <foreach collection="list" item="item" index="index" 
+			  separator="union all"> 
+			  select 
+			  #{item.id,jdbcType=VARCHAR},  #{item.receiptCode,jdbcType=VARCHAR}, 
+			  #{item.subReceiptCode,jdbcType=VARCHAR}, #{item.receiptName,jdbcType=VARCHAR},  #{item.subReceiptName,jdbcType=VARCHAR}, #{item.receiptTargetValue,jdbcType=VARCHAR},
+			  #{item.receiptMaxValue,jdbcType=VARCHAR},#{item.receiptMinValue,jdbcType=VARCHAR},#{item.dataType,jdbcType=VARCHAR}, #{item.dataUnit,jdbcType=VARCHAR},
+			  #{item.hasPic,jdbcType=CHAR},#{item.marks,jdbcType=VARCHAR},#{item.needDa,jdbcType=CHAR}, #{item.needIs,jdbcType=CHAR},
+			  #{item.needShow,jdbcType=CHAR},
+			  SYSDATE, 'PLM', SYSDATE, 'PLM',
+			  #{item.needAlarm,jdbcType=CHAR},#{item.valueDomain,jdbcType=VARCHAR},
+			  #{item.eqipListId,jdbcType=VARCHAR},#{item.equipCode,jdbcType=VARCHAR},#{item.frequence,jdbcType=DECIMAL},
+			  #{item.acEquipCode,jdbcType=VARCHAR},#{item.emphShow,jdbcType=VARCHAR}  from dual
+			  </foreach>
+			  
+	   </insert>	
+    
+     <select id="getEquipQcByItemId" parameterType="string" resultMap="getMap">
+		select * from t_pro_process_receipt where receipt_code = 'M_TuReel' and eqip_list_id in (
+		select id from t_pro_eqip_list where process_id in (
+		select id from t_pro_product_process where product_crafts_id in (select crafts_id from T_PLA_CUSTOMER_ORDER_ITEM where id in 
+		<foreach collection="orderItemIdArray" item="id"  open="(" separator="," close=")">  
+						        #{id, jdbcType=VARCHAR} 
+							 </foreach>)
+		and process_code in( select code from t_pro_process_info where section = '护套')))
+    </select>
+    
+</mapper>

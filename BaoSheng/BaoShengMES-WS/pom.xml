@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+        <artifactId>BaoShengMES-Parent</artifactId>
+        <groupId>cc.oit</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../BaoShengMES-Parent/pom.xml</relativePath>
+   </parent>
+  <artifactId>BaoShengMES-WS</artifactId>
+  <packaging>war</packaging>
+  <name>erpwebservice Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+	<dependency>
+		<groupId>cc.oit</groupId>
+		<artifactId>BaoShengMES-Core</artifactId>
+	</dependency>
+	<dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.commons-net</artifactId>
+        <version>1.4.1_1</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <finalName>BaoShengMES-WS</finalName>
+    <pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<configuration>
+						<webXml>WebContent\WEB-INF\web.xml</webXml>
+						<webResources>
+							<resource>
+								<directory>WebContent</directory>
+							</resource>
+						</webResources>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>tomcat-maven-plugin</artifactId>
+					<version>1.1</version>
+					<configuration>
+						<url>${tomcaturl}</url>
+						<username>${tomcatuser}</username>
+						<password>${tomcatpassword}</password>
+						<path>/BaoShengMES-WS</path>
+					</configuration>
+					<executions>
+						<execution>
+							<id>tomcat-deploy</id>
+							<phase>deploy</phase>
+							<goals>
+								<goal>deploy</goal>
+							</goals>
+						</execution> 
+					</executions>
+				</plugin>
+				 
+			</plugins>
+		</pluginManagement>
+  </build>
+</project>

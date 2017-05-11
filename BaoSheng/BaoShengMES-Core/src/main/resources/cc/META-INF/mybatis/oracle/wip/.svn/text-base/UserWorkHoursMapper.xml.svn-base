@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.UserWorkHoursDAO">
+
+	<resultMap type="UserWorkHours" id="getMap"></resultMap>
+	
+	<!-- 查询一个月的员工工时记录 -->
+	<select id="queryUsersHoursForAMonth" parameterType="map" resultType="map">
+		 WITH SHIFTCOUNTTMP AS
+			 (SELECT TMP.USER_CODE, TMP.SHIFT_ID, COUNT(TMP.SHIFT_ID) AS SHIFTCOUNT
+			    FROM (SELECT T.REPORT_DATE, T.USER_CODE, T.SHIFT_ID
+			            FROM T_WIP_USER_WORK_HOURS T
+			            WHERE T.REPORT_DATE <![CDATA[ >= ]]> #{startDate, jdbcType=VARCHAR}
+		  		 			AND T.REPORT_DATE <![CDATA[ < ]]> #{endDate, jdbcType=VARCHAR}
+			           GROUP BY T.REPORT_DATE, T.USER_CODE, T.SHIFT_ID) TMP
+			   GROUP BY TMP.USER_CODE, TMP.SHIFT_ID)
+			SELECT T.REPORT_DATE AS REPORTDATE,
+			       T.USER_CODE AS USERCODE,
+			       MAX(T.USER_NAME) AS USERNAME,
+			       ROUND(SUM(T.PRODUCT_WORK_HOURS), 1) AS PRODUCTWORKHOURS,
+			       ROUND(SUM(T.PRODUCT_SUPPORT_HOURS), 1) AS PRODUCTSUPPORTHOURS,
+			       ROUND(SUM(T.OVERTIME_HOURS), 1) AS OVERTIMEHOURS,
+			       ROUND(SUM(T.SUPPORT_HOURS), 1) AS SUPPORTHOURS,
+			       ROUND(SUM(T.COEFFICIENT * T.PRODUCT_WORK_HOURS), 1) AS PRODUCTWORKHOURS2,
+			       NVL((SELECT TMP.SHIFTCOUNT
+			             FROM SHIFTCOUNTTMP TMP
+			            WHERE TMP.USER_CODE = T.USER_CODE
+			              AND TMP.SHIFT_ID = 1),
+			           0) AS FORESHIFTNUM,
+			       NVL((SELECT TMP.SHIFTCOUNT
+			             FROM SHIFTCOUNTTMP TMP
+			            WHERE TMP.USER_CODE = T.USER_CODE
+			              AND TMP.SHIFT_ID = 2),
+			           0) AS MIDDLESHIFTNUM,
+			       NVL((SELECT TMP.SHIFTCOUNT
+			             FROM SHIFTCOUNTTMP TMP
+			            WHERE TMP.USER_CODE = T.USER_CODE
+			              AND TMP.SHIFT_ID = 3),
+			           0) AS NIGHTSHIFTNUM
+			  FROM T_WIP_USER_WORK_HOURS T
+			  WHERE T.REPORT_DATE <![CDATA[ >= ]]> #{startDate, jdbcType=VARCHAR}
+		  		 AND T.REPORT_DATE <![CDATA[ < ]]> #{endDate, jdbcType=VARCHAR}
+		  		 <if test="userName != null and userName.length()>0">
+				AND T.USER_NAME=#{userName, jdbcType=VARCHAR}
+				</if>
+				 <if test="typeName != null and typeName">
+				AND T.USER_NAME=#{typeName, jdbcType=VARCHAR}
+				</if>
+			 GROUP BY T.REPORT_DATE, T.USER_CODE
+			 ORDER BY T.REPORT_DATE DESC
+
+	</select>
+	
+	<select id="getUserName" resultType="map">
+		SELECT DISTINCT USER_NAME,USER_CODE  FROM T_WIP_USER_WORK_HOURS
+        GROUP BY USER_NAME,USER_CODE
+	</select>
+	
+</mapper>

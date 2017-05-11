@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/9822/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model
+END
+EventProcess.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5424/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventProcess.java
+END
+EventProcessLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/3354/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventProcessLog.java
+END
+EventType.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/5318/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventType.java
+END
+LastExecuteTimeRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4307/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/LastExecuteTimeRecord.java
+END
+EventInformation.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/9822/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventInformation.java
+END
+EventProcesser.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/2698/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventProcesser.java
+END
+EventTriggerLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/1139/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventTriggerLog.java
+END
+EventOwner.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/4349/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/model/EventOwner.java
+END

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/store
+END
+ProcessReceiptTraceStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/5015/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/store/ProcessReceiptTraceStore.js
+END
+ChartPointStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2376/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/store/ChartPointStore.js
+END
+ProcessReceiptEquipStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/BSMES/!svn/ver/8218/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/store/ProcessReceiptEquipStore.js
+END
+ProcessStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/2923/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/store/ProcessStore.js
+END
+ProcessQcTraceStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/5015/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/processReceiptTrace/store/ProcessQcTraceStore.js
+END

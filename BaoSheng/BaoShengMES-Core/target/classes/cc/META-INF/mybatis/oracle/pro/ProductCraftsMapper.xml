@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProductCraftsDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProductCrafts" id="getMap">
+	</resultMap>
+
+	<sql id="sqlColumns">
+		PC.START_DATE,
+		PC.CREATE_TIME,
+		PC.CREATE_USER_CODE,
+		PC.PRODUCT_CODE,
+		PC.CRAFTS_CODE,
+		PC.MODIFY_USER_CODE,
+		PC.CRAFTS_NAME,
+		PC.END_DATE,
+		PC.CRAFTS_VERSION,
+		PC."ID",
+		PC.IS_DEFAULT,
+		PC.ORG_CODE,
+		PC.MODIFY_TIME
+	</sql>
+
+	<sql id="findParams">
+		<where>
+			<if test="craftsCode != null and craftsCode != ''">
+				AND PC.CRAFTS_CODE LIKE
+				'%'||#{craftsCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="craftsName != null and craftsName != ''">
+				AND PC.CRAFTS_NAME LIKE
+				'%'||#{craftsName,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="productCode != null and productCode != ''">
+				AND PC.PRODUCT_CODE LIKE
+				'%'||#{productCode,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="productName != null and productName != ''">
+				AND P.PRODUCT_NAME LIKE
+				'%'||#{productName,jdbcType=VARCHAR}||'%'
+			</if>
+			<if test="startDate != null and startDate != '' and endDate != null and endDate !='' ">
+				AND TO_CHAR(#{startDate,jdbcType=DATE},'yyyy-mm-dd') <![CDATA[>=]]> TO_CHAR(PC.START_DATE,'yyyy-mm-dd')
+				AND ( PC.END_DATE is null OR TO_CHAR(#{endDate,jdbcType=DATE},'yyyy-mm-dd') <![CDATA[<=]]> TO_CHAR(PC.END_DATE,'yyyy-mm-dd'))
+			</if>
+			<if test="startDate != null and startDate != '' ">
+				AND TO_CHAR(#{startDate,jdbcType=DATE},'yyyy-mm-dd') <![CDATA[>=]]> TO_CHAR(PC.START_DATE,'yyyy-mm-dd')
+			</if>		
+			<if test="endDate != null and endDate !='' ">
+				AND ( PC.END_DATE is null OR TO_CHAR(#{endDate,jdbcType=DATE},'yyyy-mm-dd') <![CDATA[<=]]> TO_CHAR(PC.END_DATE,'yyyy-mm-dd'))
+			</if>
+		</where>
+	</sql>
+
+	<select id="find" resultMap="getMap">
+		SELECT PC.START_DATE,
+		PC.CREATE_TIME,
+		PC.CREATE_USER_CODE,
+		PC.PRODUCT_CODE,
+		PC.CRAFTS_CODE,
+		P.PRODUCT_NAME,
+		PC.MODIFY_USER_CODE,
+		PC.CRAFTS_NAME,
+		PC.END_DATE,
+		PC.CRAFTS_VERSION,
+		PC."ID",
+		PC.IS_DEFAULT,
+		PC.ORG_CODE,
+		PC.MODIFY_TIME
+		FROM T_PRO_PRODUCT_CRAFTS PC LEFT JOIN T_PLA_PRODUCT P
+		on(PC.PRODUCT_CODE=P.PRODUCT_CODE)
+		<include refid="findParams" />
+	</select>
+
+	<select id="count" resultType="int">
+		SELECT COUNT(*)
+		FROM T_PRO_PRODUCT_CRAFTS PC LEFT JOIN T_PLA_PRODUCT P
+		on(PC.PRODUCT_CODE=P.PRODUCT_CODE)
+		<include refid="findParams" />
+	</select>
+	
+	<select id="getByPrcvByNo" parameterType="String" resultMap="getMap">
+		SELECT DISTINCT * FROM T_PRO_PRODUCT_CRAFTS 
+		WHERE CRAFTS_CODE=#{prcvNo,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getAll" resultMap="getMap">
+		SELECT
+		<include refid="sqlColumns" />
+		FROM T_PRO_PRODUCT_CRAFTS PC
+		<include refid="findParams" />
+	</select>
+
+	<!-- 根据产品代码和工艺版本号 获取工艺信息 查出了所有版本 暂时改用缓存 -->
+	<select id="getByProductCode" resultMap="getMap" parameterType="string">
+		SELECT
+		ID,
+		CRAFTS_CODE,
+		CRAFTS_NAME,
+		START_DATE,
+		END_DATE,
+		CRAFTS_VERSION,
+		PRODUCT_CODE
+		FROM
+		T_PRO_PRODUCT_CRAFTS
+		WHERE
+		PRODUCT_CODE=#{productCode,jdbcType=VARCHAR}
+		AND IS_DEFAULT='1' AND SYSDATE>=START_DATE
+		AND (END_DATE IS NULL OR SYSDATE<![CDATA[<]]>END_DATE)
+		AND ROWNUM <![CDATA[ <= ]]>
+		1
+	</select>
+	
+	<select id="getCraftIdByProductCode" resultType="string"  parameterType="string">
+		 SELECT * FROM (SELECT PPCR.PRODUCT_CRAFTS_ID
+		   FROM T_PRO_PRODUCT_CRAFTS_R PPCR
+		  WHERE PPCR.PRODUCT_CODE = #{productCode,jdbcType=VARCHAR} ORDER BY PPCR.CREATE_TIME DESC) WHERE ROWNUM<![CDATA[ <= ]]>1
+	</select>
+
+	<select id="getLatest" resultMap="getMap">
+		SELECT
+		ID,CRAFTS_CODE,CRAFTS_NAME,START_DATE,END_DATE,CRAFTS_VERSION,PRODUCT_CODE
+		FROM T_PRO_PRODUCT_CRAFTS
+		WHERE SYSDATE>=START_DATE AND SYSDATE<![CDATA[<=]]>END_DATE
+	</select>
+
+	<!-- 模糊查询 根据name或者code -->
+	<select id="findByCodeOrName" parameterType="map"
+		resultType="cc.oit.bsmes.pro.model.ProductCrafts">
+		SELECT * FROM T_PRO_PRODUCT_CRAFTS C
+		<where>
+			<if test="codeOrName!=null and codeOrName!=''">
+				AND (UPPER(C.CRAFTS_CODE) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}) OR
+				UPPER(C.CRAFTS_NAME) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}))
+			</if>
+		</where>
+		ORDER BY NLSSORT(C.CRAFTS_NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+
+	<!-- 获取产品的可选工艺列表 -->
+	<select id="getChooseCraftsArray" parameterType="string" resultMap="getMap">
+		SELECT
+		    C.*
+		FROM
+		    T_PRO_PRODUCT_CRAFTS C
+		WHERE
+		    C.PRODUCT_CODE = #{productCode, jdbcType=VARCHAR}
+		ORDER BY
+		    CRAFTS_CODE,
+		    CREATE_TIME DESC
+	</select>
+
+	<!-- 获取最近的一个该产品的订单所使用的工艺对象 -->
+	<select id="getLastOrderUserdCrafts" parameterType="string"
+		resultMap="getMap">
+		<![CDATA[
+		SELECT
+		    *
+		FROM
+		    (
+		        SELECT
+		            PC.*
+		        FROM
+		            T_PLA_CUSTOMER_ORDER_ITEM COI,
+		            T_PRO_PRODUCT_CRAFTS PC
+		        WHERE
+		            COI.CRAFTS_ID=PC.ID
+		        AND COI.PRODUCT_CODE=#{productCode, jdbcType=VARCHAR}
+		        ORDER BY
+		            COI.CREATE_TIME DESC)
+		WHERE
+		    ROWNUM <=1
+		]]>
+	</select>
+
+	<select id="getUncompletedScxFromMes" resultType="String">
+		SELECT M.PRODUCT_CODE FROM (SELECT PPC.PRODUCT_CODE,
+		COUNT(PEL.EQUIP_CODE) AS AMOUNT
+		FROM T_PRO_PRODUCT_CRAFTS PPC,
+		T_PRO_PRODUCT_PROCESS PPP,
+		T_PRO_EQIP_LIST PEL
+		WHERE PPC.ID = PPP.PRODUCT_CRAFTS_ID
+		AND PPP.ID = PEL.PROCESS_ID
+		GROUP BY PPC.PRODUCT_CODE) M,
+		(SELECT P.NO, COUNT(SCXO.ITEMID2) AS AMOUNT
+		FROM PRODUCT P, PRCV_OBJOF PRCVO, PROCESS_OBJOF PROO, SCX_OBJOF SCXO
+		WHERE P.ID = PRCVO.ITEMID1
+		AND PRCVO.ITEMID2 = PROO.ITEMID1
+		AND SCXO.ITEMID1 = PROO.ITEMID2
+		GROUP BY P.NO) N
+		WHERE M.PRODUCT_CODE=N.NO AND M.AMOUNT<![CDATA[<>]]>N.AMOUNT
+	</select>
+							
+	<insert id="insertCaftsR" parameterType="string">
+      insert into t_pro_product_crafts_r(id,product_code,product_crafts_id,create_time) values(get_uuid,#{param1,jdbcType=VARCHAR},#{param2,jdbcType=VARCHAR},SYSDATE)
+	</insert>
+	
+	<!-- 调用函数查看工艺是否有效：包括工序是否连贯，是否没道工序都有投入产出，产出投入是否连贯，产出是否有且只有一个，是否都有生产线 
+		@return 1:合法, 0:不合法 -->
+	<select id="validateProductCrafts" parameterType="string" resultType="string">
+		SELECT VALIDATEPRODUCTCRAFTS(#{craftsId, jdbcType=VARCHAR}) AS ISPASS FROM DUAL
+	</select>
+	
+	<select id="getLatestPrcvByNo" parameterType="string" resultMap="getMap">
+		SELECT * FROM (
+        SELECT * FROM T_PRO_PRODUCT_CRAFTS WHERE 
+        CRAFTS_CODE=#{craftsCode,jdbcType=VARCHAR} ORDER BY CREATE_TIME DESC)
+        WHERE ROWNUM=1
+	</select>
+
+    <select id="getAllById"  parameterType="String" resultMap="getMap">
+	    SELECT * FROM T_PRO_PRODUCT_CRAFTS WHERE ID = #{id,jdbcType=VARCHAR}
+	</select>
+    
+</mapper>
+
+

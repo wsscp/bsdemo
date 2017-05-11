@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/4918/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/interceptor
+END
+SortListInterceptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/interceptor/SortListInterceptor.java
+END
+SqlInterceptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/BSMES/!svn/ver/4918/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/common/mybatis/interceptor/SqlInterceptor.java
+END

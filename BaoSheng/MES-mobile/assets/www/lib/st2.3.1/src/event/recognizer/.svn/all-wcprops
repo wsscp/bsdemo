@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer
+END
+SingleTouch.js
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/SingleTouch.js
+END
+Tap.js
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Tap.js
+END
+Recognizer.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Recognizer.js
+END
+Swipe.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Swipe.js
+END
+EdgeSwipe.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/EdgeSwipe.js
+END
+LongPress.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/LongPress.js
+END
+Drag.js
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Drag.js
+END
+MultiTouch.js
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/MultiTouch.js
+END
+Rotate.js
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Rotate.js
+END
+DoubleTap.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/DoubleTap.js
+END
+HorizontalSwipe.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/HorizontalSwipe.js
+END
+Pinch.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Pinch.js
+END
+VerticalSwipe.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/VerticalSwipe.js
+END
+Touch.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/event/recognizer/Touch.js
+END

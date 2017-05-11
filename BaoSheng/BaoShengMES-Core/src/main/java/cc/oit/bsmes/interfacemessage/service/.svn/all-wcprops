@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/8981/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/service
+END
+Message.properties
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/4922/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/service/Message.properties
+END
+MessageService.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/7998/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/service/MessageService.java
+END
+MessageAutoSendService.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/BSMES/!svn/ver/8030/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacemessage/service/MessageAutoSendService.java
+END

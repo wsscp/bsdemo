@@ -1,0 +1,410 @@
+/*#region 全局 */
+html,body {
+	font-family:微软雅黑;
+}
+body.x-desktop {
+	font-size:100%;
+}
+/*#endregion*/
+/*#region 引导页 */
+.guide .x-innerhtml {
+	height:100%;
+}
+.guide .bgImg {
+	height:100%;
+	background-image:url('../images/main.png');
+	background-size:100% 100%;
+}
+.guide .text {
+	padding:3em;
+}
+.guideIco {
+	background-image:url('../images/ico/guide.png');
+	background-size:auto 100%;
+	background-repeat:no-repeat;
+	background-position:right;
+	float:right;
+	height:100%;
+	width:4em;
+	height:4em;
+	margin-right:1.5em;
+}
+.guideBtn.pressing .guideIco {
+	background-image:url('../images/ico/guidedown.png');
+}
+/*#endregion*/
+/*#region 首页 */
+
+.home .x-button {
+	background-image:none;
+	background-color:transparent;
+	border:0;
+	padding:0.2em 0;
+}
+.home .x-button .x-button-label {
+	font-weight:normal;
+	color:#3F444A;
+	font-size:.7em;
+	margin-top:.25em;
+}
+.home .x-button .x-button-icon {
+	font-size:1.8em;
+	width: 64px;
+	height: 64px;
+}
+/*#endregion*/
+/*#region 天气预报 */
+
+.weather div {
+	color:White;
+	font-size:0.7em;
+}
+.weather span {
+	width:1.7em;
+	height:1.7em;
+	display:inline-block;
+	background-repeat:no-repeat;
+	background-position:bottom;
+}
+/*#endregion*/
+/*#region 列表 */
+.list {
+	font-size:.9em;
+}
+.list .x-list-item.x-list-item-tpl .x-innerhtml {
+	line-height:1.4em;
+}
+.list .x-list-item.x-item-pressed .x-innerhtml {
+	background-image:none;
+	background-color:#6F747A;
+}
+.list .x-list-item.x-item-pressed .x-innerhtml div {
+	color:White;
+}
+/*#endregion*/
+/*#region 详细页 */
+.info {
+	font-size:.8em;
+	line-height:1.5em;
+}
+.info img {
+     width:100% !important;
+     height:auto !important;
+}
+.info .x-inner {
+	padding:0.5em 1em;
+}
+/*#endregion*/
+/*#region cardPanel */
+
+.cardPanel .navigationBar {
+	background-color:#FF5B0A;
+	background-image:none;
+	border-bottom-color:#ED5F12;
+}
+.cardPanel .x-title {
+	font-weight:normal;
+	text-shadow:none;
+}
+.back.x-button {
+	background-color:transparent;
+	background-image:none;
+	border:0;
+}
+.back.x-button.x-button-pressing {
+	background-color:transparent;
+	background-image:none;
+}
+/*#endregion*/
+/*#region 底部导航栏 */
+
+.navToolbar.x-toolbar-dark {
+	border:0;
+	padding:0;
+	margin:0;
+	background-color:#FAFAFA;
+	background-image:none;
+}
+.navToolbar .x-button {
+	border:0 1px 1px 0;
+	border-style:solid;
+	border-color:transparent;
+	-moz-border-radius:0;
+	-webkit-border-radius:0;
+	border-radius:0;
+	margin:0;
+	padding:0;
+	color:#6A6A6A;
+	background-color:transparent;
+	background-image:none;
+}
+.navToolbar .x-button .x-button-label {
+	font-weight:normal;
+	font-size:.8em;
+}
+.navToolbar .x-button.x-button-pressing,.navToolbar .x-button.x-tabBar-pressing {
+	background-color:#DEDEDE;
+	background-image:-webkit-gradient(linear,50% 0%,50% 100%,color-stop(0%,#DEDEDE),color-stop(100%,#F6F6F6));
+	background-image:linear-gradient(#DEDEDE,#F6F6F6);
+	background-image:-webkit-linear-gradient(#DEDEDE,#F6F6F6);
+	color:#11598c;
+}
+/*#endregion*/
+/*#region 联系人边栏 */
+
+.telBar.x-toolbar-dark {
+	border-top:1px solid #ED5F12;
+}
+.telBtn {
+	padding:5px 30px;
+}
+.telBtn .x-button {
+	border-radius:3px;
+}
+.telBtn .x-button.x-button-pressing {
+	color:White;
+}
+.telBtn .x-button .x-button-label {
+	font-size:.9em;
+}
+/*#endregion*/
+/*#region 顶部导航栏 */
+.topBar .x-button {
+	border-right-color:#DBDBDB;
+	color:Black;
+	font-weight:bold;
+}
+.topBar .x-button.x-button-pressing,.topBar .x-button.x-tabBar-pressing {
+	background-color:transparent;
+	background-image:none;
+	color:Black;
+	border-bottom-color:#FF5B0A;
+}
+/*#endregion*/
+/*#region tab页面 */
+
+.tab {
+	height:100%;
+}
+.tab .x-tabbar-dark {
+	background-image:none;
+	background-color:White;
+	padding:0;
+	border:0;
+}
+.tab .x-tabbar-dark .x-tab {
+	color:Black;
+	background-color:White;
+	height:100%;
+	border-color:#DBDBDB;
+	border-style:solid;
+	border-width:0px 1px 1px 0px;
+	background-image:none;
+	border-radius:0;
+	padding:0.8em;
+}
+.tab .x-tabbar-dark .x-tab-active {
+	border-bottom-color:#FF5B0A;
+}
+/*#endregion*/
+/*#region 字体颜色 */
+.orangeYellow {
+	color:#F37E0B;
+}
+.orange {
+	color:#ED5F12;
+}
+.roseRed {
+	color:#DE3554;
+}
+.lightBlue {
+	color:#2C94B1;
+}
+.green {
+	color:#7DB13A;
+}
+.blue {
+	color:#4C93C2;
+}
+.yellow {
+	color:#F19300;
+}
+.paleYellow {
+	color:#F3B428;
+}
+.smBlue {
+	color:#45ADB9;
+}
+.yellowish {
+	color:#B15F2E;
+}
+.gray {
+	color:gray;
+}
+/*#endregion*/
+/*#region 布局 */
+.tc {
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+.tf {
+	text-align:left;
+}
+.mt {
+	margin-top:1em;
+}
+.pad {
+	padding:5px;
+}
+/*#endregion*/
+/*#region 其他 */
+
+.img {
+	width:2em;
+	height:3em;
+	background-size:100% auto;
+	background-position:center;
+	margin-left:1em;
+	background-repeat:no-repeat;
+}
+.content {
+	margin-left:0.5em;
+}
+.sm {
+	font-size:80%;
+}
+.right {
+	width:7.5em;
+	text-align:right;
+}
+.w1 {
+	width:10em;
+}
+.w3 {
+	width:3em;
+}
+.w6 {
+	width:6em;
+}
+.tf {
+	text-align:left;
+}
+/*#endregion*/
+/*#region pageTab扩展 */
+.pageTab {
+	height:100%;
+}
+.pageTab .x-tabbar-dark {
+	background-image:none;
+	background-color:#D3DCE3;
+	padding:0;
+	border:0;
+}
+.pageTab .x-tabbar-dark .x-tab {
+	color:#677C8B;
+	border:0;
+	height:100%;
+	border-radius:0;
+	padding:0.8em 0.2em;
+}
+.pageTab .x-tabbar-dark .x-tab-active {
+	background-color:transparent;
+	background-image:none;
+	border-bottom:1px solid #00A4FF;
+	color:#060606;
+}
+.pageTab .pageTabBar {
+	padding:0;
+}
+.pageTabBar .x-button {
+	border:0;
+	padding:0;
+	background-color:transparent;
+	background-image:none;
+}
+.pageTabBar .x-button .x-button-icon {
+	margin:0.5em 0;
+	color:#7DB13A;
+}
+.pageTabBar .x-button.x-button-pressing .x-button-icon {
+	color:#2A8BBE;
+}
+.tabLeft:before {
+	content:"8";
+}
+.tabRight:before {
+	content:"7";
+}
+/*#endregion*/
+/*#region ico */
+.pIco {
+	background-size:auto 100%;
+}
+.tel:before {
+	content:":";
+}
+.mes:before {
+	content:"M";
+}
+.squared:before {
+	content:"u";
+}
+.x-button.x-button-pressing .x-button-icon {
+	color:#11598c;
+}
+/*#endregion*/
+/*#region 信息提示 */
+
+.message .x-mask-inner {
+	background-color:Black;
+	font-size:0.9em;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	top:7em;
+}
+.message .x-mask-message {
+	line-height:1.8em;
+	padding:0 0.3em;
+}
+/*#endregion*/
+/*#region 盒模型 */
+
+.bh {
+	display:-webkit-box;
+	-webkit-box-orient:horizontal;
+}
+.bv {
+	display:-webkit-box;
+	-webkit-box-orient:vertical;
+}
+.bh div>div,.bv div>div {
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+.b1 {
+	-webkit-box-flex:1;
+}
+.b2 {
+	-webkit-box-flex:2;
+}
+.b3 {
+	-webkit-box-flex:3;
+}
+.b4 {
+	-webkit-box-flex:4;
+}
+/*#endregion*/
+/*#region 滚动条 */
+
+/* 隐藏x方向滚动条 */
+.x-scroll-bar-x.active {
+	width:0px;
+}
+/* 隐藏y方向滚动条 */
+.x-scroll-bar-y.active {
+	width:0px;
+}
+/*#endregion*/

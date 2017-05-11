@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.WorkOrderOperateLogDAO">
+
+	<resultMap type="WorkOrderOperateLog" id="getMap"></resultMap>
+
+	<sql id="workOrderOperateLogColumns">
+		WOOL."ID",
+		WOOL.WORK_ORDER_NO,
+		WOOL.EQUIP_CODE,
+		WOOL.ORG_CODE,
+		WOOL.OPERATE_REASON,
+		WOOL.STATUS,
+		WOOL.CREATE_USER_CODE,
+		WOOL.CREATE_TIME,
+		WOOL.MODIFY_USER_CODE,
+		WOOL.MODIFY_TIME
+	</sql>
+	
+	<select id="find" parameterType="cc.oit.bsmes.wip.model.WorkOrderOperateLog" resultType="WorkOrderOperateLog">
+		SELECT 	<include refid="workOrderOperateLogColumns"/>,
+			(SELECT E.NAME FROM T_BAS_EMPLOYEE E WHERE E.USER_CODE=WOOL.CREATE_USER_CODE) AS USER_NAME,
+			(SELECT NVL(I.EQUIP_ALIAS, I.NAME) FROM T_FAC_EQIP_INFO I WHERE I.CODE=WOOL.EQUIP_CODE) AS EQUIP_NAME
+		FROM T_WIP_WORK_ORDER_OPERATE_LOG WOOL WHERE 1=1
+		<include refid="getParameter"/>
+	</select>
+	
+	<select id="count" parameterType="cc.oit.bsmes.wip.model.WorkOrderOperateLog" resultType="int">
+		SELECT 	COUNT(WOOL.ID) 
+		FROM T_WIP_WORK_ORDER_OPERATE_LOG WOOL WHERE 1=1
+		<include refid="getParameter"/>
+	</select>
+
+	<select id="getLastOperateLog" parameterType="string" resultType="cc.oit.bsmes.wip.model.WorkOrderOperateLog">
+		SELECT <include refid="workOrderOperateLogColumns"/>
+		  FROM T_WIP_WORK_ORDER_OPERATE_LOG WOOL
+		 WHERE WOOL.WORK_ORDER_NO = #{workOrderNo, jdbcType=VARCHAR} 
+		   AND WOOL.STATUS <![CDATA[<>]]> 'FINISHED'
+		   AND WOOL.END_TIME IS NULL
+		   AND ROWNUM = 1
+	</select>
+
+	<sql id="getParameter">
+		<if test="workOrderNo !=null and workOrderNo !=''">
+			AND WOOL.WORK_ORDER_NO LIKE #{workOrderNo, jdbcType=VARCHAR}
+		</if>
+		<if test="operateType !=null and operateType !=''">
+			AND WOOL.OPERATE_TYPE = #{operateType, jdbcType=VARCHAR}
+		</if>
+		<if test="equipCode !=null and equipCode !=''">
+			AND WOOL.EQUIP_CODE LIKE #{equipCode, jdbcType=VARCHAR}
+		</if>
+		<if test="status !=null and status !=''">
+			AND WOOL.STATUS LIKE #{status, jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode !=null and orgCode !=''">
+			AND WOOL.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+		</if>
+		
+		<!--
+		<if test="oldFlag !=null and oldFlag !=''">
+			AND WOOL.OLD_FLAG = '0'
+			AND WOOL.OLD_FLAG LIKE #{oldFlag, jdbcType=Boolean}
+		</if>
+		
+		AND  not exists (select 1 from  t_wip_work_order where work_order_no = WOOL.work_order_no and status = 'CANCELED')
+		-->
+		<if test="equipCodeParams !=null and equipCodeParams !=''">
+			AND WOOL.EQUIP_CODE IN
+			<foreach collection="equipCodeParams" item="equipCode" open="(" separator="," close=")">  
+			    #{equipCode,jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		
+		ORDER BY WOOL.EQUIP_CODE DESC
+	</sql>
+	
+	
+</mapper>

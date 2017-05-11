@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.WorkOrderReportDAO">
+
+	<resultMap type="WorkOrderReport" id="getMap"></resultMap>
+	
+	<parameterMap id="callProcedureMap" type="map" >  
+	   	<parameter property="vo_reporttype" jdbcType="VARCHAR" mode="IN"/>
+	   	<parameter property="vo_querydate" jdbcType="VARCHAR" mode="IN"/>  
+	   	<parameter property="V_errorcode" jdbcType="INTEGER" mode="OUT"/> 
+	   	<parameter property="V_errorcontent" jdbcType="VARCHAR" mode="OUT"/> 
+	</parameterMap>  
+	
+	<select id="callProcedure" parameterMap="callProcedureMap" statementType="CALLABLE">
+		{call WORKORDER_REPORT(?,?,?,?)}
+	</select>
+	
+	<select id="totalworkhours" parameterType="WorkOrderReport" resultType="int">
+		SELECT NVL(SUM(WORK_HOURS), 0)
+		FROM T_WIP_WORK_ORDER_REPORT
+		<where>
+			<if test="reportType != null and reportType != ''">
+				AND REPORT_TYPE = #{reportType, jdbcType=VARCHAR}
+			</if>
+			<if test="reportDate != null and reportDate != ''">
+				AND REPORT_DATE = #{reportDate, jdbcType=VARCHAR}
+			</if>
+			<if test="shiftId != null and shiftId != ''">
+				AND SHIFT_ID = #{shiftId, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	
+	<sql id="selectColumns">
+		WOR."ID",
+		WOR.CONTRACT_NO,
+		WOR.OPERATOR,
+		WOR.WORK_ORDER_NO,
+		WOR.EQUIP_CODE ,
+		WOR.EQUIP_NAME,
+		WOR.SHIFT_ID,
+		WOR.PRODUCT_TYPE,
+		WOR.PRODUCT_SPEC,
+		WOR.WORK_HOURS,
+		WOR.FINISHED_LENGTH,
+		WOR.DB_WORKER,
+		WOR.FDB_WORKER,
+		WOR.FZG_WORKER,
+		WOR.COLOR_OR_WORD,
+		WOR.JS_THICKNESS_MIN,
+		WOR.JS_THICKNESS_MAX,
+		WOR.JS_FRONT_OUTERDIAMETER_MIN,
+		WOR.JS_FRONT_OUTERDIAMETER_MAX,
+		WOR.JS_BACK_OUTERDIAMETER_MIN,
+		WOR.JS_BACK_OUTERDIAMETER_MAX,
+		WOR.TEST_VOLTAGE,
+		WOR.PUNCTURE_NUM,
+		WOR.LINE_SPEED,
+		WOR.OUTER_POSITION,
+		WOR.BELT_POSITION,
+		WOR.CU_COVER_LEVEL,
+		WOR.PLAN_LENGTH,
+		WOR.REAL_LENGTH,
+		WOR.TESTING,
+		WOR.QUALITY,
+		WOR.KIND,
+		WOR.PRE_LEAVE,
+		WOR.THIS_TAKE,
+		WOR.THIS_BACK,
+		WOR.CL_OUTERDIAMETER_UP,
+		WOR.CL_OUTERDIAMETER_DOWN,
+		WOR.PB_OUTERDIAMETER_UP,
+		WOR.PB_OUTERDIAMETER_DOWN,
+		WOR.PICE_RANGE,
+		WOR.PB_MAT,
+		WOR.RB_QUALITY,
+		WOR.COVER_LEVEL,
+		WOR.OWNER_TESTING,
+		WOR.CREATE_USER_CODE,
+		WOR.CREATE_TIME,
+		WOR.MODIFY_TIME,
+		WOR.MODIFY_USER_CODE,
+		WOR.REPORT_DATE,
+		WOR.REPORT_TYPE,
+		WOR.ORG_CODE
+	</sql>
+	
+	<select id="find" parameterType="WorkOrderReport" resultType="WorkOrderReport">
+		SELECT 	<include refid="selectColumns"/>
+		FROM T_WIP_WORK_ORDER_REPORT WOR
+		<include refid="getParameter"/>
+	</select>
+	
+	<select id="count" parameterType="WorkOrderReport" resultType="int">
+		SELECT 	COUNT(*)
+		FROM T_WIP_WORK_ORDER_REPORT WOR
+		<include refid="getParameter"/>
+	</select>
+	
+	<sql id="getParameter">
+		<where>
+			<if test="reportDate !=null and reportDate !=''">
+				AND WOR.REPORT_DATE = #{reportDate, jdbcType=VARCHAR}
+			</if>
+			<if test="reportType !=null and reportType !=''">
+				AND WOR.REPORT_TYPE = #{reportType, jdbcType=VARCHAR}
+			</if>
+			<if test="shiftId !=null and shiftId !=''">
+				AND WOR.SHIFT_ID = #{shiftId, jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode !=null and orgCode !=''">
+				AND WOR.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	
+</mapper>

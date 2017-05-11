@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.ReportDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.Report" id="getMap">
+	</resultMap>
+
+	<sql id="reportColumns">
+		RE."ID",
+		RE.WORK_ORDER_NO,
+		RE.SERIAL_NUM,
+		RE.WEIGHT,
+		RE.STATUS,
+		RE.REPORT_USER_CODE,
+		RE.REPORT_TIME,
+		RE.ORG_CODE,
+		RE.CREATE_USER_CODE,RE.CREATE_TIME,RE.MODIFY_USER_CODE,RE.MODIFY_TIME,
+		RE.REPORT_LENGTH,
+		RE.GOOD_LENGTH,
+		RE.COIL_NUM
+	</sql>
+	
+	<sql id="distinctreportColumns">	
+	       distinct
+           RE.WORK_ORDER_NO, 
+           RE.REPORT_USER_CODE ,
+            E.NAME REPORT_USER_NAME,
+			TMP.CONTRACT_NO,
+			WO.REAL_START_TIME,
+			WO.REAL_END_TIME,
+			WO.ORDER_LENGTH,
+            WO.EQUIP_CODE
+	</sql>
+	
+	<select id="findForUserProcessTrace" parameterType="map" resultType="map">
+		SELECT 
+		<include refid="distinctreportColumns" />,
+            (SELECT PRODUCT_CODE  FROM T_PRO_PRODUCT_CRAFTS CR WHERE EXISTS (
+               SELECT 1 FROM T_PRO_PRODUCT_PROCESS PR WHERE CR.ID = PR.PRODUCT_CRAFTS_ID AND PR.ID = WO.PROCESS_ID
+            )) AS PRODUCT_CODE
+		FROM T_WIP_REPORT RE
+		LEFT JOIN T_BAS_EMPLOYEE E 
+		ON RE.REPORT_USER_CODE = E.USER_CODE
+		LEFT JOIN T_WIP_WORK_ORDER WO
+		ON (WO.WORK_ORDER_NO = RE.WORK_ORDER_NO AND WO.REAL_START_TIME IS NOT NULL)
+		LEFT JOIN (SELECT WORK_ORDER_NO, WMSYS.WM_CONCAT(DISTINCT CONTRACT_NO) CONTRACT_NO
+               FROM (SELECT OT.WORK_ORDER_NO,
+                            OT.CONTRACT_NO,
+                            ROW_NUMBER() OVER(PARTITION BY OT.WORK_ORDER_NO ORDER BY OT.WORK_ORDER_NO) R
+                       FROM T_PLA_ORDER_TASK OT)
+              GROUP BY WORK_ORDER_NO) TMP
+    	ON RE.WORK_ORDER_NO = TMP.WORK_ORDER_NO
+		<include refid="findForUserProcessTraceCondition" /> 
+	</select>
+
+	<select id="getCurrent" parameterType="string" resultType="cc.oit.bsmes.wip.model.Report">
+		SELECT ROWNUM,T.* FROM (
+            SELECT
+		<include refid="reportColumns" />
+            FROM T_WIP_REPORT RE, T_WIP_WORK_ORDER WO
+            WHERE WO.STATUS IN ('TO_DO','IN_PROGRESS') AND WO.EQUIP_CODE= #{equipCode}  AND RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+            ORDER BY WO.PRE_START_TIME,RE.CREATE_TIME DESC
+        ) T WHERE ROWNUM = 1
+	</select>
+	<select id="countForUserProcessTrace" parameterType="map" resultType="int">
+	
+	select count(*)  from ( select 
+		<include refid="distinctreportColumns" />  			 
+		FROM T_WIP_REPORT RE 
+		LEFT JOIN T_BAS_EMPLOYEE E 
+		ON RE.REPORT_USER_CODE = E.USER_CODE
+		LEFT JOIN T_WIP_WORK_ORDER WO
+		ON (WO.WORK_ORDER_NO = RE.WORK_ORDER_NO AND WO.REAL_START_TIME IS NOT NULL)
+		LEFT JOIN (SELECT WORK_ORDER_NO, WMSYS.WM_CONCAT(DISTINCT CONTRACT_NO) CONTRACT_NO
+               FROM (SELECT OT.WORK_ORDER_NO,
+                            OT.CONTRACT_NO,
+                            ROW_NUMBER() OVER(PARTITION BY OT.WORK_ORDER_NO ORDER BY OT.WORK_ORDER_NO) R
+                       FROM T_PLA_ORDER_TASK OT)
+              GROUP BY WORK_ORDER_NO) TMP
+    	ON RE.WORK_ORDER_NO = TMP.WORK_ORDER_NO
+		<include refid="findForUserProcessTraceCondition" /> 	
+		 )
+	</select>
+	<sql id="findForUserProcessTraceCondition">
+		<where>
+			<if test="reportUserCode != null and reportUserCode != '' ">
+				AND (RE.REPORT_USER_CODE LIKE #{reportUserCode} OR E.NAME LIKE #{reportUserCode})
+			</if>
+			<if test="contractNo != null and contractNo != '' ">
+				AND INSTR(TMP.CONTRACT_NO,#{contractNo})>0
+			</if>
+			<if test="workOrderNo!=null and workOrderNo!=''">
+				AND INSTR(RE.WORK_ORDER_NO,#{workOrderNo})>0
+			</if>
+			<if test="equipCode!=null and equipCode!=''">
+				AND INSTR( WO.EQUIP_CODE,#{equipCode})>0
+			</if>
+			<if test="orgCode !=null and orgCode != ''">
+                AND RE.ORG_CODE =#{orgCode}
+			</if>
+            
+			<if test="startTime !=null and startTime != ''">
+                AND WO.REAL_START_TIME   >=#{startTime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endTime !=null and endTime != ''">
+			AND WO.REAL_START_TIME <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP}  
+			</if>
+            
+               	  
+    		
+    		
+		</where>
+	</sql>
+	
+	<select id = "getReportCount1" parameterType = "String" resultType="int">
+		SELECT COUNT(*)
+		FROM T_WIP_REPORT
+		WHERE WORK_ORDER_NO = #{workOrderNo}
+	</select>
+	
+	<select id="sumGoodLengthByWoNo" parameterType="string" resultType="double">
+          SELECT
+            SUM(GOOD_LENGTH)
+          FROM T_WIP_REPORT
+          WHERE WORK_ORDER_NO = #{woNo}
+	</select>
+
+	<select id="getByEquipCode" parameterType="cc.oit.bsmes.wip.model.Report" resultMap="getMap">
+    	WITH DD AS(
+    		SELECT T.ID,
+       			LISTAGG(CONTRACT_NO, ',') WITHIN GROUP(ORDER BY CONTRACT_NO) AS CONTRACT_NO,
+       			LISTAGG(CUST_PRODUCT_TYPE, ',') WITHIN GROUP(ORDER BY CUST_PRODUCT_TYPE) AS CUST_PRODUCT_TYPE,
+       			LISTAGG(CUST_PRODUCT_SPEC, ',') WITHIN GROUP(ORDER BY CUST_PRODUCT_SPEC) AS CUST_PRODUCT_SPEC
+  			FROM (SELECT RE.ID, OT.CONTRACT_NO, PPD.CUST_PRODUCT_TYPE,PPD.CUST_PRODUCT_SPEC
+          			FROM T_WIP_REPORT RE
+			          LEFT JOIN T_WIP_REPORT_TASK WT
+			            ON WT.REPORT_ID = RE.ID
+			          LEFT JOIN T_PLA_ORDER_TASK OT
+			            ON WT.ORDER_TASK_ID = OT.ID
+			          LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PPD
+			            ON PPD.ID = OT.ORDER_ITEM_PRO_DEC_ID
+         			WHERE RE.EQUIP_CODE = #{equipCode}
+           				AND RE.REPORT_TIME <![CDATA[>=]]> #{reportTime,jdbcType=TIMESTAMP}
+         			GROUP BY RE.ID, OT.CONTRACT_NO, PPD.CUST_PRODUCT_TYPE,PPD.CUST_PRODUCT_SPEC) T
+			 GROUP BY T.ID)
+            SELECT <include refid="reportColumns"/>,
+                DD.CUST_PRODUCT_TYPE,
+                DD.CUST_PRODUCT_SPEC AS PRODUCT_SPEC,
+                DD.CONTRACT_NO,
+                EM.NAME AS REPORTUSERNAME,
+                (SELECT LISTAGG(TEMP.COLOR, ',') WITHIN GROUP(ORDER BY TEMP.COLOR) AS MATERIAL
+                  FROM (SELECT TA.REPORT_ID,TA.COLOR
+                  FROM T_WIP_REPORT_TASK TA
+                  GROUP BY TA.REPORT_ID,TA.COLOR) TEMP WHERE TEMP.REPORT_ID = RE.ID) AS PRODUCTCOLOR
+            FROM T_WIP_REPORT RE
+            LEFT JOIN DD ON DD.ID=RE.ID 
+            LEFT JOIN T_BAS_EMPLOYEE EM ON RE.REPORT_USER_CODE = EM.USER_CODE
+            WHERE RE.EQUIP_CODE = #{equipCode}
+				AND RE.REPORT_TIME <![CDATA[>=]]> #{reportTime,jdbcType=TIMESTAMP}
+				<if test="orgCode != null and orgCode != ''">
+		                AND RE.ORG_CODE =#{orgCode,jdbcType=VARCHAR}
+				</if>
+            ORDER BY RE.REPORT_TIME DESC
+	</select>
+	
+	<select id="getReportOutput" parameterType="cc.oit.bsmes.wip.model.Report" resultMap="getMap">
+		WITH DD AS(
+SELECT T.ID,T.CONTRACT_NO,LISTAGG(CUST_PRODUCT_TYPE,',') WITHIN GROUP (ORDER BY CUST_PRODUCT_TYPE) AS CUST_PRODUCT_TYPE
+FROM (SELECT RE.ID,OT.CONTRACT_NO,PPD.CUST_PRODUCT_TYPE FROM T_WIP_REPORT RE 
+LEFT JOIN T_WIP_REPORT_TASK WT ON WT.REPORT_ID=RE.ID
+LEFT JOIN T_PLA_ORDER_TASK OT ON WT.ORDER_TASK_ID=OT.ID
+LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PPD ON PPD.ID=OT.ORDER_ITEM_PRO_DEC_ID GROUP BY RE.ID,OT.CONTRACT_NO,PPD.CUST_PRODUCT_TYPE )T 
+GROUP BY T.ID,T.CONTRACT_NO
+)
+            SELECT
+		<include refid="reportColumns"/>,
+                PRO.PRODUCT_TYPE,
+                PRO.PRODUCT_SPEC,
+                dd.CUST_PRODUCT_TYPE,
+                dd.CONTRACT_NO,
+                EM.NAME AS reportUserName,
+                (SELECT LISTAGG(TEMP.COLOR, ',') WITHIN GROUP(ORDER BY TEMP.COLOR) AS MATERIAL
+                  FROM (SELECT TA.REPORT_ID,TA.COLOR
+                  FROM T_WIP_REPORT_TASK TA
+                  GROUP BY TA.REPORT_ID,TA.COLOR
+                ) TEMP WHERE TEMP.REPORT_ID = RE.ID) AS productColor
+            FROM T_WIP_REPORT RE
+            LEFT JOIN DD ON DD.ID=RE.ID 
+            LEFT JOIN T_WIP_WORK_ORDER WO ON RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+            LEFT JOIN T_WIP_WO_EQUIP_RELATION ER ON WO.ID = ER.WORK_ORDER_ID
+            LEFT JOIN T_BAS_EMPLOYEE EM ON RE.REPORT_USER_CODE = EM.USER_CODE
+            LEFT JOIN T_PRO_PRODUCT_PROCESS_WIP PR ON PR.ID = WO.PROCESS_ID
+            LEFT JOIN T_PRO_PRODUCT_CRAFTS_WIP CR ON CR.ID = PR.PRODUCT_CRAFTS_ID
+            LEFT JOIN T_PLA_PRODUCT PRO ON PRO.PRODUCT_CODE = CR.PRODUCT_CODE
+            WHERE RE.EQUIP_CODE = #{equipCode}
+			AND RE.REPORT_TIME <![CDATA[>=]]> #{onTime,jdbcType=TIMESTAMP}
+			AND RE.REPORT_TIME <![CDATA[<=]]> #{offTime,jdbcType=TIMESTAMP}
+			AND RE.REPORT_USER_CODE = #{reportUserCode,jdbcType=VARCHAR}
+            ORDER BY RE.REPORT_TIME DESC
+	</select>
+    
+    <select id="getEquipEnergyInfo" parameterType="cc.oit.bsmes.wip.model.Report" resultMap="getMap">
+		WITH DD AS(
+			SELECT T.ID,T.CONTRACT_NO,LISTAGG(CUST_PRODUCT_TYPE,',') WITHIN GROUP (ORDER BY CUST_PRODUCT_TYPE) AS CUST_PRODUCT_TYPE
+			FROM (SELECT RE.ID,OT.CONTRACT_NO,PPD.CUST_PRODUCT_TYPE FROM T_WIP_REPORT RE 
+			LEFT JOIN T_WIP_REPORT_TASK WT ON WT.REPORT_ID=RE.ID
+			LEFT JOIN T_PLA_ORDER_TASK OT ON WT.ORDER_TASK_ID=OT.ID
+			LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PPD ON PPD.ID=OT.ORDER_ITEM_PRO_DEC_ID GROUP BY RE.ID,OT.CONTRACT_NO,PPD.CUST_PRODUCT_TYPE )T 
+			GROUP BY T.ID,T.CONTRACT_NO
+			)
+            SELECT
+		<include refid="reportColumns"/>,
+                PRO.PRODUCT_TYPE,
+                PRO.PRODUCT_SPEC,
+                dd.CUST_PRODUCT_TYPE,
+                dd.CONTRACT_NO,
+                EM.NAME AS reportUserName,
+                (SELECT LISTAGG(TEMP.COLOR, ',') WITHIN GROUP(ORDER BY TEMP.COLOR) AS MATERIAL
+                  FROM (SELECT TA.REPORT_ID,TA.COLOR
+                  FROM T_WIP_REPORT_TASK TA
+                  GROUP BY TA.REPORT_ID,TA.COLOR
+                ) TEMP WHERE TEMP.REPORT_ID = RE.ID) AS productColor
+            FROM T_WIP_REPORT RE
+            LEFT JOIN DD ON DD.ID=RE.ID 
+            LEFT JOIN T_WIP_WORK_ORDER WO ON RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+            LEFT JOIN T_WIP_WO_EQUIP_RELATION ER ON WO.ID = ER.WORK_ORDER_ID
+            LEFT JOIN T_BAS_EMPLOYEE EM ON RE.REPORT_USER_CODE = EM.USER_CODE
+            LEFT JOIN T_PRO_PRODUCT_PROCESS_WIP PR ON PR.ID = WO.PROCESS_ID
+            LEFT JOIN T_PRO_PRODUCT_CRAFTS_WIP CR ON CR.ID = PR.PRODUCT_CRAFTS_ID
+            LEFT JOIN T_PLA_PRODUCT PRO ON PRO.PRODUCT_CODE = CR.PRODUCT_CODE
+            WHERE RE.EQUIP_CODE = #{equipCode}
+			AND RE.REPORT_TIME <![CDATA[>=]]> TO_TIMESTAMP(#{morShift},'yyyy-mm-dd hh24:mi:ss')
+			AND RE.REPORT_TIME <![CDATA[<=]]> TO_TIMESTAMP(#{currentTime},'yyyy-mm-dd hh24:mi:ss')
+            ORDER BY RE.REPORT_TIME DESC
+	</select>
+    
+	<select id="countFind" parameterType="cc.oit.bsmes.wip.model.Report" resultType="int">
+            SELECT
+               count(RE.id)
+            FROM T_WIP_REPORT RE
+            LEFT JOIN T_WIP_WORK_ORDER WO ON RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+            LEFT JOIN T_WIP_WO_EQUIP_RELATION ER ON WO.ID = ER.WORK_ORDER_ID
+            WHERE ER.EQUIP_CODE = #{equipCode}
+	        AND RE.REPORT_TIME <![CDATA[>=]]> #{reportTime,jdbcType=TIMESTAMP}
+		<if test="orgCode != null and orgCode != ''">
+                AND RE.ORG_CODE =#{orgCode,jdbcType=VARCHAR}
+		</if>
+            ORDER BY RE.REPORT_TIME DESC
+	</select>
+    
+
+	<select id="countByEquipCode" parameterType="cc.oit.bsmes.wip.model.Report" resultType="int">
+        SELECT
+          COUNT(RE.ID)
+        FROM T_WIP_REPORT RE
+        LEFT JOIN T_WIP_WORK_ORDER WO ON RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+        LEFT JOIN T_BAS_EMPLOYEE EM ON RE.REPORT_USER_CODE = EM.USER_CODE
+        WHERE WO.EQUIP_CODE = #{equipCode}
+	AND RE.REPORT_TIME <![CDATA[>=]]> #{reportTime,jdbcType=TIMESTAMP}
+		<if test="orgCode != null and orgCode != ''">
+            AND RE.ORG_CODE =#{orgCode,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<select id="getSumGoodLength" parameterType="string" resultType="double">
+            SELECT
+              SUM(GOOD_LENGTH)
+            FROM T_WIP_REPORT WHERE WORK_ORDER_NO = #{woNo}
+	</select>
+
+	<select id="checkFinishWorkOrder" parameterType="map" resultMap="getMap">
+        SELECT
+          RO.COIL_NUM
+        FROM T_WIP_REPORT RO
+        WHERE RO.WORK_ORDER_NO = #{woNo}
+        AND NOT EXISTS (
+          SELECT ID FROM T_PRO_PROCESS_QC_VALUE QV WHERE QV.COIL_NUM = RO.COIL_NUM
+          AND QV.WORK_ORDER_NO = RO.WORK_ORDER_NO
+          AND QV.TYPE = #{type}
+        )
+        ORDER BY RO.COIL_NUM
+	</select>
+	
+	<select id="getPrintInfoById" parameterType="string" resultType="cc.oit.bsmes.wip.model.Report">
+        SELECT
+          RO.ID,
+          RO.SERIAL_NUM,
+          RO.WORK_ORDER_NO,
+          RO.REPORT_LENGTH,
+          RO.COIL_NUM,
+          WO.HALF_PRODUCT_CODE,
+          (
+            SELECT LISTAGG(TEMP.COLOR, ',') WITHIN GROUP(ORDER BY TEMP.COLOR) AS COLORS
+						    FROM (SELECT
+                                    RT.COLOR
+                                  FROM T_WIP_REPORT_TASK RT
+                                  WHERE RT.REPORT_ID = #{param1}
+                                  GROUP BY RT.COLOR) TEMP
+
+          ) AS productColor,
+          RO.EQUIP_CODE,
+          BE.NAME
+        FROM T_WIP_REPORT RO LEFT JOIN T_WIP_WORK_ORDER WO ON RO.WORK_ORDER_NO = WO.WORK_ORDER_NO
+        LEFT JOIN T_BAS_EMPLOYEE BE ON BE.USER_CODE = RO.REPORT_USER_CODE
+        WHERE RO.ID = #{param1}
+	</select>
+
+	<select id="getByBarCode" parameterType="string" resultType="cc.oit.bsmes.wip.model.Report">
+        SELECT
+		<include refid="reportColumns"/>,
+          WO.HALF_PRODUCT_CODE
+        FROM T_WIP_REPORT RE LEFT JOIN T_WIP_WORK_ORDER WO ON RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+        WHERE RE.SERIAL_NUM = #{barCode}
+	</select>
+
+	<select id="getByWorkOrder" parameterType="string" resultMap="getMap">
+        SELECT
+		<include refid="reportColumns"/>,
+          MA.COLOR,
+          PRO.PRODUCT_TYPE,
+          PRO.PRODUCT_SPEC,
+          EE.NAME as reportUserName
+        FROM T_WIP_REPORT RE
+        LEFT JOIN T_WIP_WORK_ORDER WO ON RE.WORK_ORDER_NO = WO.WORK_ORDER_NO
+        LEFT JOIN T_INV_MAT_WIP MA ON WO.HALF_PRODUCT_CODE = MA.MAT_CODE
+        LEFT JOIN T_PRO_PRODUCT_PROCESS_WIP PR ON PR.ID = WO.PROCESS_ID
+        LEFT JOIN T_PRO_PRODUCT_CRAFTS_WIP CR ON CR.ID = PR.PRODUCT_CRAFTS_ID
+        LEFT JOIN T_PLA_PRODUCT PRO ON PRO.PRODUCT_CODE = CR.PRODUCT_CODE
+        LEFT JOIN T_BAS_EMPLOYEE EE ON EE.USER_CODE = RE.REPORT_USER_CODE
+        WHERE RE.WORK_ORDER_NO = #{param1}
+        ORDER BY RE.COIL_NUM
+	</select>
+
+
+	<select id="getPutIn" parameterType="map" resultMap="getMap">
+        SELECT
+          RE.*,
+          INV.QUANTITY
+        FROM T_WIP_REPORT RE LEFT JOIN T_INV_INVENTORY INV  ON RE.SERIAL_NUM = INV.BAR_CODE
+        WHERE INV.QUANTITY　> 0
+        AND EXISTS (
+            SELECT
+              1
+            FROM T_PLA_ORDER_TASK TA
+            LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PD ON TA.ORDER_ITEM_PRO_DEC_ID = PD.ID
+            WHERE PD.ORDER_ITEM_DEC_ID IN
+		<foreach collection="itemDecIds" item="itemDecId" open="(" separator="," close=")">
+                #{itemDecId}
+		</foreach>
+            AND TA.PROCESS_ID IN
+		<foreach collection="processIds" item="processId" open="(" separator="," close=")">
+                #{processId}
+		</foreach>
+            AND TA.WORK_ORDER_NO = RE.WORK_ORDER_NO
+        )
+	</select>
+
+	<select id="getByWorkOrderNoAndBarCode" parameterType="string" resultMap="getMap">
+        SELECT
+            RE.*,
+            (
+                SELECT
+                    MAX(COLOR)
+                FROM
+                    T_WIP_REPORT_TASK
+                WHERE
+                    REPORT_ID = RE.ID ) AS productColor
+        FROM
+            T_WIP_REPORT RE
+        WHERE SERIAL_NUM = #{param1}
+          AND WORK_ORDER_NO = #{param2}
+	</select>
+	
+	<!-- 生产单： 获取报工记录 -->
+	<select id="getWorkOrderReportHistory" parameterType="map" resultMap="getMap">
+	      SELECT (SELECT WMSYS.WM_CONCAT(DISTINCT (SUBSTR(REGEXP_SUBSTR(PD.CONTRACT_NO,
+		                                                     '[[:digit:]]+'),
+		                                       LENGTH(REGEXP_SUBSTR(PD.CONTRACT_NO,
+		                                                            '[[:digit:]]+')) - 4,
+		                                       LENGTH(REGEXP_SUBSTR(PD.CONTRACT_NO,
+		                                                            '[[:digit:]]+')))) ||
+		                               ' - ' || PD.CUST_PRODUCT_TYPE || ' ' ||
+		                               PD.CUST_PRODUCT_SPEC)
+		          FROM T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		         WHERE WR.WORK_ORDER_NO = PD.WORK_ORDER_NO) AS CONTRACT_NO,
+		       WR.COIL_NUM,
+		       WR.COLOR,
+		       (SELECT WMSYS.WM_CONCAT(U.USER_CODE)
+		          FROM T_WIP_REPORT_USER U
+		         WHERE WR.ID = U.REPORT_ID) AS REPORT_USER_CODE,
+		       (SELECT WMSYS.WM_CONCAT(U.USER_NAME)
+		          FROM T_WIP_REPORT_USER U
+		         WHERE WR.ID = U.REPORT_ID) AS REPORT_USER_NAME,
+		       WR.REPORT_TIME,
+		       WR. REPORT_LENGTH,
+		       WR. GOOD_LENGTH,
+		       (FEI.EQUIP_ALIAS || '[' || WR.EQUIP_CODE || ']') AS REPORT_EQUIP
+		  FROM T_WIP_REPORT WR, T_FAC_EQIP_INFO FEI
+		 WHERE FEI.CODE = WR.EQUIP_CODE
+		   AND WR.WORK_ORDER_NO = #{workorderno, jdbcType=VARCHAR}
+		 ORDER BY WR. REPORT_TIME DESC
+	</select>
+	
+	<select id="getGoodLengthByWorkOrder" parameterType="string" resultMap="getMap">
+		select * from t_wip_report r where r.work_order_no = #{param1}
+	</select>
+	
+	<select id="hasNextProcess" parameterType="string" resultType="string">
+	SELECT WO.WORK_ORDER_NO
+	FROM 
+		T_WIP_WORK_ORDER WO,
+		T_WIP_REPORT RE
+	WHERE 
+		WO.STATUS = 'TO_DO'
+	AND RE.WORK_ORDER_NO = WO.PROCESS_GROUP_RESPOOL
+	AND RE.SERIAL_NUM = #{param1}
+	
+	</select>
+ 
+	<select id="getInfoByWorkOrderNo" parameterType="string" resultType="map">
+	SELECT 
+		PCO.PROCESS_NAME, PCO.CONTRACT_NO, PCO.COLOR, RE.REPORT_LENGTH
+	FROM 
+		T_WIP_REPORT RE, 
+		T_WIP_REPORT_TASK RET, 
+		T_PLA_ORDER_TASK POT, 
+		T_PLA_CU_ORDER_ITEM_PRO_DEC PCO
+	WHERE 
+		RE.ID = RET.REPORT_ID
+	AND RET.ORDER_TASK_ID = POT.ID
+	AND POT.ORDER_ITEM_PRO_DEC_ID = PCO.ID
+	AND RE.SERIAL_NUM = #{param1}
+	</select>
+	
+	<!-- 获取颜色：1#黄,2#黄,3#黄,4#黄->1-4#黄 -->
+	<select id="getShortColor" parameterType="string" resultType="string">
+	    SELECT GETCOLORSTR(#{color, jdbcType=VARCHAR}) FROM DUAL
+	</select>
+	
+	<select id="getReMarks" parameterType="string" resultType="string">
+	    SELECT WM_CONCAT(IM.MAT_NAME||':'||NVL(IBM.FA_LIAO_QUANTITY-UD.BBJL,0)) 
+	    from T_INV_MAT IM,T_INV_BORROW_MAT IBM,T_WIP_MAT_USAGE_DT UD
+	    WHERE IBM.MAT_CODE=IM.MAT_CODE 
+	    AND IM.MAT_CODE = UD.MAT_CODE
+	    AND IBM.WORK_ORDER_NO = #{workOrderNo,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateUseStatus">
+	  UPDATE T_WIP_REPORT SET USE_STATUS = '未使用' WHERE USE_STATUS IS NULL
+	</update>
+	<update id="updateUseStatus2">
+ UPDATE T_WIP_REPORT WR SET WR.USE_STATUS = '已使用'
+      WHERE WR.USE_STATUS = '未使用'
+      AND exists (SELECT 1 FROM T_WIP_WORK_ORDER WON WHERE WR.WORK_ORDER_NO = WON.PROCESS_GROUP_RESPOOL and REAL_START_TIME is not null)
+	</update>
+</mapper>

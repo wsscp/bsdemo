@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.fac.dao.EquipImageDAO">
+
+	<resultMap type="cc.oit.bsmes.fac.model.EquipImage" id="getMap">
+	</resultMap>
+	<select id="getByEqipId" parameterType="string" resultMap="getMap">
+		SELECT
+		    IM.*,
+		    INF.CODE AS CODE,
+		    INF.NAME AS NAME,
+		    INF.EQUIP_ALIAS AS EQUIP_ALIAS
+		FROM
+		    T_FAC_EQIP_IMAGE IM,
+		    T_FAC_EQIP_INFO INF
+		WHERE
+		    IM.EQIP_ID = INF.ID
+		AND IM.EQIP_ID=#{eqipId,
+		    jdbcType=VARCHAR}
+	</select>
+</mapper>

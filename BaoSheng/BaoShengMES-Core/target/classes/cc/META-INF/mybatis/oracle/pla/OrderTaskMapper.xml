@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.OrderTaskDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.OrderTask" id="getMap">
+		<result property="processCode" column="PROCESS_CODE"/>
+		<result property="percent" column="PERCENT"/>
+	</resultMap>
+
+	<sql id="orderTaskColumns">
+		t.ID,
+		t.ORDER_ITEM_PRO_DEC_ID,
+		t.CONTRACT_NO,
+		t.PROCESS_ID,
+		t.PROCESS_PATH,
+		t.EQUIP_CODE as equipCode,
+		t.PLAN_START_DATE,
+		t.PLAN_FINISH_DATE,
+		t.IS_DELAYED,
+		t.WORK_ORDER_NO,
+		t.SHIFT,TASK_LENGTH,
+		t.CREATE_USER_CODE,
+		t.CREATE_TIME,
+		t.MODIFY_USER_CODE,
+		t.MODIFY_TIME,
+		t.ORG_CODE,
+		t.IS_LOCKED,
+		t.OPERATOR,
+		t.STATUS
+	</sql>
+
+	<select id="getOrderTasksLimitByTime" parameterType="cc.oit.bsmes.pla.model.OrderTask" resultMap="getMap">
+	 SELECT r.ID,r.EQUIP_CODE,r.PLAN_START_DATE,r.PLAN_FINISH_DATE,r.TASK_LENGTH,r.WORK_ORDER_NO,s.NAME as EQUIP_NAME,
+   			 t.CUSTOMER_ORDER_NO,t.PRODUCT_CODE,t.HALF_PRODUCT_CODE,t.PROCESS_CODE,t.PROCESS_NAME,t.CONTRACT_NO,
+   			 (c.USED_STOCK_LENGTH+c.FINISHED_LENGTH)/(c.FINISHED_LENGTH+c.UN_FINISHED_LENGTH+c.USED_STOCK_LENGTH)*100 AS PERCENT
+     FROM   T_PLA_ORDER_TASK r,T_FAC_EQIP_INFO s, V_PLAN_DEATIL t,T_PLA_CU_ORDER_ITEM_PRO_DEC c
+     WHERE r.EQUIP_CODE=s.CODE AND r.ORDER_ITEM_PRO_DEC_ID=t.ITEM_PRO_DEC_ID AND c.ID=r.ORDER_ITEM_PRO_DEC_ID  
+		<if test="orgCode!=null and orgCode!=''">
+    			AND t.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="planStartDate!=null and planStartDate!=''">
+    		    AND r.PLAN_START_DATE>=#{planStartDate,jdbcType=DATE}
+		</if>
+		<if test="planFinishDate!=null and planFinishDate!=''">
+		AND  r.PLAN_START_DATE <![CDATA[<]]>#{planFinishDate,jdbcType=DATE} 
+		</if>
+         ORDER BY r.EQUIP_CODE ASC,t.PROCESS_CODE ASC,r.PLAN_START_DATE ASC 
+
+	</select>
+
+	<select id="getAllLockedOrderItemProDecIds" parameterType="cc.oit.bsmes.pla.model.OrderTask"
+		resultMap="getMap">
+		SELECT
+		ORDER_ITEM_PRO_DEC_ID
+		FROM T_PLA_ORDER_TASK
+		WHERE STATUS IN ('','IN_PROGRESS')
+		AND ORG_CODE = #{orgCode}
+	</select>
+
+	<delete id="deleteByOrgCode" parameterType="string">
+		DELETE FROM
+		T_PLA_ORDER_TASK WHERE ORG_CODE = #{orgCode}
+	</delete>
+
+	<sql id="getByWorkOrderIdSql">
+		FROM T_PLA_ORDER_TASK OT
+		LEFT JOIN T_WIP_WORK_ORDER WO
+		ON OT.WORK_ORDER_NO = WO.WORK_ORDER_NO
+		LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC PRODEC
+		ON OT.ORDER_ITEM_PRO_DEC_ID = PRODEC.ID
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC ITEMDEC
+		ON PRODEC.ORDER_ITEM_DEC_ID = ITEMDEC.ID
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM ITEM
+		ON ITEM.ID = ITEMDEC.ORDER_ITEM_ID
+		LEFT JOIN T_ORD_SALES_ORDER_ITEM SITEM
+        ON ITEM.SALES_ORDER_ITEM_ID = SITEM.ID
+		LEFT JOIN T_PLA_PRODUCT PRO
+		ON OT.PRODUCT_CODE = PRO.PRODUCT_CODE
+		WHERE WO.ID = #{workOrderId}  
+	</sql>
+	<select id="getByWorkOrderId" parameterType="string" resultMap="getMap">
+		SELECT OT.ID,
+		OT.ORDER_ITEM_PRO_DEC_ID,
+		OT.PROCESS_ID,
+        OT.PROCESS_PATH,
+		OT.EQUIP_CODE,
+		OT.PLAN_START_DATE,
+		OT.PLAN_FINISH_DATE,
+		OT.IS_DELAYED,
+		OT.WORK_ORDER_NO,
+		OT.SHIFT,TASK_LENGTH,
+		OT.CREATE_USER_CODE,
+		OT.CREATE_TIME,
+		OT.MODIFY_USER_CODE,
+		OT.MODIFY_TIME,
+		OT.ORG_CODE,
+		OT.STATUS,
+		OT.CONTRACT_NO,
+		ITEM.SUB_OA_DATE,
+		PRO.PRODUCT_NAME,
+		PRO.PRODUCT_TYPE,
+		PRO.PRODUCT_SPEC,
+		PRODEC.LATEST_START_DATE,
+        PRODEC.LATEST_FINISH_DATE,
+		ROUND((PRODEC.USED_STOCK_LENGTH + PRODEC.FINISHED_LENGTH)/(PRODEC.USED_STOCK_LENGTH + PRODEC.FINISHED_LENGTH + PRODEC.UN_FINISHED_LENGTH)*100, 2) AS PERCENT,
+		(SELECT SUM(SECTION_LENGTH) FROM T_WIP_SECTION WHERE ORDER_ITEM_PRO_DEC_ID = OT.ORDER_ITEM_PRO_DEC_ID) AS reportNum,
+		SITEM.SECTION,
+        SITEM.WIRES_STRUCTURE,
+        PRODEC.HALF_PRODUCT_CODE,
+        PRODEC.COLOR
+		<include refid="getByWorkOrderIdSql"/>
+		ORDER BY OT.PLAN_START_DATE ASC
+	</select>
+
+	<select id="countByWorkOrderId" parameterType="string" resultType="int">
+		SELECT count(1) <include refid="getByWorkOrderIdSql"/>
+	</select>
+
+	<select id="getTaskLeft" parameterType="string" resultMap="getMap">
+		SELECT t.TASK_LENGTH - s.sum
+			FROM T_PLA_ORDER_TASK t,(
+			SELECT SUM(w.GOOD_LENGTH) sum
+				FROM T_PLA_ORDER_TASK t,T_WIP_SECTION w
+			WHERE t.PROCESS_PATH = w.PROCESS_PATH
+				AND t.ORDER_ITEM_PRO_DEC_ID = w.ORDER_ITEM_PRO_DEC_ID
+				AND t.ORDER_ITEM_PRO_DEC_ID = #{orderItemProDecId}) s
+		WHERE t.ORDER_ITEM_PRO_DEC_ID = #{orderItemProDecId}
+	</select>
+
+	<select id="getRecentByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT
+		<include refid="orderTaskColumns"/>
+		FROM T_PLA_ORDER_TASK t
+		WHERE t.WORK_ORDER_NO = #{workOrderNo}
+		AND t.STATUS = 'TO_DO'
+		ORDER BY t.PLAN_START_DATE
+	</select>
+
+	<select id="getByEquipCode" parameterType="string" resultMap="getMap">
+		SELECT
+		<include refid="orderTaskColumns"/>
+		FROM T_PLA_ORDER_TASK t
+		WHERE t.EQUIP_CODE = #{equipCode} AND t.STATUS IN ('TO_AUDIT', 'TO_DO', 'IN_PROGRESS') ORDER BY t.PLAN_START_DATE
+	</select>
+
+	<select id="getForOALocked" parameterType="string" resultType="string">
+		SELECT ORDER_ITEM_PRO_DEC_ID
+		FROM T_PLA_ORDER_TASK
+		WHERE ORG_CODE = #{orgCode} AND IS_LOCKED = '1'
+		AND STATUS IN ('TO_AUDIT', 'FINISHED', 'IN_PROGRESS')
+	</select>
+
+	<select id="getProduceByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT
+		<include refid="orderTaskColumns"/>
+		FROM T_PLA_ORDER_TASK t
+		WHERE t.WORK_ORDER_NO = #{workOrderNo}
+		AND t.STATUS IN ('TO_DO','IN_PROGRESS','FINISHED')
+		ORDER BY t.PLAN_START_DATE
+	</select>
+
+	<select id="getForOALockedByProDecId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="orderTaskColumns"/>
+		FROM T_PLA_ORDER_TASK t
+		WHERE t.ORDER_ITEM_PRO_DEC_ID = #{proDecId}
+		AND t.STATUS IN ('TO_AUDIT', 'FINISHED', 'IN_PROGRESS')
+	</select>
+
+	<select id="getUncompletedByWoNo" resultMap="getMap">
+		SELECT <include refid="orderTaskColumns"/>
+        FROM T_PLA_ORDER_TASK t
+        WHERE t.WORK_ORDER_NO = #{workOrderNo} AND t.STATUS IN ('TO_AUDIT', 'TO_DO', 'IN_PROGRESS')
+        ORDER BY t.PLAN_START_DATE
+
+	</select>
+    
+	<select id="getByWorkOrderNo" parameterType="string" resultMap="getMap">
+		SELECT
+		   CONTRACT_NO,PRODUCT_CODE,PROCESS_ID,SUM(TASK_LENGTH) AS taskLength
+		FROM T_PLA_ORDER_TASK
+		WHERE  WORK_ORDER_NO = #{param1,jdbcType=VARCHAR}
+		AND ORG_CODE = #{param2,jdbcType=VARCHAR}
+		GROUP BY CONTRACT_NO,PRODUCT_CODE,PROCESS_ID
+	</select>
+
+	<select id="getOrdersTodayByEquipcodes" resultType="java.util.Map">
+        SELECT t.CONTRACT_NO||i.PRODUCT_CODE  AS ORDER_ID,
+		i.STATUS,
+		i.PRODUCT_CODE,
+		t.CONTRACT_NO,
+		(SUM(p.USED_STOCK_LENGTH)+SUM(p.FINISHED_LENGTH))/(SUM(p.USED_STOCK_LENGTH)+SUM(p.FINISHED_LENGTH)+SUM(p.UN_FINISHED_LENGTH)) as PROGRESS
+        FROM T_PLA_ORDER_TASK t, T_PLA_CU_ORDER_ITEM_PRO_DEC p,T_PLA_CUSTOMER_ORDER_ITEM_DEC d,T_PLA_CUSTOMER_ORDER_ITEM i,T_WIP_WORK_ORDER w,T_WIP_WO_EQUIP_RELATION r
+        WHERE r.WORK_ORDER_ID = w.ID
+		AND w.WORK_ORDER_NO = t.WORK_ORDER_NO
+		AND r.EQUIP_CODE IN
+		<foreach collection="param1" item="code"  open="(" separator="," close=")">
+                #{code,jdbcType=VARCHAR}
+		</foreach>
+            AND
+        t.ORG_CODE = #{param2,jdbcType=VARCHAR} AND t.ORDER_ITEM_PRO_DEC_ID=p.ID
+        AND p.ORDER_ITEM_DEC_ID=d.ID AND d.ORDER_ITEM_ID = i.ID   
+        GROUP BY t.CONTRACT_NO||i.PRODUCT_CODE,i.STATUS ,i.PRODUCT_CODE,t.CONTRACT_NO
+	</select>
+
+	<select id="getCurrentOrder" resultMap="getMap">
+        SELECT
+        	wo.REAL_START_TIME as PLAN_START_DATE ,
+        	wo.WORK_ORDER_NO ,
+        	sum(p.USED_STOCK_LENGTH+p.FINISHED_LENGTH)/sum(p.USED_STOCK_LENGTH+p.FINISHED_LENGTH+p.UN_FINISHED_LENGTH) as PROGRESS
+        FROM T_PLA_ORDER_TASK t, T_PLA_CU_ORDER_ITEM_PRO_DEC p,T_WIP_WORK_ORDER wo,T_WIP_WO_EQUIP_RELATION re
+        WHERE 	wo.ID = re.WORK_ORDER_ID
+        AND re.EQUIP_CODE = #{param1,jdbcType=VARCHAR}
+        AND t.ORG_CODE = #{param2,jdbcType=VARCHAR}
+		AND wo.STATUS='IN_PROGRESS'
+        AND t.ORDER_ITEM_PRO_DEC_ID =p.id
+        AND wo.WORK_ORDER_NO =t.WORK_ORDER_NO
+        GROUP BY wo.REAL_START_TIME ,wo.WORK_ORDER_NO
+	</select>
+
+
+	<select id="getSumFinishTaskLength" parameterType="string" resultType="double">
+        SELECT
+          SUM(TASK_LENGTH)
+        FROM T_PLA_ORDER_TASK
+        WHERE WORK_ORDER_NO = #{param1}
+        AND STATUS = 'FINISHED'
+	</select>
+	
+	<insert id="insertOrderTask" parameterType="map">
+   		INSERT INTO T_PLA_ORDER_TASK
+		  (ID,
+		   ORDER_ITEM_PRO_DEC_ID,
+		   CONTRACT_NO,
+		   PRODUCT_CODE,
+		   PROCESS_ID,
+		   STATUS,
+		   COLOR,
+		   PROCESS_PATH,
+		   WORK_ORDER_NO,
+		   ORG_CODE,
+		   CREATE_USER_CODE,
+		   CREATE_TIME,
+		   MODIFY_USER_CODE, 
+		   MODIFY_TIME,
+		   PLAN_START_DATE,
+		   PLAN_FINISH_DATE,
+		   TASK_LENGTH,
+		   OLD_PROCESS_ID)
+		SELECT GET_UUID(),
+		       OIPD.ID,
+		       OIPD.CONTRACT_NO,
+		       OIPD.PRODUCT_CODE,
+		       OIPD.PROCESS_ID,
+		       'TO_AUDIT',
+		       OIPD.COLOR,
+		       OIPD.PROCESS_PATH,
+		       #{workOrderNo,jdbcType=VARCHAR},
+		       OIPD.ORG_CODE,
+		       #{userCode,jdbcType=VARCHAR},
+		       SYSDATE,
+		       #{userCode,jdbcType=VARCHAR},
+		       SYSDATE,
+		       SYSDATE,
+		       SYSDATE,
+		       OIPD.UN_FINISHED_LENGTH,
+		       OIPD.OLD_PROCESS_ID
+		  FROM T_PLA_CU_ORDER_ITEM_PRO_DEC OIPD
+		 WHERE OIPD.ID IN 
+		<foreach collection="proDecIdList" item="proDecId"  open="(" separator="," close=")">  
+	    	#{proDecId,jdbcType=VARCHAR} 
+		</foreach>
+	</insert>
+	
+	<select id="findByWoNoAndColor" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO = #{param1} AND COLOR = #{param2}
+	</select>
+
+	<select id="getOrderTaskByWonForCL" parameterType="string" resultMap="getMap">
+		SELECT
+		SUM(A.TASK_LENGTH) AS taskLength,
+		A.STATUS,
+		SUM(B.FINISHED_LENGTH) AS finishedLength,
+		MAX(A.WORK_ORDER_NO) AS workOrderNo
+		FROM T_PLA_ORDER_TASK A
+		LEFT JOIN T_PLA_CU_ORDER_ITEM_PRO_DEC B ON A.ORDER_ITEM_PRO_DEC_ID=B.ID
+		WHERE A.WORK_ORDER_NO=#{workOrderNo,jdbcType=VARCHAR}
+		GROUP BY A.,A.STATUS,
+		ORDER BY A.STATUS DESC
+	</select>
+
+	<update id="changeTask" parameterType="map" flushCache="true" >
+		UPDATE T_PLA_ORDER_TASK SET STATUS = #{updateStatus},EQUIP_CODE = #{equipCode}
+		WHERE ID IN
+		<foreach collection="ids" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+		AND STATUS = #{oldStatus}
+	</update>
+
+	<select id="getOrderItemDecIds" parameterType="map" resultType="string">
+		SELECT
+        	DISTINCT PD.ORDER_ITEM_DEC_ID
+		FROM  T_PLA_CU_ORDER_ITEM_PRO_DEC PD
+		LEFT JOIN T_PLA_ORDER_TASK TA ON PD.ID = TA.ORDER_ITEM_PRO_DEC_ID
+		WHERE TA.WORK_ORDER_NO = #{workOrderNo}
+		<if test="color !=null and color !=''">
+			AND TA.COLOR =#{color}
+		</if>
+		<if test="orderTaskId != null and orderTaskId != ''">
+			AND TA.ID = #{orderTaskId}
+		</if>
+	</select>
+
+	<select id="getOrderTasks" parameterType="map" resultMap="getMap">
+		SELECT
+        	TA.*
+		FROM  T_PLA_ORDER_TASK TA
+		WHERE TA.WORK_ORDER_NO = #{workOrderNo}
+		<if test="color !=null and color !=''">
+			AND TA.COLOR =#{color}
+		</if>
+		<if test="orderTaskId != null and orderTaskId != ''">
+			AND TA.ID = #{orderTaskId}
+		</if>
+	</select>
+
+	<!-- 更新生产单状态：1、workOrder 2、orderTask 3、proDec/param workOrderNo:生产单号;status:状态 -->
+	<update id="updateWorkerOrderStatus" parameterType="string" flushCache="true">
+		UPDATE T_PLA_ORDER_TASK SET STATUS = #{status, jdbcType=VARCHAR} 
+		WHERE WORK_ORDER_NO IN
+		<foreach collection="workOrderNo" item="no" open="(" separator="," close=")">
+            #{no, jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+	<select id="getWorkOrderColors" parameterType="string" resultType="string">
+		 SELECT LISTAGG(OT.COLOR, ',') WITHIN GROUP(ORDER BY OT.COLOR) AS COLORS
+						   FROM (SELECT DISTINCT COLOR FROM T_PLA_ORDER_TASK OT
+						  WHERE WORK_ORDER_NO = #{workOrderNo}
+						  AND STATUS = 'IN_PROGRESS') OT
+	</select>
+
+	<select id="getContractNo" parameterType="string" resultType="string">
+		SELECT
+			LISTAGG(CONTRACT_NO, ',') WITHIN GROUP(ORDER BY CONTRACT_NO) AS CONTRACT_NO
+		FROM
+			(
+				SELECT DISTINCT
+					SUBSTR(REGEXP_SUBSTR(T.CONTRACT_NO, '[[:digit:]]+'),LENGTH(REGEXP_SUBSTR(T.CONTRACT_NO,
+					'[[:digit:]]+'))-4) AS CONTRACT_NO
+				FROM
+					T_PLA_ORDER_TASK T
+				WHERE
+					T.WORK_ORDER_NO = #{workOrderNo})
+	</select>
+
+	<select id="getInProgressTask" parameterType="string" resultMap="getMap">
+		SELECT
+		    <include refid="orderTaskColumns"/>,
+		    (CASE
+	            WHEN instr(t.COLOR,'#') = 0
+	            THEN 1
+	            ELSE (CASE
+                        WHEN REGEXP_LIKE((SUBSTR(t.COLOR, 0, INSTR(t.COLOR, '#') - 1)) ,
+                            '(^[+-]?\d{0,}\.?\d{0,}$)')
+                        THEN to_number(SUBSTR(t.COLOR, 0, INSTR(t.COLOR, '#', 1, 1) - 1))
+                        ELSE 0
+                    END)
+		        END) AS COLORNUM,
+		    T.COLOR,
+		    T1.WIRE_COIL_COUNT   AS WIRECOILCOUNT,
+		    T1.HALF_PRODUCT_CODE AS HALF_PRODUCT_CODE
+		FROM
+		    T_PLA_ORDER_TASK T,
+		    T_PLA_CU_ORDER_ITEM_PRO_DEC T1
+		WHERE
+		    t.ORDER_ITEM_PRO_DEC_ID = t1.ID
+		AND t.WORK_ORDER_NO = #{param1}
+		AND t.EQUIP_CODE = #{param2}
+		AND t.STATUS = 'IN_PROGRESS'
+		ORDER BY
+		    COLORNUM,
+		    t.COLOR
+	</select>
+	
+	<select id="getFinishedTask" parameterType="string" resultMap="getMap">
+		SELECT
+			t.ORDER_ITEM_PRO_DEC_ID
+		FROM T_PLA_ORDER_TASK t,T_PLA_CU_ORDER_ITEM_PRO_DEC t1
+		WHERE t.ORDER_ITEM_PRO_DEC_ID = t1.ID
+		AND t.WORK_ORDER_NO = #{param1}
+		AND t.EQUIP_CODE = #{param2}
+		AND (t.STATUS = 'FINISHED' OR t.STATUS = 'IN_PROGRESS' OR T.STATUS = 'TO_DO')
+		ORDER BY t.MODIFY_TIME DESC
+	</select>
+
+	<select id="countUnFinishTask" parameterType="string" resultType="int">
+		SELECT COUNT(1) FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO = #{param1} AND STATUS <![CDATA[<> 'FINISHED']]>
+	</select>
+	
+	<select	id="getOrderTaskId" parameterType="map" resultType="map">
+		SELECT OT.ID FROM T_PLA_CUSTOMER_ORDER_ITEM OI,
+		T_PLA_CUSTOMER_ORDER_ITEM_DEC OID,
+		T_PLA_CU_ORDER_ITEM_PRO_DEC PRO，
+		T_PLA_ORDER_TASK OT
+		WHERE OI.ID=OID.ORDER_ITEM_ID AND 
+		PRO.ORDER_ITEM_DEC_ID=OID.ID AND OI.ID=#{custOrderItemId}
+		AND PRO.PROCESS_NAME=#{processName}
+		AND OT.ORDER_ITEM_PRO_DEC_ID=PRO.ID
+		AND ROWNUM=1
+	</select>
+	
+	<select id="getTaskIdByCustOrderItemId" parameterType="String" resultMap="getMap">		
+		SELECT ID FROM T_PLA_ORDER_TASK WHERE ORDER_ITEM_PRO_DEC_ID IN(
+		SELECT ID FROM T_PLA_CU_ORDER_ITEM_PRO_DEC PD WHERE EXISTS(
+		SELECT 1 FROM T_PLA_CUSTOMER_ORDER_ITEM_DEC OD 
+		WHERE OD.ID=PD.ORDER_ITEM_DEC_ID
+		AND OD.ORDER_ITEM_ID=#{custOrderItemId,jdbcType=VARCHAR}) 
+		AND PROCESS_NAME='云母带绕包两层')
+		AND ROWNUM=1
+	</select>
+</mapper>

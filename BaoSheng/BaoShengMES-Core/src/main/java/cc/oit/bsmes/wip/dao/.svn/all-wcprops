@@ -1,0 +1,191 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/12064/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao
+END
+ReportDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/11596/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ReportDAO.java
+END
+RealCostDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/4858/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/RealCostDAO.java
+END
+WorkOrderDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/12064/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/WorkOrderDAO.java
+END
+TurnOverReportDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11212/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/TurnOverReportDAO.java
+END
+WorkOrderEquipRelationDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/7964/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/WorkOrderEquipRelationDAO.java
+END
+SparkRepairDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/5115/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/SparkRepairDAO.java
+END
+FinishedOrderDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/9652/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/FinishedOrderDAO.java
+END
+ApplyMatDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/10565/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ApplyMatDAO.java
+END
+WorkCusorderRelationDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/7359/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/WorkCusorderRelationDAO.java
+END
+ReceiptDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/8353/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ReceiptDAO.java
+END
+FinishOrderItemDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/10168/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/FinishOrderItemDAO.java
+END
+SemiFinishedProductsDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/11851/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/SemiFinishedProductsDAO.java
+END
+DailyReportDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/10921/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/DailyReportDAO.java
+END
+WorkOrderOperateLogDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/8888/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/WorkOrderOperateLogDAO.java
+END
+EventTraceDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8965/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/EventTraceDAO.java
+END
+UserWorkHoursDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/8194/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/UserWorkHoursDAO.java
+END
+SectionDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/4166/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/SectionDAO.java
+END
+StoreManageDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7787/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/StoreManageDAO.java
+END
+TurnOverMatDetailDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/7361/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/TurnOverMatDetailDAO.java
+END
+ReportUserDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/8815/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ReportUserDAO.java
+END
+MaterialTraceDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/1636/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/MaterialTraceDAO.java
+END
+MonthReportDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7278/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/MonthReportDAO.java
+END
+ProductStatusDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ProductStatusDAO.java
+END
+DebugDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/1226/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/DebugDAO.java
+END
+ReportTaskDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/5800/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ReportTaskDAO.java
+END
+ProductTraceDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8963/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ProductTraceDAO.java
+END
+SpecialCraftsTraceDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/8954/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/SpecialCraftsTraceDAO.java
+END
+MatUsageDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7602/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/MatUsageDAO.java
+END
+OnoffRecordDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/11666/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/OnoffRecordDAO.java
+END
+ScrapDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/936/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/ScrapDAO.java
+END
+WorkOrderReportDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/4618/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wip/dao/WorkOrderReportDAO.java
+END

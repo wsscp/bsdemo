@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/BSMES/!svn/ver/7812/trunk/BaoSheng/BaoShengMES-Web/src/main/resources
+END
+applicationContext-job.xml
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/2986/trunk/BaoSheng/BaoShengMES-Web/src/main/resources/applicationContext-job.xml
+END
+JCustomOpc.dll
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/BSMES/!svn/ver/1690/trunk/BaoSheng/BaoShengMES-Web/src/main/resources/JCustomOpc.dll
+END
+logback.xml
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/BSMES/!svn/ver/7812/trunk/BaoSheng/BaoShengMES-Web/src/main/resources/logback.xml
+END

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.ProductStatusDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.ProductStatus" id="getMap">
+		<result property="workOrderNo" column="WORK_ORDER_NO"/>	
+		<result property="contractNo" column="CONTRACT_NO"/>	
+		<result property="halfProductCode" column="HALF_PRODUCT_CODE"/>	
+		<result property="batchNo" column="BATCH_NO"/>	
+		<result property="matCode" column="MAT_CODE"/>	
+		<result property="status" column="STATUS"/>	
+		<result property="processCode" column="PROCESS_CODE"/>	
+		<result property="processName" column="PROCESS_NAME"/>
+		<result property="equipCode" column="EQUIP_CODE"/>	
+		<result property="realStartTime" column="REAL_START_TIME"/>	
+		<result property="realEndTime" column="REAL_END_TIME"/>
+		<result property="orderlength" column="ORDER_LENGTH"/>	
+		<result property="reportUserCode" column="REPORT_USER_CODE"/>
+		<result property="completedLength" column="GOOD_LENGTH"/>
+		<result property="specification" column="MAT_SPEC"/>	
+		<result property="processTime" column="PROCESS_TIME"/>		
+		<result property="col" column="COLOR"/>
+		<result property="productCode" column="PRODUCT_CODE"/>
+	</resultMap>
+	<!-- 生产状态追溯 -->
+	<select id="find" parameterType="cc.oit.bsmes.wip.model.ProductStatus" resultMap="getMap">
+		 SELECT  s.CONTRACT_NO,r.WORK_ORDER_NO,r.HALF_PRODUCT_CODE,t.BATCH_NO,t.MAT_CODE,r.STATUS,v.PROCESS_CODE,v.PROCESS_NAME,r.EQUIP_CODE,r.REAL_START_TIME,r.ORDER_LENGTH, 
+				 (SELECT SUM(GOOD_LENGTH) FROM T_WIP_SECTION WHERE  R_ID IN ( SELECT ID FROM T_WIP_REPORT WHERE  WORK_ORDER_NO =r.WORK_ORDER_NO) ) AS GOOD_LENGTH,
+				 (SELECT COLOR FROM T_INV_MAT WHERE MAT_CODE=r.HALF_PRODUCT_CODE) AS COLOR,
+                   (SELECT MAT_SPEC FROM T_INV_MAT WHERE MAT_CODE=r.HALF_PRODUCT_CODE) AS MAT_SPEC,
+                   (SELECT WMSYS.WM_CONCAT(DISTINCT(REPORT_USER_CODE)) FROM T_WIP_REPORT a WHERE a.WORK_ORDER_NO=r.WORK_ORDER_NO) AS REPORT_USER_CODE
+ 		 FROM    T_WIP_WORK_ORDER r,T_PLA_ORDER_TASK s,T_WIP_REAL_COST t,T_PRO_PRODUCT_PROCESS v,T_WIP_REPORT o  
+ 		 WHERE   r.WORK_ORDER_NO=s.WORK_ORDER_NO AND s.WORK_ORDER_NO=t.WORK_ORDER_NO AND 
+			     r.PROCESS_ID=v.ID AND r.WORK_ORDER_NO=o.WORK_ORDER_NO 
+			     <if test="contractNo!=null and contractNo!=''">
+			    	 AND INSTR(s.CONTRACT_NO,#{contractNo})>0
+			     </if> 
+			      <if test="orgCode!=null and orgCode!=''">
+			      	AND r.ORG_CODE = #{orgCode,jdbcType=VARCHAR}   
+			     </if> 
+			      <if test="workOrderNo!=null and workOrderNo!=''">
+			      	 AND INSTR(r.WORK_ORDER_NO,#{workOrderNo})>0
+			     </if> 
+			     <if test="processCode!=null and processCode!=''">
+			     	AND v.PROCESS_CODE=#{processCode,jdbcType=VARCHAR} 
+			     </if>
+		 GROUP BY v.PROCESS_CODE,r.HALF_PRODUCT_CODE,s.CONTRACT_NO,r.WORK_ORDER_NO,t.BATCH_NO,t.MAT_CODE,r.STATUS,v.PROCESS_NAME,r.EQUIP_CODE, r.REAL_START_TIME,r.ORDER_LENGTH  
+		 order by r.WORK_ORDER_NO
+	</select>
+	<select id="count" parameterType="cc.oit.bsmes.wip.model.ProductStatus" resultType="int">
+		SELECT COUNT(1)
+		FROM (SELECT  s.CONTRACT_NO,r.WORK_ORDER_NO,r.HALF_PRODUCT_CODE,t.BATCH_NO,t.MAT_CODE,r.STATUS,v.PROCESS_CODE,r.EQUIP_CODE,r.REAL_START_TIME,r.ORDER_LENGTH, 
+				 (SELECT SUM(GOOD_LENGTH) FROM T_WIP_SECTION WHERE  R_ID IN ( SELECT ID FROM T_WIP_REPORT WHERE  WORK_ORDER_NO =r.WORK_ORDER_NO) ) AS GOOD_LENGTH
+ 		 FROM    T_WIP_WORK_ORDER r,T_PLA_ORDER_TASK s,T_WIP_REAL_COST t,T_PRO_PRODUCT_PROCESS v,T_WIP_REPORT o  
+ 		 WHERE   r.WORK_ORDER_NO=s.WORK_ORDER_NO AND s.WORK_ORDER_NO=t.WORK_ORDER_NO AND 
+			     r.PROCESS_ID=v.ID AND r.WORK_ORDER_NO=o.WORK_ORDER_NO   
+			      <if test="contractNo!=null and contractNo!=''">
+			     	AND INSTR(s.CONTRACT_NO,#{contractNo})>0
+			     </if>  
+			       <if test="orgCode!=null and orgCode!=''">
+			      AND  r.ORG_CODE = #{orgCode,jdbcType=VARCHAR}   
+			     </if> 
+			      <if test="workOrderNo!=null and workOrderNo!=''">
+			       AND INSTR(r.WORK_ORDER_NO,#{workOrderNo})>0
+			     </if> 
+		 GROUP BY v.PROCESS_CODE,s.CONTRACT_NO,r.HALF_PRODUCT_CODE,r.WORK_ORDER_NO,t.BATCH_NO,t.MAT_CODE,r.STATUS,r.EQUIP_CODE, r.REAL_START_TIME,r.ORDER_LENGTH  
+		)
+	</select>
+	<!-- 生产过程追溯 -->
+	<select id="getProductionProcess" parameterType="cc.oit.bsmes.wip.model.ProductStatus" resultMap="getMap">
+		SELECT DISTINCT
+		    u.WORK_ORDER_NO,
+		    u.BATCH_NO,
+		    u.PROCESS_CODE,
+		    u.MAT_CODE,
+		    u.PROCESS_NAME,
+		    u.EQUIP_CODE,
+		    u.REAL_START_TIME,
+		    u.PROCESS_TIME,
+		    u.GOOD_LENGTH,
+		    u.REPORT_USER_CODE,
+		    u.CONTRACT_NO,
+		    v.PRODUCT_TYPE,
+		    v.PRODUCT_SPEC
+		FROM
+		    (
+		        SELECT DISTINCT
+		            r.WORK_ORDER_NO,
+		            s.BATCH_NO,
+		            t.PROCESS_CODE,
+		            s.MAT_CODE,
+		            r.PROCESS_NAME,
+		            r.EQUIP_CODE,
+		            r.REAL_START_TIME,
+		            ROUND((TO_DATE(TO_CHAR(DECODE(r.REAL_END_TIME,NULL,SYSDATE,r.REAL_END_TIME),
+		            'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss')- TO_DATE(TO_CHAR(REAL_START_TIME,
+		            'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'))*1440) AS PROCESS_TIME,
+		            (
+		                SELECT
+		                    SUM(u.GOOD_LENGTH)
+		                FROM
+		                    T_WIP_SECTION u,
+		                    T_WIP_REPORT o
+		                WHERE
+		                    o.ID=u.R_ID
+		                AND o.WORK_ORDER_NO=r.WORK_ORDER_NO ) AS GOOD_LENGTH ,
+		            (
+		                SELECT
+		                    WMSYS.WM_CONCAT(DISTINCT(REPORT_USER_CODE))
+		                FROM
+		                    T_WIP_REPORT a
+		                WHERE
+		                    a.WORK_ORDER_NO=r.WORK_ORDER_NO) AS REPORT_USER_CODE,
+		            (
+		                SELECT
+		                    WMSYS.WM_CONCAT(DISTINCT(CONTRACT_NO))
+		                FROM
+		                    T_PLA_ORDER_TASK a
+		                WHERE
+		                    a.WORK_ORDER_NO=r.WORK_ORDER_NO
+		                AND a.PROCESS_ID=r.PROCESS_ID) AS CONTRACT_NO
+		        FROM
+		            T_WIP_WORK_ORDER r,
+		            T_WIP_REAL_COST s,
+		            T_PRO_PRODUCT_PROCESS t
+		        WHERE
+		            r.WORK_ORDER_NO=s.WORK_ORDER_NO
+		        AND t.ID=r.PROCESS_ID) u
+		LEFT JOIN
+		    T_PLA_PRODUCT v
+		ON
+		    (
+		        u.CONTRACT_NO=v.CRAFTS_CODE)
+ 		<if test="batchNo!=null and batchNo!=''">
+ 			AND INSTR(s.BATCH_NO,#{batchNo,jdbcType=VARCHAR})>0
+ 		</if>
+ 		<if test="contractNo!=null and contractNo!=''">
+ 			AND r.WORK_ORDER_NO IN(SELECT WORK_ORDER_NO FROM T_PLA_ORDER_TASK WHERE INSTR(CONTRACT_NO,#{contractNo,jdbcType=VARCHAR})>0)
+ 		</if>
+ 		<if test="equipCode!=null and equipCode!=''">
+ 			AND INSTR(r.EQUIP_CODE,#{equipCode,jdbcType=VARCHAR})>0
+ 		</if>
+ 		<if test="workOrderNo!=null and workOrderNo!=''">
+ 			AND INSTR(r.WORK_ORDER_NO,#{workOrderNo,jdbcType=VARCHAR})>0
+ 		</if>
+ 		<if test="processCode!=null and processCode!=''">
+ 			AND t.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+ 		</if>
+	</select>
+	<sql id="contr">
+		<if test="contractNo!=null and contractNo!=''">
+ 			AND INSTR(CONTRACT_NO,#{contractNo,jdbcType=VARCHAR})>0
+ 		</if>
+	</sql>
+	<select id="countTotalProcess" parameterType="cc.oit.bsmes.wip.model.ProductStatus" resultType="int">
+		SELECT COUNT(1) 
+		FROM (SELECT distinct r.WORK_ORDER_NO,s.BATCH_NO,t.PROCESS_CODE,s.MAT_CODE,r.PROCESS_NAME,r.EQUIP_CODE,r.REAL_START_TIME,
+				ROUND((TO_DATE(TO_CHAR(DECODE(r.REAL_END_TIME,NULL,SYSDATE,r.REAL_END_TIME),'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss')-
+    				TO_DATE(TO_CHAR(REAL_START_TIME,'yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd hh24:mi:ss'))*1440) AS PROCESS_TIME,
+           		(SELECT SUM(u.GOOD_LENGTH) FROM T_WIP_SECTION u,T_WIP_REPORT o WHERE o.ID=u.R_ID AND o.WORK_ORDER_NO=r.WORK_ORDER_NO ) AS GOOD_LENGTH ,
+           		(SELECT WMSYS.WM_CONCAT(DISTINCT(REPORT_USER_CODE)) FROM T_WIP_REPORT a WHERE a.WORK_ORDER_NO=r.WORK_ORDER_NO) AS REPORT_USER_CODE,
+	  	   		(SELECT WMSYS.WM_CONCAT(DISTINCT(CONTRACT_NO)) FROM T_PLA_ORDER_TASK a WHERE a.WORK_ORDER_NO=r.WORK_ORDER_NO AND a.PROCESS_ID=r.PROCESS_ID) AS CONTRACT_NO
+    	FROM T_WIP_WORK_ORDER r,T_WIP_REAL_COST s,T_PRO_PRODUCT_PROCESS t
+     	WHERE r.WORK_ORDER_NO=s.WORK_ORDER_NO AND t.ID=r.PROCESS_ID
+ 		<if test="batchNo!=null and batchNo!=''">
+ 			AND INSTR(s.BATCH_NO,#{batchNo,jdbcType=VARCHAR})>0
+ 		</if>
+ 		<if test="contractNo!=null and contractNo!=''">
+ 			AND r.WORK_ORDER_NO IN(SELECT WORK_ORDER_NO FROM T_PLA_ORDER_TASK WHERE INSTR(CONTRACT_NO,#{contractNo,jdbcType=VARCHAR})>0)
+ 		</if>
+ 		<if test="equipCode!=null and equipCode!=''">
+ 			AND INSTR(r.EQUIP_CODE,#{equipCode,jdbcType=VARCHAR})>0
+ 		</if>
+ 		<if test="workOrderNo!=null and workOrderNo!=''">
+ 			AND INSTR(r.WORK_ORDER_NO,#{workOrderNo,jdbcType=VARCHAR})>0
+ 		</if>
+ 		<if test="processCode!=null and processCode!=''">
+ 			AND t.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+ 		</if>)
+	</select>
+	<select id="getProcessReport" parameterType="cc.oit.bsmes.wip.model.ProductStatus" resultMap="getMap">
+		SELECT V.*,P.PROCESS_NAME
+		FROM T_PRO_PRODUCT_PROCESS P,
+				(SELECT  CONTRACT_NO,PRODUCT_CODE,T.PROCESS_ID,MIN(T.REAL_START_TIME) AS REAL_START_TIME ,
+					  MAX(T.REAL_END_TIME) AS REAL_END_TIME,SUM(T.TASK_LENGTH) AS ORDER_LENGTH, T.EQUIP_CODE,REPORT_USER_CODE 
+			 	 FROM
+					(SELECT A.CONTRACT_NO,A.PRODUCT_CODE,A.TASK_LENGTH,B.PROCESS_ID,O.NAME EQUIP_CODE,B.REAL_START_TIME,B.REAL_END_TIME,
+        				 (SELECT WMSYS.WM_CONCAT(DISTINCT(REPORT_USER_CODE)) FROM T_WIP_REPORT R WHERE  R.WORK_ORDER_NO=B.WORK_ORDER_NO) REPORT_USER_CODE
+        			 FROM T_PLA_ORDER_TASK A,T_WIP_WORK_ORDER B,T_FAC_EQIP_INFO O
+					 WHERE A.WORK_ORDER_NO=B.WORK_ORDER_NO AND B.EQUIP_CODE=O.CODE<include refid="getParameter"/>) T
+				GROUP BY CONTRACT_NO,PRODUCT_CODE,T.PROCESS_ID,T.EQUIP_CODE,REPORT_USER_CODE) V
+		WHERE P.ID=V.PROCESS_ID 
+		<if test="processCode !=null and processCode!=''">
+			AND PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+		</if>
+		ORDER BY CONTRACT_NO,PRODUCT_CODE, P.SEQ ASC 
+	</select>
+	<select id="countTotalProcessReport" parameterType="cc.oit.bsmes.wip.model.ProductStatus" resultType="int">
+		SELECT COUNT(1) 
+		FROM (SELECT V.* 
+		FROM T_PRO_PRODUCT_PROCESS P,
+				(SELECT  CONTRACT_NO,PRODUCT_CODE,T.PROCESS_ID,MIN(T.REAL_START_TIME) AS REAL_START_TIME ,
+					  MAX(T.REAL_END_TIME) AS REAL_END_TIME,SUM(T.TASK_LENGTH) AS TASK_LENGTH, T.EQUIP_CODE,REPORT_USER_CODE 
+			 	 FROM
+					(SELECT A.CONTRACT_NO,A.PRODUCT_CODE,A.TASK_LENGTH,B.PROCESS_ID,B.EQUIP_CODE,B.REAL_START_TIME,B.REAL_END_TIME,
+        				 (SELECT WMSYS.WM_CONCAT(DISTINCT(REPORT_USER_CODE)) FROM T_WIP_REPORT R WHERE  R.WORK_ORDER_NO=B.WORK_ORDER_NO) REPORT_USER_CODE
+        			 FROM T_PLA_ORDER_TASK A,T_WIP_WORK_ORDER B
+					 WHERE A.WORK_ORDER_NO=B.WORK_ORDER_NO <include refid="getParameter"/>) T
+				GROUP BY CONTRACT_NO,PRODUCT_CODE,T.PROCESS_ID,T.EQUIP_CODE,REPORT_USER_CODE) V
+		WHERE P.ID=V.PROCESS_ID 
+		<if test="processCode !=null and processCode!=''">
+			AND PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+		</if>)
+	</select>
+	<sql id="getParameter">
+		<if test="contractNo !=null and contractNo !=''">
+			AND A.CONTRACT_NO=(SELECT CONTRACT_NO FROM T_ORD_SALES_ORDER WHERE ID=#{contractNo})
+		</if>
+		<if test="productCode !=null and productCode !=''">
+			AND A.PRODUCT_CODE=#{productCode,jdbcType=VARCHAR}
+		</if>
+		<if test="equipCode !=null and equipCode !=''">
+			AND B.EQUIP_CODE=#{equipCode,jdbcType=VARCHAR}
+		</if>
+	</sql>
+</mapper>

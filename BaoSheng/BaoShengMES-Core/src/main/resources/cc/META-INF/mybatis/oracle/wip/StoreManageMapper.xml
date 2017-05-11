@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.StoreManageDAO">
+	<resultMap type="StoreManage" id="getMap">
+	</resultMap>
+	
+	<!-- <select id="findMap" parameterType="map" resultMap="getMap">
+		
+	</select>
+	
+	<select id="countMap" parameterType="map" resultType="int">
+	
+	</select> -->
+	
+	<select id="findResult" resultMap='getMap'>
+	    SELECT
+		    T1. ID,
+		    T1.NAME,
+		    T1.STAT_DATE,
+		    (T2.NAME||'['||T1.USER_CODE||']')AS USER_CODE ,
+		    ROUND(T1.FEI_TONG,0) AS FEI_TONG,
+		    ROUND(T1.FEI_XIAN,0) AS FEI_XIAN,
+		    ROUND(T1.JIAO_LIAN,0) AS JIAO_LIAN,
+		    ROUND(T1.ZA_LIAO,0) AS ZA_LIAO,
+		    ROUND(T1.FS_LIAO,0) AS FS_LIAO,
+		    ROUND(T1.WU_LU,0) AS WU_LU,
+		    ROUND(T1.REWARD_PUNISH,0) AS REWARD_PUNISH,
+		    ROUND(T1.WASTE_DEDUCTIONS,0) AS WASTE_DEDUCTIONS,
+		    ROUND(T1.REALITY_WASTE,0) AS REALITY_WASTE,
+		    ROUND(T1.THEORY_WASTE,0) AS THEORY_WASTE,
+		    ROUND(T1.REALITY_MATERIAL_PRO,0) AS REALITY_MATERIAL_PRO,
+		    ROUND(T1.SLOP_LINE_DEDUCTIONS,0) AS SLOP_LINE_DEDUCTIONS,
+		    ROUND(T1.JIECHAO_SLOP_LINE,0) AS JIECHAO_SLOP_LINE,
+		    ROUND(T1.THEORY_SLOP_LINE,0) AS THEORY_SLOP_LINE
+		FROM
+		    T_INV_STORE_MANAGE T1,
+		    T_BAS_EMPLOYEE T2
+		WHERE 
+		T1.USER_CODE = T2.USER_CODE
+		<if test="nowDate!=null and nowDate!=''"> 
+		    AND TO_CHAR(T1.STAT_DATE,'yyyy-MM-dd') = #{nowDate,jdbcType=VARCHAR}
+		</if>
+		<if test="nowUserCode!=null and nowUserCode!=''">
+		    AND  T1.USER_CODE IN
+		    <foreach collection="nowUserCode" item="no_3"  open="(" separator="," close=")">  
+		    	#{no_3, jdbcType=VARCHAR}
+            </foreach>
+		</if>
+	</select>
+	
+	<select id="countStoreMange" resultType="int">
+		SELECT
+		    COUNT(T1. ID)
+		FROM
+		    T_INV_STORE_MANAGE T1,
+		    T_BAS_EMPLOYEE T2
+		WHERE 
+		T1.USER_CODE = T2.USER_CODE
+		<if test="nowDate!=null and nowDate!=''"> 
+		    AND TO_CHAR(T1.STAT_DATE,'yyyy-MM-dd') = #{nowDate,jdbcType=VARCHAR}
+		</if>
+		<if test="nowUserCode!=null and nowUserCode!=''">
+		    AND  T1.USER_CODE IN
+		    <foreach collection="nowUserCode" item="no_3"  open="(" separator="," close=")">  
+		    	#{no_3, jdbcType=VARCHAR}
+            </foreach>
+		</if>
+	</select>
+	
+	<select id="getUserInfo" resultMap='getMap'>
+	SELECT
+	    NAME,
+	    USER_CODE
+	FROM
+	    T_BAS_EMPLOYEE
+	WHERE
+	    CERTIFICATE = 'DB'
+	</select>
+	
+	<insert id="insertNewData" parameterType="Map">
+	   INSERT INTO T_INV_STORE_MANAGE
+	   (
+	    ID,
+	    USER_CODE,
+	    FEI_TONG,
+	    FEI_XIAN,
+	    JIAO_LIAN,
+	    ZA_LIAO,
+	    FS_LIAO,
+	    WU_LU,
+	    REWARD_PUNISH,
+	    WASTE_DEDUCTIONS,
+	    REALITY_WASTE,
+	    THEORY_WASTE,
+	    REALITY_MATERIAL_PRO,
+	    SLOP_LINE_DEDUCTIONS,
+	    JIECHAO_SLOP_LINE,
+	    THEORY_SLOP_LINE,
+	    CREATE_TIME,
+	    CREATE_USER_CODE,
+	    MODIFY_TIME,
+	    MODIFY_USER_CODE,
+	    STAT_DATE
+	   )
+	   VALUES
+	   (
+	    GET_UUID(),
+	    #{userCode,jdbcType=VARCHAR},
+	    #{feiTong,jdbcType=VARCHAR},
+	    #{feiXian,jdbcType=VARCHAR},
+	    #{jiaoLian,jdbcType=VARCHAR},
+	    #{zaLiao,jdbcType=VARCHAR},
+	    #{fsLiao,jdbcType=VARCHAR},
+	    #{wuLu,jdbcType=VARCHAR},
+	    #{rewardPunish,jdbcType=VARCHAR},
+	    #{wasteDeductions,jdbcType=VARCHAR},
+	    #{realityWaste,jdbcType=VARCHAR},
+	    #{theoryWaste,jdbcType=VARCHAR},
+	    #{realityMaterialPro,jdbcType=VARCHAR},
+	    #{slopLineDeductions,jdbcType=VARCHAR},
+	    #{jiechaoSlopLine,jdbcType=VARCHAR},
+	    #{theorySlopLine,jdbcType=VARCHAR},
+	    SYSDATE,
+	    #{operator,jdbcType=VARCHAR},
+	    SYSDATE,
+	    #{operator,jdbcType=VARCHAR},
+	    TO_DATE(#{statDate,jdbcType=VARCHAR},'yyyy-mm-dd')
+	   )
+	</insert>
+	
+	<update id="updateData" parameterType="Map">
+	    UPDATE
+	    T_INV_STORE_MANAGE
+		SET
+		    USER_CODE =#{userCode,jdbcType=VARCHAR},
+		    FEI_TONG= #{feiTong,jdbcType=VARCHAR},
+		    FEI_XIAN= #{feiXian,jdbcType=VARCHAR},
+		    JIAO_LIAN=#{jiaoLian,jdbcType=VARCHAR},
+		    ZA_LIAO=#{zaLiao,jdbcType=VARCHAR},
+		    FS_LIAO=#{fsLiao,jdbcType=VARCHAR},
+		    WU_LU= #{wuLu,jdbcType=VARCHAR},
+		    REWARD_PUNISH= #{rewardPunish,jdbcType=VARCHAR},
+		    WASTE_DEDUCTIONS= #{wasteDeductions,jdbcType=VARCHAR},
+		    REALITY_WASTE= #{realityWaste,jdbcType=VARCHAR},
+		    THEORY_WASTE= #{theoryWaste,jdbcType=VARCHAR},
+		    REALITY_MATERIAL_PRO= #{realityMaterialPro,jdbcType=VARCHAR},
+		    SLOP_LINE_DEDUCTIONS= #{slopLineDeductions,jdbcType=VARCHAR},
+		    JIECHAO_SLOP_LINE= #{jiechaoSlopLine,jdbcType=VARCHAR},
+		    THEORY_SLOP_LINE= #{theorySlopLine,jdbcType=VARCHAR},
+		    STAT_DATE = TO_DATE(#{statDate,jdbcType=VARCHAR},'yyyy-mm-dd'),
+		    MODIFY_TIME = SYSDATE,
+			MODIFY_USER_CODE = #{operator,jdbcType=VARCHAR}
+		WHERE
+	    ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteData" parameterType="Map">
+	  DELETE FROM T_INV_STORE_MANAGE WHERE ID IN
+	  <foreach collection="ids" item="no_3"  open="(" separator="," close=")">  
+			    	#{no_3, jdbcType=VARCHAR}
+	  </foreach>
+	</delete>
+</mapper>

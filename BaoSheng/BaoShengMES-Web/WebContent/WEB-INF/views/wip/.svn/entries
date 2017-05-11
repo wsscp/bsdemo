@@ -1,0 +1,127 @@
+10
+
+dir
+12152
+http://101.231.47.126:8080/svn/BSMES/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/views/wip
+http://101.231.47.126:8080/svn/BSMES
+
+
+
+2016-12-27T01:20:59.643743Z
+11423
+wangguohua
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cb86dc5a-27e7-f949-8907-1b6afd8e026a
+
+turnoverReport
+dir
+
+weight
+dir
+
+userProcessTrace
+dir
+
+realTimeEquipmentStatus
+dir
+
+productTrace
+dir
+
+semiFinishedProductsUsing
+dir
+
+specialCraftsTrace
+dir
+
+qualityTrace
+dir
+
+processReceiptTrace
+dir
+
+workOrderReport
+dir
+
+terminal
+dir
+
+realEquipStatusChart
+dir
+
+workOrder
+dir
+
+cameraSensor
+dir
+
+sparkRepair
+dir
+
+applyMaterials
+dir
+
+processTraceReport
+dir
+
+personalMonitor
+dir
+
+receipt
+dir
+
+semiFinishedProducts
+dir
+
+rawMaterialInvTrans
+dir
+
+productProcessTrace
+dir
+
+eventTrace
+dir
+
+workOrderOperateLog
+dir
+
+equipProcessTrace
+dir
+
+userWorkHours
+dir
+
+productStatusTrace
+dir
+
+statusChart
+dir
+
+storeManage
+dir
+
+processBalanceChart
+dir
+
+cycleStepChart
+dir
+
+materialTrace
+dir
+
+alarmHistory
+dir
+

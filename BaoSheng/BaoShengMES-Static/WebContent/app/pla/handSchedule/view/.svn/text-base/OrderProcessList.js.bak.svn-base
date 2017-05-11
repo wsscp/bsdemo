@@ -1,0 +1,112 @@
+/**
+ * 订单产品列表子列表：展开产品显示工序列表
+ */
+
+Ext.define('bsmes.view.OrderProcessList', {
+	extend : 'Oit.app.view.Grid',
+	alias : 'widget.orderProcessList',
+	store : 'ProcessStore',
+	hasPaging : false,
+	defaultEditingPlugin : false,
+	// plugins : [{
+	// ptype : 'rowexpander',
+	// rowBodyTpl : ['<div id="{id}">', '</div>']
+	// }],
+	columns : [{
+				text : Oit.msg.pla.orderOA.processName,
+				dataIndex : 'processName',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.handSchedule.seq,
+				dataIndex : 'seq',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.orderOA.equipCode,
+				dataIndex : 'equipCode',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.orderOA.halfProductCode,
+				dataIndex : 'halfProductCode',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					var outProductColor = record.get('outProductColor');
+					if (outProductColor != '') {
+						return value + '(' + outProductColor + ')';
+					}
+					return value;
+				}
+			}, {
+				text : Oit.msg.pla.orderOA.latestStartDate,
+				dataIndex : 'latestStartDate',
+				xtype : 'datecolumn',
+				format : 'Y-m-d H:i:s',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.orderOA.lastFinishDate,
+				dataIndex : 'lastFinishDate',
+				xtype : 'datecolumn',
+				format : 'Y-m-d H:i:s',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}, {
+				text : Oit.msg.pla.orderOA.planWorkHours,
+				dataIndex : 'planWorkHours',
+				flex : 1,
+				sortable : false,
+				menuDisabled : true
+			}]
+		// ,
+		// initComponent : function() {
+		// var me = this;
+		// this.callParent(arguments);
+		// me.view.on('expandBody', function(rowNode, record, expandRow, eOpts)
+		// {
+		// var processId = record.get('id');
+		// var orderItemId = record.get('orderItemId');
+		//
+		// var innerStore = Ext.create('bsmes.store.OrderItemProDecStore');
+		// innerStore.getProxy().url = "handSchedule/orderItemProDec";
+		// innerStore.load({
+		// params : {
+		// processId : processId,
+		// orderItemId : orderItemId
+		// }
+		// });
+		// var innerGrid = Ext.create('bsmes.view.OrderItemProDecList', {
+		// store : innerStore,
+		// renderTo : processId,
+		// parentRowindex : record.index,
+		// parentParentRowindex : me.parentRowindex
+		// });
+		// innerGrid.getEl().swallowEvent(['mousedown', 'mouseup', 'click',
+		// 'contextmenu',
+		// 'mouseover', 'mouseout', 'dblclick', 'mousemove']);
+		// innerGrid.on('toOpenSetWindow', me.doOpenSetWindow, me);
+		// });
+		//
+		// me.view.on('collapsebody', function(rowNode, record, expandRow,
+		// eOpts) {
+		// var parent = document.getElementById(record.get('id'));
+		// var child = parent.firstChild;
+		// while (child) {
+		// child.parentNode.removeChild(child);
+		// child = child.nextSibling;
+		// }
+		// });
+		// },
+		// doOpenSetWindow : function(data, grid) {
+		// console.log(data);
+		// console.log(grid);
+		// }
+	});

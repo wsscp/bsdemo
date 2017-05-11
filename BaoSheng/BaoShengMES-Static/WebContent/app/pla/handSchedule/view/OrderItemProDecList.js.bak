@@ -1,0 +1,188 @@
+/**
+ * 工序子列表：工序分解明细的生产单列表
+ */
+
+/**
+ * RowEditing 事件
+ */
+var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+			pluginId : 'rowEditing',
+			saveBtnText : '保存',
+			cancelBtnText : "取消",
+			// autoCancel: false,
+			// clicksToEdit:1, //双击进行修改 1-单击 2-双击 0-可取消双击/单击事件
+			// cancelEdit: function(){
+			// var me = this;
+			// if (me.editing) {
+			// me.getEditor().cancelEdit();
+			// var record = me.context.record;
+			// var id = record.data.id;
+			// if (typeof(id)=='undefined') {
+			// var grid = me.context.grid;
+			// var items = grid.getSelectionModel().getSelection();
+			// Ext.each(items, function(item) {
+			// grid.store.remove(item);
+			// })
+			// }
+			// }
+			// }
+			listeners : {
+				edit : function(editor, e) {
+					console.log(editor);
+					console.log(e.record);
+
+					// var data = e.record.data;
+					// var proType = combobox.value;
+					// if (proType == null || proType == '') {
+					// e.store.remove(e.record);
+					// return;
+					// } else {
+					// Ext.Ajax.request({
+					// url : '/bsmes/eve/eventProcess/insertOrUpdate',
+					// params : {
+					// 'id' : data.id,
+					// 'eventTypeId' : id,
+					// 'processType' : proType,
+					// 'stepInterval' : data.stepInterval
+					// },
+					// success : function(response){
+					// if (data.id == null || data.id == '') {
+					// Ext.Msg.alert('提示', '添加成功');
+					// } else {
+					// Ext.Msg.alert('提示', '修改成功');
+					// }
+					// store.reload();
+					// }
+					// }
+					// );
+					// }
+				}
+			}
+		});
+
+Ext.define('bsmes.view.OrderItemProDecList', {
+			extend : 'Oit.app.view.Grid',
+			alias : 'widget.orderItemProDecList',
+			store : 'OrderItemProDecStore',
+			hasPaging : false,
+			parentRowindex : null,
+			parentParentRowindex : null,
+			defaultEditingPlugin : false,
+			plugins : [rowEditing],
+			columns : [{
+						text : '序号',
+						xtype : "rownumberer",
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '当前生产线',
+						dataIndex : 'equipName',
+						flex : 1,
+						renderer : function(value, metaData, record) {
+							if (value != '' && record.get('equipCode') != '') {
+								return '[' + record.get('equipCode') + ']' + value;
+							}
+							return value;
+						},
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '选择固定生产线',
+						dataIndex : 'fixedEquipName',
+						flex : 1,
+						// renderer : function(value, cellmeta, record,
+						// rowIndex){
+						// var me = this;
+						// if (value == '') {
+						// return '<a style="color:blue;cursor:pointer;"
+						// onclick=changeProDecFixEquip("'
+						// + me.parentParentRowindex
+						// + '","'
+						// + me.parentRowindex
+						// + '","'
+						// + rowIndex
+						// + '","'
+						// + record.get('id') + '")>添加</a>';
+						// } else {
+						// var html = '&nbsp;&nbsp;<a
+						// style="color:blue;cursor:pointer;"
+						// onclick=changeProDecFixEquip("'
+						// + me.parentParentRowindex
+						// + '","'
+						// + me.parentRowindex
+						// + '","'
+						// + rowIndex
+						// + '","'
+						// + record.get('id') + '")>修改</a>';
+						// return value + html;
+						// }
+						// },
+						editor : new Ext.form.ComboBox({
+									queryMode : 'local',
+									displayField : 'equipName',
+									valueField : 'equipCode',
+									store : Ext.create('Ext.data.Store', {
+												fields : [{
+															name : 'equipName',
+															convert : function(value, record) {
+																return value + '[' + record.get('equipCode') + ']';
+															}
+														}, 'equipCode'],
+												proxy : {
+													type : 'ajax',
+													url : 'handSchedule/proDecFixEquipArray',
+													extraParams : {
+														proDecId : '697eb9d8-faea-4217-bdb2-05b172c00588'
+													}
+												}
+											}),
+									editable : false,
+									valueField : 'value',
+									displayField : 'text'
+								}),
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '半成品编码',
+						dataIndex : 'halfProductCode',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '计划开始时间',
+						dataIndex : 'preStartTime',
+						xtype : 'datecolumn',
+						format : 'Y-m-d H:i:s',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '计划结束时间',
+						dataIndex : 'preEndTime',
+						xtype : 'datecolumn',
+						format : 'Y-m-d H:i:s',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}, {
+						text : '生产长度',
+						dataIndex : 'unFinishedLength',
+						flex : 1,
+						sortable : false,
+						menuDisabled : true
+					}]
+		});
+
+/**
+ * 弹出修改明细固定设备列表
+ */
+function changeProDecFixEquip(parentParentRowindex, parentRowindex, rowIndex, proDecId) {
+	var window = Ext.create('bsmes.view.ProDecFixEquipWindow', {
+				parentParentRowindex : parentParentRowindex,
+				parentRowindex : parentRowindex,
+				rowIndex : rowIndex,
+				proDecId : proDecId
+			});
+	window.show();
+}

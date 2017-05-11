@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EquipEnergyMonitorDAO">
+	<resultMap type="cc.oit.bsmes.bas.model.EquipEnergyMonitor" id="getMap">
+	</resultMap>
+	
+	<update id="updateMeterElectricDayData">
+		update T_BAS_EQUIPENERGY set
+		PI=#{pi, jdbcType=VARCHAR},
+		PE=#{pe, jdbcType=VARCHAR},
+		FL=#{fl, jdbcType=VARCHAR},
+		VA=#{va, jdbcType=VARCHAR},
+		SUMTO=#{sumto, jdbcType=VARCHAR}
+		WHERE EQUIP_NAME=#{equipName, jdbcType=VARCHAR} 
+		AND CREATE_TIME <![CDATA[>=]]> TO_DATE(to_char(#{createTime}, 'yyyy-mm-dd') || ' 00:00:00', 'yyyy-mm-dd hh24:mi:ss')
+		AND CREATE_TIME <![CDATA[<=]]> TO_DATE(to_char(#{createTime}, 'yyyy-mm-dd') || ' 23:59:59', 'yyyy-mm-dd hh24:mi:ss')
+	</update>
+	
+	
+    <select id="findEnergyHistory" parameterType="EquipEnergyMonitor" resultMap="getMap" >
+		SELECT BE.POW_AT,BE.CREATE_TIME,BE.EQUIP_NAME
+		FROM T_BAS_EQUIPENERGY BE
+		WHERE BE.EQUIP_NAME= #{equipName,jdbcType=VARCHAR} 
+		AND CREATE_TIME <![CDATA[>=]]>TO_DATE(#{historyStartTime,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+		AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{historyEndTime,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+		ORDER BY CREATE_TIME ASC
+	</select>
+    
+    <select id="getEquipEnergyMonitor" parameterType="map" resultType="map">
+		SELECT  DISTINCT EQUIP_NAME AS EQUIP_NAME,TO_CHAR(CREATE_TIME,'yyyy-MM-dd') AS ENERGY_MODIFY_TIME,
+		PI,PE,FL,VA,EQUIPCODE,
+		(SELECT SUM(R.ELE_FA) 
+			FROM (SELECT DISTINCT BE.CREATE_TIME,BE.ELE_FA
+			FROM T_BAS_EQUIPENERGY BE
+			WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+			AND CREATE_TIME >=TO_DATE(#{mShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{aShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')) R) AS MSHIFT_ENERGY,
+		(SELECT SUM(R.ELE_FA) 
+			FROM (SELECT DISTINCT BE.CREATE_TIME,BE.ELE_FA
+			FROM T_BAS_EQUIPENERGY BE
+			WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+			AND CREATE_TIME >=TO_DATE(#{aShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{eShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')) R) AS ASHIFT_ENERGY,
+		(SELECT SUM(R.ELE_FA) 
+			FROM (SELECT DISTINCT BE.CREATE_TIME,BE.ELE_FA
+			FROM T_BAS_EQUIPENERGY BE
+			WHERE BE.EQUIP_NAME = #{name,jdbcType=VARCHAR}
+			AND CREATE_TIME >=TO_DATE(#{eShift,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')
+			AND CREATE_TIME <![CDATA[<=]]>TO_DATE(#{currentTime,jdbcType=VARCHAR},'yyyy-MM-dd HH24:MI:SS')) R) AS ESHIFT_ENERGY
+		FROM T_BAS_EQUIPENERGY BE
+		WHERE EQUIP_NAME = #{name,jdbcType=VARCHAR}
+		AND TO_CHAR(CREATE_TIME,'yyyy-MM-dd') = #{demandTime,jdbcType=VARCHAR}  ORDER BY TO_NUMBER(PE) DESC
+	</select>
+    
+   
+    <select id="getEquipEnergyLoad" parameterType="map" resultType="map">
+    	SELECT DISTINCT EQUIP_NAME,SUMTO,
+    	TO_CHAR(CREATE_TIME,'yyyy-MM-dd') AS ENERGY_MODIFY_TIME,
+    	PI,PE,FL,VA 
+    	FROM T_BAS_EQUIPENERGY
+    	WHERE TO_DATE(TO_CHAR(CREATE_TIME,'yyyy-MM-dd'),'yyyy-MM-dd') = TO_DATE(#{createDate,jdbcType=VARCHAR},'yyyy-MM-dd')
+    	AND PI IS NOT NULL
+    </select>
+    
+    <select id="getEnergyQuantity" parameterType="map" resultType="map">
+    	SELECT DISTINCT EQUIP_NAME,
+    	TO_CHAR(CREATE_TIME,'yyyy-MM-dd') AS ENERGY_MODIFY_TIME,
+    	POW_AT,POW_AA,POW_AB,POW_AC
+    	FROM T_BAS_EQUIPENERGY,(select max(CREATE_TIME) AS crTime FROM T_BAS_EQUIPENERGY group by EQUIP_NAME) R
+    	WHERE CREATE_TIME = R.crTime
+    </select>
+    
+    
+</mapper>

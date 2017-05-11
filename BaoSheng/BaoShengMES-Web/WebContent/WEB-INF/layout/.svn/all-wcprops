@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/BSMES/!svn/ver/10693/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout
+END
+layout_html3.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/10693/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout/layout_html3.jsp
+END
+import.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/8579/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout/import.jsp
+END
+layout.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/10692/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout/layout.jsp
+END
+layout_e.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BSMES/!svn/ver/3681/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout/layout_e.jsp
+END
+layout_html.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/BSMES/!svn/ver/8824/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout/layout_html.jsp
+END
+layout_w.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/BSMES/!svn/ver/3681/trunk/BaoSheng/BaoShengMES-Web/WebContent/WEB-INF/layout/layout_w.jsp
+END

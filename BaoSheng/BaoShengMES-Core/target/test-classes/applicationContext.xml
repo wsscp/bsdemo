@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	">
+
+    <bean id="planData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/planData.xls" />
+    </bean>
+    <bean id="qcTempData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/qcData.xls" />
+    </bean>
+    <bean id="productData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/productData.xls" />
+    </bean>
+    <bean id="maintainData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/maintainData.xls" />
+    </bean>
+    <bean id="planDataMapper" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/planData.xml" />
+    </bean>
+    <bean id="processParmData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/processParmData.xls" />
+    </bean>
+    <bean id="equipdailyCheckData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/equipdailyCheckData.xls" />
+    </bean>
+     <bean id="saleOrderData" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/saleOrderData.xls" />
+    </bean>
+    <bean id="plmEquipLine" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/plmEquipLine.xls" />
+    </bean>
+    <bean id="plmProductDetail" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/plmProductDetail.xlsx" />
+    </bean>
+    
+    <bean id="plmMpartDetail" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/plmMpartDetail.xlsx" />
+    </bean>
+    
+    <bean id="insertMpartObj" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/insertMpartObj.xlsx" />
+    </bean>
+    
+    <bean id="plmProcessDetail" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/plmProcessDetail.xlsx" />
+    </bean>
+    
+    <bean id="insertNewProduct" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="data/insertNewProduct.xlsx" />
+    </bean>
+
+</beans>

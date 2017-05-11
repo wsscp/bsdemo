@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.OrderStatisticsDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.OrderStatistics" id="getMap">
+	</resultMap>
+	<select id="getOrderStatisticsList" parameterType="map" resultMap="getMap">
+	select c.section,c.name,e.sum_length from
+  	(select
+	   c.section,c.name,sum(a.REPORT_LENGTH) sum_length from T_WIP_REPORT a
+       inner join T_WIP_WORK_ORDER b on a.WORK_ORDER_NO = b.WORK_ORDER_NO
+  	   inner join T_PRO_PROCESS_INFO c on b.PROCESS_CODE  = c.CODE
+	   inner join T_BAS_WORK_SHIFT d on 
+	   ((d.SHIFT_NAME = '早班' or d.SHIFT_NAME = '中班' ) and to_char(a.create_time,'hh24mi') between d.SHIFT_START_TIME and d.SHIFT_END_TIME)
+	   or (d.SHIFT_NAME = '夜班' and (to_char(a.create_time,'hh24mi') &gt;= d.SHIFT_START_TIME or to_char(a.create_time,'hh24mi') &lt;= d.SHIFT_END_TIME))
+		<include refid="getParameter" />
+		group by c.section,c.section_seq,c.name) e
+        right join T_PRO_PROCESS_INFO c on e.name  = c.NAME
+        where 1 = 1
+		<if test=" section!=null and section !=''">
+			AND c.SECTION=#{section,jdbcType=VARCHAR}
+		</if>
+		<if test="name!=null and name !=''">
+			AND c.NAME=#{name,jdbcType=VARCHAR}
+		</if>
+        order by c.section_seq,c.name
+	</select>
+	
+
+	<sql id="getParameter">
+		where 1 = 1
+		<if test="section!=null and section !=''">
+			AND c.SECTION=#{section,jdbcType=VARCHAR}
+		</if>
+		<if test="shiftNameList !=null and shiftNameList.size() > 0">
+		 <foreach collection="shiftNameList" item="inputValue"  open="and d.SHIFT_NAME in(" separator="," close=")">
+       #{inputValue, jdbcType=VARCHAR}
+          </foreach>
+		</if>
+		<if test="startTime !=null"> 
+			AND a.create_time &gt;=#{startTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endTime !=null"> 
+			AND a.create_time &lt; #{endTime,jdbcType=TIMESTAMP}
+		</if>
+
+	</sql>
+
+	<select id="getSection"  resultMap="getMap">
+	SELECT DISTINCT SECTION FROM T_PRO_PROCESS_INFO
+	</select>
+	
+	<select id="getName"  resultMap="getMap">
+	SELECT DISTINCT NAME FROM T_PRO_PROCESS_INFO
+	</select>
+</mapper>

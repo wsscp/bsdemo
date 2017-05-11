@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.FinishOrderItemDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.FinishOrderItem" id="getMap">
+	</resultMap>
+	
+	<!-- -->
+	<select id="getNeedPushOrderItems" parameterType="map" resultType="cc.oit.bsmes.wip.model.FinishOrderItemErpModel">
+		select 
+        FOI.ID AS ID,
+        '3' AS ZTID,
+        '302' AS SCBMID,
+        ORG.NAME AS SCBMMC,
+        FOI.JJR AS JJRID,
+        FOI.JJR AS JJR,
+        SO.ID AS XSDDID,
+        SO.CONTRACT_NO AS HTH,
+        SOI.ID AS XSDDMXID,
+        SOI.PRODUCT_ID AS CPID,
+        FOI.JJSL AS JJSL,
+        FOI.JLDW AS JLDW,
+        FOI.ZJBJ AS ZJBJ,
+        'ADD' AS CZLX
+        
+ from 
+        T_WIP_FINISHED_ORDER_ITEM FOI,
+        T_ORD_SALES_ORDER_ITEM SOI,
+        T_ORD_SALES_ORDER SO,
+        T_BAS_ORG ORG
+where   SOI.ID=FOI.SALES_ORDER_ITEM_ID
+        AND SO.ID=SOI.SALES_ORDER_ID
+        AND ORG.ORG_CODE=SOI.ORG_CODE
+        AND SOI.STATUS='FINISHED'
+        AND (FOI.PUSH_STATUS='TO_PUSH' OR FOI.PUSH_STATUS='FALSE')
+	</select>
+	
+</mapper>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.bas.dao.EmployeeDAO">
+
+	<resultMap type="cc.oit.bsmes.bas.model.Employee" id="getMap">
+	</resultMap>
+	
+	<sql id="sqlColumns">
+		E."ID",
+		E.NAME,
+		E.USER_CODE,
+		E.ORG_CODE,
+		(SELECT NAME FROM T_BAS_ORG WHERE ORG_CODE=E.ORG_CODE) AS ORG_NAME,
+		E.TOP_ORG_CODE,
+		E.TELEPHONE,
+		E.EMAIL,
+		E.SOURCES,
+		E.CREATE_USER_CODE,
+		E.CREATE_TIME,
+		E.MODIFY_USER_CODE,
+		E.MODIFY_TIME,
+		E.CERTIFICATE,
+		(SELECT D.NAME FROM T_BAS_DATA_DICT D WHERE D.CODE=E.CERTIFICATE AND D.TERMS_CODE='DATA_EMPLOYEE_CERTIFICATE' AND ROWNUM &lt;= 1) AS CERTIFICATE_NAME
+	</sql>
+	
+	<sql id="findParams">
+		<where>
+			<if test="name != null and name != ''">
+				AND E.NAME LIKE #{name,jdbcType=VARCHAR}
+			</if>
+			<if test="userCode != null and userCode != ''">
+				AND E.USER_CODE LIKE #{userCode,jdbcType=VARCHAR}
+			</if>
+			<if test="telephone != null and telephone != ''">
+				AND E.TELEPHONE LIKE #{telephone,jdbcType=VARCHAR}
+			</if>
+			<if test="email != null and email != ''">
+				AND E.EMAIL LIKE #{email,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode!=null and orgCode!=''">
+				AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</sql>
+	
+	<select id="find" resultMap="getMap">
+		SELECT <include refid="sqlColumns" />
+		FROM T_BAS_EMPLOYEE E
+		<include refid="findParams" />
+	</select>
+	
+	<select id="count" resultType="int">
+		SELECT COUNT(*)
+		FROM T_BAS_EMPLOYEE E
+		<include refid="findParams" />
+	</select>
+		
+	<select id="getByUserCode" parameterType="string" resultType="cc.oit.bsmes.bas.model.Employee">
+		SELECT * FROM T_BAS_EMPLOYEE WHERE USER_CODE = #{userCode}
+	</select>
+	<select id="getByName" parameterType="string" resultMap="getMap">
+		SELECT USER_CODE ID, USER_CODE AS USER_CODE, NAME AS NAME FROM T_BAS_EMPLOYEE WHERE INSTR(UPPER(USER_CODE),UPPER(#{name}))>0 OR INSTR(UPPER(NAME),UPPER(#{name}))>0
+	</select>
+	<select id="getByNameSMS" parameterType="string" resultMap="getMap">
+		SELECT USER_CODE ID, USER_CODE , NAME FROM T_BAS_EMPLOYEE WHERE NAME LIKE #{name}||'%'
+	</select>
+	
+	<select id="getEmployeeByRoleId" parameterType="string" resultMap="getMap"> 
+	  SELECT EMP.* FROM T_BAS_USER_ROLE USERROLE ,T_BAS_EMPLOYEE EMP , T_BAS_USER USERS WHERE USERROLE.USER_ID =USERS.ID  AND  USERS.USER_CODE=EMP.USER_CODE
+       AND USERROLE.ROLE_ID = #{roleId}  
+	</select>
+	 
+	<select id="getEmployeeByUserCodes"   resultMap="getMap">
+		SELECT * FROM T_BAS_EMPLOYEE WHERE USER_CODE IN
+		<foreach collection="list" item="code"  open="(" separator="," close=")">  
+	    	#{code,jdbcType=VARCHAR} 
+	    </foreach>
+	</select>
+	<select id="getEmployee" resultMap="getMap" parameterType="string">
+		SELECT USER_CODE,NAME FROM T_BAS_EMPLOYEE WHERE INSTR(USER_CODE,#{name})>0 OR INSTR(NAME,#{name})>0
+	</select>
+
+    <select id="findNotInUser" resultMap="getMap" parameterType="string">
+        SELECT USER_CODE,NAME FROM T_BAS_EMPLOYEE EE WHERE NOT EXISTS (
+          SELECT 1 FROM T_BAS_USER ER WHERE EE.USER_CODE = ER.USER_CODE
+        ) AND (EE.User_Code like '%' || #{query} || '%' OR EE.NAME like '%' || #{query} || '%')
+    </select>
+
+    <select id="getOnWorkUserByEquip" parameterType="string" resultType="cc.oit.bsmes.bas.model.Employee">
+        SELECT
+          EM.USER_CODE,
+          EM.NAME
+        FROM T_BAS_EMPLOYEE EM
+        WHERE EXISTS (
+            SELECT * FROM T_WIP_ONOFF_RECORD RD,T_BAS_USER US,T_BAS_USER_ROLE UR,T_BAS_ROLE_EQIP RE,T_FAC_EQIP_INFO EI
+            WHERE RD.OFF_TIME IS NULL
+              AND RD.USER_CODE = EM.USER_CODE
+              AND RD.USER_CODE  = US.USER_CODE
+              AND US.ID = UR.USER_ID
+              AND UR.ROLE_ID = RE.ROLE_ID
+              AND RE.EQIP_INFO_ID = EI.ID
+              AND EI.CODE = #{param1}
+              AND EI.ORG_CODE =#{param2}
+        )
+    </select>
+    
+    <!-- 变更员工时判断员工号是否已经存在 -->
+    <select id="hasUserCodeForUpdate" parameterType="cc.oit.bsmes.bas.model.Employee" resultType="int">
+    	<![CDATA[
+        SELECT count(*) 
+        FROM　T_BAS_EMPLOYEE 
+        WHERE 
+          USER_CODE = #{userCode, jdbcType=VARCHAR}  
+          AND ORG_CODE = #{orgCode, jdbcType=VARCHAR}  
+          AND ID <> #{id, jdbcType=VARCHAR}
+        ]]>
+    </select>
+
+	<!--查询用户是否是班组长，并且该用户是否有该设备权限-->
+	<select id="validUserBZZPermissions" parameterType="string" resultMap="getMap">
+		SELECT
+			A.*,
+			B.PASSWORD
+		FROM T_BAS_EMPLOYEE A,T_BAS_USER B
+		WHERE A.USER_CODE = #{param1}
+		AND A.USER_CODE = B.USER_CODE
+		AND EXISTS (
+			SELECT
+				1
+			FROM T_BAS_ROLE_EQIP EQ
+			LEFT JOIN T_BAS_USER_ROLE RO ON EQ.ROLE_ID = RO.ROLE_ID
+			LEFT JOIN T_BAS_USER US ON US.ID = RO.USER_ID
+			LEFT JOIN T_FAC_EQIP_INFO EI ON EI.ID = EQ.EQIP_INFO_ID
+			WHERE EI.CODE = #{param2}
+			AND A.USER_CODE = US.USER_CODE
+		)
+		AND A.CERTIFICATE = 'BZZ'
+	</select>
+	<!--查询用户是否又该设备权限-->
+	<select id="validUserEquipPermissions" parameterType="string" resultMap="getMap">
+		SELECT
+			A.*,
+			B.PASSWORD
+		FROM T_BAS_EMPLOYEE A,T_BAS_USER B
+		WHERE A.USER_CODE = #{param1}
+		AND A.USER_CODE = B.USER_CODE
+		AND EXISTS (
+			SELECT
+				1
+			FROM T_BAS_ROLE_EQIP EQ
+			LEFT JOIN T_BAS_USER_ROLE RO ON EQ.ROLE_ID = RO.ROLE_ID
+			LEFT JOIN T_BAS_USER US ON US.ID = RO.USER_ID
+			LEFT JOIN T_FAC_EQIP_INFO EI ON EI.ID = EQ.EQIP_INFO_ID
+			WHERE EI.CODE = #{param2}
+			AND A.USER_CODE = US.USER_CODE
+		)
+	</select>
+	<select id="getEventAccepter" parameterType="String" resultMap="getMap">
+    	SELECT T6.* FROM T_FAC_EQIP_INFO T1 ,T_PRO_PROCESS_INFO T2 ,T_BAS_ROLE T3 ,T_BAS_USER_ROLE T4 ,T_BAS_USER T5 ,T_BAS_EMPLOYEE T6
+			WHERE T1.CODE LIKE #{equipCode} || '%'
+				AND T1.TYPE = 'MAIN_EQUIPMENT'
+				AND T1.PROCESS_CODE = T2.CODE
+				AND T2.SECTION = T3.NAME
+				AND T3.ID = T4.ROLE_ID
+				AND T4.USER_ID = T5.ID
+				AND T5.USER_CODE = T6.USER_CODE
+				AND T6.CERTIFICATE = 'BZZ'
+    </select>
+    
+</mapper>

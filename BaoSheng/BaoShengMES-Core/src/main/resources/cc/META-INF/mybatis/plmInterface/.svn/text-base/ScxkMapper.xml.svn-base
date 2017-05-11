@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacePLM.dao.ScxkDAO">
+    <resultMap type="cc.oit.bsmes.interfacePLM.model.Scxk" id="getMap">
+    </resultMap>
+
+    <select id="lastUpdateData" parameterType="map" resultType="cc.oit.bsmes.interfacePLM.model.Scxk">
+        SELECT
+        ID,
+        NO,
+        NAME,
+        ENAME,
+        CTIME,
+        MTIME
+        FROM SCXK
+        WHERE DEL='0'
+        AND WKAID <![CDATA[ <>]]> '3'
+        <if test="lastDate != null">
+            AND <![CDATA[(CTIME > #{lastDate} OR MTIME > #{lastDate})]]>
+        </if>
+    </select>
+
+    <select id="getByProductLineNo" parameterType="string" resultMap="getMap">
+        SELECT
+              *
+        FROM SCXK
+        WHERE NO = #{no,jdbcType=VARCHAR} AND
+        WKAID <![CDATA[<>]]>'3'
+        AND DEL='0'
+        
+    </select>
+
+    <update id="updateCsvalue" parameterType="cc.oit.bsmes.interfacePLM.model.Scxk">
+        UPDATE SCXK SET CSVALUE1 = #{csvalue1,jdbcType=VARCHAR}
+        <if test="csvalue2 != null and csvalue2 !=''">
+            ,CSVALUE2 = #{csvalue2,jdbcType=VARCHAR}
+        </if>
+        <if test="csvalue3 != null and csvalue3 !=''">
+            ,CSVALUE3 = #{csvalue3,jdbcType=VARCHAR}
+        </if>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

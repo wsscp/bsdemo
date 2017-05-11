@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.OnoffRecordDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.OnoffRecord" id="getMap">
+	</resultMap>
+
+	<select id="findByMesClientMac" parameterType="string" resultType="cc.oit.bsmes.wip.model.OnoffRecord">
+		SELECT RE.ID, RE.USER_CODE AS USER_CODE, EM.NAME AS USER_NAME, EM.CERTIFICATE AS CERTIFICATE
+		  FROM T_WIP_ONOFF_RECORD RE, T_BAS_EMPLOYEE EM
+		 WHERE RE.EXCEPTION_TYPE = 'ON_WORK'
+		   AND RE.USER_CODE = EM.USER_CODE
+		   AND RE.CLIENT_NAME = #{clientMac ,jdbcType=VARCHAR}
+	</select>
+
+    <select id="getHavePermissionRecord" parameterType="string" resultType="cc.oit.bsmes.wip.model.OnoffRecord">
+        SELECT
+              RE.ID,
+              RE.USER_CODE,
+              EM.NAME AS USERNAME
+        FROM T_WIP_ONOFF_RECORD RE,T_BAS_EMPLOYEE EM
+        WHERE RE.EXCEPTION_TYPE = 'ON_WORK'
+              AND RE.USER_CODE = EM.USER_CODE
+              AND EXISTS (
+                            SELECT 1
+                            FROM T_FAC_EQIP_INFO EI
+                              LEFT JOIN T_BAS_ROLE_EQIP EQ ON EI.ID = EQ.EQIP_INFO_ID
+                              LEFT JOIN T_BAS_USER_ROLE UR ON EQ.ROLE_ID = UR.ROLE_ID
+                              LEFT JOIN T_BAS_USER US ON US.ID = UR.USER_ID
+                            WHERE EI.CODE = #{param2}
+                            AND US.USER_CODE = RE.USER_CODE)
+              AND RE.CLIENT_NAME = #{param1}
+    </select>
+
+	<select id="findbyUserCodeAndMac" parameterType="string" resultType="cc.oit.bsmes.wip.model.OnoffRecord">
+		SELECT
+		  ROWNUM,T.*
+        FROM (
+            SELECT
+                   ID,
+                   USER_CODE,
+                   ON_TIME,
+                   OFF_TIME,
+                   EXCEPTION_TYPE,
+                   CLIENT_NAME,
+                   SHIFT_ID,
+                   EQUIP_CODES
+            FROM T_WIP_ONOFF_RECORD
+            WHERE USER_CODE = #{param1}
+            AND  CLIENT_NAME = #{param2}
+            AND  OFF_TIME IS NULL
+            ORDER BY ON_TIME DESC
+		) T WHERE ROWNUM = 1
+	</select>
+
+    <select id="validUserPermission" parameterType="string" resultType="int">
+        SELECT
+          COUNT(RE.ID)
+        FROM T_WIP_ONOFF_RECORD RE
+        WHERE RE.USER_CODE = #{param1}
+          AND RE.CLIENT_NAME = #{param2}
+          AND OFF_TIME IS NULL
+          AND EXISTS (
+            SELECT
+                1
+            FROM T_BAS_ROLE_EQIP EQ
+              LEFT JOIN T_BAS_USER_ROLE RO ON EQ.ROLE_ID = RO.ROLE_ID
+              LEFT JOIN T_BAS_USER US ON US.ID = RO.USER_ID
+              LEFT JOIN T_FAC_EQIP_INFO EI ON EI.ID = EQ.EQIP_INFO_ID
+              WHERE EI.CODE = #{param3}
+              AND RE.USER_CODE = US.USER_CODE
+        )
+    </select>
+    
+    
+     <select id="checkIFCreditCard" parameterType="string" resultType="int">
+        SELECT 
+        	COUNT(*)
+        FROM T_WIP_ONOFF_RECORD RE
+        WHERE RE.USER_CODE = #{param1}
+          AND RE.EXCEPTION_TYPE = 'ON_WORK'
+          AND INSTR(RE.EQUIP_CODES,#{param2})>0
+    </select>
+
+    <select id="getOnWorkUserRecord" parameterType="string"  resultMap="getMap">
+    
+              SELECT       RD.USER_CODE,
+          EM.NAME as userName,
+          EM.CERTIFICATE,
+          RD.ON_TIME,
+          RD.OFF_TIME,
+          RD.SHIFT_ID
+        FROM T_WIP_ONOFF_RECORD RD,T_BAS_EMPLOYEE EM
+        WHERE
+          RD.OFF_TIME IS NULL
+          AND RD.USER_CODE = EM.USER_CODE
+          
+          AND EXISTS (
+              SELECT 1 FROM T_BAS_MES_CLIENT_MAN_EQIP ME ,T_FAC_EQIP_INFO EI,T_BAS_MES_CLIENT MC 
+              WHERE EI.CODE = #{param1}
+              AND ME.EQIP_ID = EI.ID
+              AND ME.MES_CLIENT_ID = MC.ID
+              AND MC.CLIENT_MAC = RD.CLIENT_NAME
+
+          )
+          AND RD.ORG_CODE = #{param2}
+          
+          
+    </select>
+
+    <select id="getOnWorkUserByUserCode" parameterType="string" resultMap="getMap">
+      SELECT
+          RD.USER_CODE,
+          EM.NAME as userName,
+          DD.NAME AS CERTIFICATE,
+          RD.ON_TIME,
+          RD.OFF_TIME,
+          RD.SHIFT_ID
+        FROM T_WIP_ONOFF_RECORD RD,T_BAS_EMPLOYEE EM,T_BAS_DATA_DICT DD
+        WHERE RD.OFF_TIME IS NULL
+          AND RD.USER_CODE = EM.USER_CODE
+          AND DD.TERMS_CODE = 'DATA_EMPLOYEE_CERTIFICATE'
+          AND RD.USER_CODE = #{param1}
+          AND EM.CERTIFICATE = DD.CODE
+    </select>
+    
+    <select id="checkIfDB" parameterType="string" resultType="string">
+		SELECT CERTIFICATE
+		  FROM T_BAS_EMPLOYEE
+		 WHERE USER_CODE = #{param1}
+	</select>
+	
+	<select id="checkIfUsed" parameterType="string" resultType="String">
+		SELECT 
+			R.USER_NAME
+		FROM T_WIP_ONOFF_RECORD R, T_BAS_EMPLOYEE E
+		WHERE R.USER_CODE = E.USER_CODE
+		AND E.CERTIFICATE = 'DB'
+		AND #{param1} IN R.EQUIP_CODES
+		AND R.EXCEPTION_TYPE = 'ON_WORK'
+	</select>
+</mapper>
+	
+	

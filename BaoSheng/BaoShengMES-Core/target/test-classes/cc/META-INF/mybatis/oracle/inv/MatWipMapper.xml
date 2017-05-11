@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.MatWipDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.MatWip" id="getMap">
+	</resultMap>
+	
+	<!-- 模糊查询 根据name或者code -->
+	<select id="getMaterialsArray" resultMap="getMap">
+		SELECT * FROM T_INV_MAT_WIP
+		M
+		WHERE M.MAT_TYPE = 'MATERIALS'
+		ORDER BY M.MAT_CODE,
+		NLSSORT(M.MAT_NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	<!-- 根据matCode,salesOrderItemId,processInOutId查询 -->
+	<select id="getByMatCode" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_INV_MAT_WIP 
+		WHERE MAT_CODE = #{matCode,jdbcType=VARCHAR}
+		AND SALES_ORDER_ITEM_ID = #{salesOrderItemId,jdbcType=VARCHAR}
+		AND PROCESS_IN_OUT_WIP_ID = #{processInOutId,jdbcType=VARCHAR}
+	</select>
+
+    <insert id="insertAll" parameterType="java.util.List">
+        INSERT INTO T_INV_MAT_WIP(ID,MAT_CODE,MAT_NAME,MAT_TYPE,HAS_PIC,IS_PRODUCT,PRODUCT_CODE,CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,
+        MODIFY_USER_CODE,REMARK,TEMPLET_ID,ORG_CODE,COLOR,MAT_SIZE,MAT_SPEC,MAT_SECTION,UN_FINISHED_LENGTH,IMAGE_PATH,PROCESS_WIP_ID,
+        SALES_ORDER_ITEM_ID,PROCESS_IN_OUT_WIP_ID)
+        <foreach collection="matWip" item="item" index="index" 
+			  separator="union all">
+			  SELECT
+			  #{item.id,jdbcType=VARCHAR},#{item.matCode,jdbcType=VARCHAR},#{item.matName,jdbcType=VARCHAR},#{item.matType,jdbcType=VARCHAR},
+			  #{item.hasPic,jdbcType=VARCHAR},#{item.isProduct,jdbcType=VARCHAR},#{item.productCode,jdbcType=VARCHAR},
+			  sysdate, 'Service', 
+			  sysdate, 'Service',
+			  #{item.remark,jdbcType=VARCHAR},#{item.templetId,jdbcType=VARCHAR},#{item.orgCode,jdbcType=VARCHAR},
+			  #{item.color,jdbcType=VARCHAR},#{item.matSize,jdbcType=VARCHAR},#{item.matSpec,jdbcType=VARCHAR},
+			  #{item.matSection,jdbcType=VARCHAR},#{item.unFinishedLength,jdbcType=VARCHAR},#{item.imagePath,jdbcType=VARCHAR},
+			  #{item.processWipId,jdbcType=VARCHAR},#{item.salesOrderItemId,jdbcType=VARCHAR},#{item.processInOutWipId,jdbcType=VARCHAR}
+			  FROM DUAL
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteDate" parameterType="string">
+       DELETE FROM T_INV_MAT_WIP M WHERE EXISTS(
+       SELECT 1 FROM T_PRO_PROCESS_IN_OUT_WIP PIO,T_PRO_PRODUCT_PROCESS_WIP PP WHERE PP.PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+       AND PP.ID = PIO.PRODUCT_PROCESS_ID
+       AND PIO.ID = M.PROCESS_IN_OUT_WIP_ID
+       )
+    </delete>
+
+</mapper>

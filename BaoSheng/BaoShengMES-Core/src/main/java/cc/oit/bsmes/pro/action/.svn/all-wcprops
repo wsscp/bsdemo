@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/11188/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action
+END
+ProcessInOutController.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessInOutController.java
+END
+ProcessQcBzController.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessQcBzController.java
+END
+ProductProcessWipController.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/9308/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductProcessWipController.java
+END
+ProductQCTemplateController.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductQCTemplateController.java
+END
+ProcessQAController.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/11188/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessQAController.java
+END
+ProcessQcController.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessQcController.java
+END
+ProductQCResultController.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/4441/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductQCResultController.java
+END
+ProductProcessBzController.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductProcessBzController.java
+END
+ProcessInOutWipController.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/9957/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessInOutWipController.java
+END
+ProcessQcEqipBzController.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/5551/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessQcEqipBzController.java
+END
+ProcessEquipListController.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/6425/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessEquipListController.java
+END
+ProductCraftsBzController.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/10811/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductCraftsBzController.java
+END
+ProductProcessController.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductProcessController.java
+END
+ProcessQcWipController.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/10448/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessQcWipController.java
+END
+ProductCraftsController.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/10466/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductCraftsController.java
+END
+ProcessInformationController.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/10479/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessInformationController.java
+END
+EqipListBzController.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/5593/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/EqipListBzController.java
+END
+ProductQCDetailController.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/3124/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProductQCDetailController.java
+END
+ProcessInOutBzController.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/10647/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessInOutBzController.java
+END
+ProcessReceiptController.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/8126/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/pro/action/ProcessReceiptController.java
+END

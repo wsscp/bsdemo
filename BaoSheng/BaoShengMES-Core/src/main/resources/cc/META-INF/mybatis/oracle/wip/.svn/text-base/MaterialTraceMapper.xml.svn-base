@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.MaterialTraceDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.MaterialTrace" id="getMap">
+		<result property="id" column="ID" />
+		<result property="matCode" column="MAT_CODE" />
+		<result property="batchNo" column="BATCH_NO" />
+		<result property="productBatches" column="PRODUCT_BATCHES" />
+		<result property="equipCode" column="EQUIP_CODE" />
+		<result property="operator" column="CREATE_USER_CODE" />
+		<result property="realStartTime" column="REAL_START_TIME" />
+		<result property="quantity" column="QUANTITY" />
+		<result property="workOrderNo" column="WORK_ORDER_NO" />
+	</resultMap>
+	<select id="find" resultMap="getMap" parameterType="cc.oit.bsmes.wip.model.MaterialTrace">
+			SELECT  r.MAT_CODE,r.BATCH_NO,s.EQUIP_CODE,r.WORK_ORDER_NO,r.CREATE_USER_CODE,
+				(SELECT WMSYS.WM_CONCAT(DISTINCT PRODUCT_CODE) FROM T_PLA_ORDER_TASK WHERE WORK_ORDER_NO=S.WORK_ORDER_NO) as PRODUCT_BATCHES,
+				(SELECT QUANTITY FROM T_PRO_PROCESS_IN_OUT WHERE PRODUCT_PROCESS_ID=s.PROCESS_ID AND MAT_CODE=r.MAT_CODE)*
+       			(SELECT SUM(PRODUCT_LENGTH) FROM T_WIP_REPORT a,T_WIP_SECTION b WHERE a."ID"= b.R_ID AND a.WORK_ORDER_NO=r.WORK_ORDER_NO) as QUANTITY,
+       			(SELECT MIN(REAL_START_TIME) FROM T_WIP_REAL_COST A WHERE A.WORK_ORDER_NO= r.WORK_ORDER_NO AND r.MAT_CODE=A.MAT_CODE AND r.BATCH_NO=A.BATCH_NO) AS REAL_START_TIME
+		  FROM  (SELECT  MAT_CODE,WORK_ORDER_NO,BATCH_NO,ORG_CODE,WMSYS.WM_CONCAT(DISTINCT CREATE_USER_CODE) AS CREATE_USER_CODE  FROM T_WIP_REAL_COST
+         GROUP BY MAT_CODE,WORK_ORDER_NO,BATCH_NO,ORG_CODE) r,T_WIP_WORK_ORDER s 
+		WHERE r.WORK_ORDER_NO=s.WORK_ORDER_NO <include refid="getParameter"/>
+	</select>
+	 
+	<select id="count" parameterType="cc.oit.bsmes.wip.model.MaterialTrace" resultType="int" >
+		SELECT COUNT(1)
+		FROM (SELECT  r.MAT_CODE
+		  FROM  (SELECT  MAT_CODE,WORK_ORDER_NO,BATCH_NO,ORG_CODE,WMSYS.WM_CONCAT(DISTINCT CREATE_USER_CODE) AS CREATE_USER_CODE  FROM T_WIP_REAL_COST
+         GROUP BY MAT_CODE,WORK_ORDER_NO,BATCH_NO,ORG_CODE) r,T_WIP_WORK_ORDER s 
+		WHERE r.WORK_ORDER_NO=s.WORK_ORDER_NO <include refid="getParameter"/>)
+	</select> 
+
+	<sql id="getParameter">
+			<if test="matCode !=null and matCode !=''">
+				AND INSTR(r.MAT_CODE,#{matCode,jdbcType=VARCHAR})>0
+			</if>
+			<if test="productBatches!=null and productBatches!=''">
+				AND r.WORK_ORDER_NO IN (SELECT WORK_ORDER_NO FROM T_PLA_ORDER_TASK WHERE INSTR(PRODUCT_CODE,#{productBatches,jdbcType=VARCHAR})>0)
+			</if>
+			<if test="workOrderNo!=null and workOrderNo!=''">
+				AND INSTR(r.WORK_ORDER_NO,#{workOrderNo,jdbcType=VARCHAR})>0
+			</if>
+			<if test="equipCode!=null and equipCode!=''">
+				AND  EQUIP_CODE IN (SELECT CODE FROM T_FAC_EQIP_INFO WHERE INSTR(CODE,#{equipCode,jdbcType=VARCHAR})>0  OR INSTR(NAME,#{equipCode,jdbcType=VARCHAR})>0)
+			</if>
+            <if test="orgCode !=null and orgCode != ''">
+                AND r.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+                AND s.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+            </if>
+	</sql>
+</mapper>

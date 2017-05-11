@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfacemessage.dao.MessageDAO">
+	<resultMap type="cc.oit.bsmes.interfacemessage.model.Message" id="getMap">
+	</resultMap>
+	
+	<select id="findMessageSMS" resultMap="getMap">
+	  SELECT ID,CONSIGNEE,MES_CONTENT,SEND_TIMES FROM T_INT_EMAIL_MESSAGE  WHERE STATUS != 'SUCCESS' AND SEND_TIMES<![CDATA[<]]>3 AND MES_TYPE='SMS'
+	</select>
+	
+	<select id="findMessageEmail" resultMap="getMap">
+	  SELECT ID,CONSIGNEE,MES_TITLE,MES_CONTENT,SEND_TIMES FROM T_INT_EMAIL_MESSAGE  WHERE STATUS != 'SUCCESS' AND SEND_TIMES<![CDATA[<]]>3 AND MES_TYPE='EMAIL'
+	</select>
+</mapper>

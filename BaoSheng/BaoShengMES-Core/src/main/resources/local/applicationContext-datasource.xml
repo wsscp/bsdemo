@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	">
+
+    <!-- mes -->
+    <bean id="dataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>DATASOURCE</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@192.168.1.102:1521:ORCL</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>20</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+    
+    <!-- mes库的历史记录数据源 -->
+    <bean id="hisDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>HISDATASOURCE</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@192.168.1.102:1521:ORCL</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>20</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+    
+
+    <!-- ww下发-->
+    <bean id="wwIsDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>WWISDATASOURCE</value></property>
+        <property name="url"><value>jdbc:oracle:thin:@192.168.1.102:1521:ORCL</value></property>
+        <property name="driverClassName"><value>oracle.jdbc.OracleDriver</value></property>
+        <property name="maxPoolSize"><value>20</value></property>
+        <property name="user"><value>bsmes</value></property>
+        <property name="password"><value>bsmes</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+
+    <!-- ww监控异常处理 -->
+    <bean id="wwalmdbDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:oracle:thin:@192.168.1.102:1521:ORCL" />
+        <property name="username" value="bsmes" />
+        <property name="password" value="bsmes" />
+        <property name="maxActive" value="20"/>
+    </bean>
+    
+     <bean id="siasunDataSource"
+          class="com.atomikos.jdbc.nonxa.AtomikosNonXADataSourceBean">
+        <property name="uniqueResourceName"><value>SINSUNDATASOURCE</value></property>
+        <property name="url"><value>jdbc:jtds:sqlserver://192.168.1.102:1433/OpcOrdersDb</value></property>
+        <property name="driverClassName"><value>net.sourceforge.jtds.jdbc.Driver</value></property>
+        <property name="maxPoolSize"><value>20</value></property>
+        <property name="user"><value>sa</value></property>
+        <property name="password"><value>root</value></property>
+        <property name="borrowConnectionTimeout"><value>60</value></property>
+    </bean>
+    
+    
+    <!-- ww采集-->
+     <bean id="wwAcDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:oracle:thin:@192.168.1.102:1521:ORCL" />
+        <property name="username" value="bsmes" />
+        <property name="password" value="bsmes" />
+        <property name="maxActive" value="20"/>
+    </bean>
+
+    <!-- plm -->
+        
+      <bean id="plmDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="url" value="jdbc:oracle:thin:@192.168.1.102:1521:ORCL" />
+        <property name="username" value="bsmes" />
+        <property name="password" value="bsmes" />
+        <property name="maxActive" value="20"/>
+    </bean>
+    
+</beans>

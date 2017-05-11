@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin
+END
+Mixin.js
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Mixin.js
+END
+Observable.js
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Observable.js
+END
+Progressable.js
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Progressable.js
+END
+Filterable.js
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Filterable.js
+END
+Templatable.js
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Templatable.js
+END
+Traversable.js
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Traversable.js
+END
+Sortable.js
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Sortable.js
+END
+Identifiable.js
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Identifiable.js
+END
+Bindable.js
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Bindable.js
+END
+Selectable.js
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/BSMES/!svn/ver/5819/trunk/BaoSheng/MES-mobile/assets/www/lib/st2.3.1/src/mixin/Selectable.js
+END

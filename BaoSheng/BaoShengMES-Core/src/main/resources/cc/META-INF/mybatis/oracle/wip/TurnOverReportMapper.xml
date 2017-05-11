@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.wip.dao.TurnOverReportDAO">
+
+	<resultMap type="cc.oit.bsmes.wip.model.TurnOverReport" id="getMap">
+	</resultMap>
+
+    <sql id="dbUserName">
+    <where>
+			<if test="param1 != null and param1 != ''">
+				AND PROCESS_NAME=#{param1,jdbcType=VARCHAR}
+			</if>
+			<if test="param2 != null and param2 !=''">
+				AND
+				TO_CHAR(SHIFT_DATE,'yyyy-mm-dd')=#{param2,jdbcType=VARCHAR}
+			</if>
+			<if test="param3 != null and param3 !=''">
+				AND SHIFT_NAME=#{param3,jdbcType=VARCHAR}
+			</if>
+			<if test="param4 != null and param4 !=''">
+				AND EQUIP_CODE=#{param4,jdbcType=VARCHAR}
+			</if>
+			<if test="param5 != null and param5 !=''">
+				AND DB_USER_NAME LIKE '%'||#{param5,jdbcType=VARCHAR}||'%'
+			</if>
+		</where>		
+    </sql>
+    
+    <sql id="fdbUserName">
+    <where>
+			<if test="param1 != null and param1 != ''">
+				AND PROCESS_NAME=#{param1,jdbcType=VARCHAR}
+			</if>
+			<if test="param2 != null and param2 !=''">
+				AND
+				TO_CHAR(SHIFT_DATE,'yyyy-mm-dd')=#{param2,jdbcType=VARCHAR}
+			</if>
+			<if test="param3 != null and param3 !=''">
+				AND SHIFT_NAME=#{param3,jdbcType=VARCHAR}
+			</if>
+			<if test="param4 != null and param4 !=''">
+				AND EQUIP_CODE=#{param4,jdbcType=VARCHAR}
+			</if>
+			<if test="param5 != null and param5 !=''">
+				AND FDB_USER_NAME LIKE '%'||#{param5,jdbcType=VARCHAR}||'%'
+			</if>
+		</where>		
+    </sql>
+
+
+<sql id="fzgUserName">
+    <where>
+			<if test="param1 != null and param1 != ''">
+				AND PROCESS_NAME=#{param1,jdbcType=VARCHAR}
+			</if>
+			<if test="param2 != null and param2 !=''">
+				AND
+				TO_CHAR(SHIFT_DATE,'yyyy-mm-dd')=#{param2,jdbcType=VARCHAR}
+			</if>
+			<if test="param3 != null and param3 !=''">
+				AND SHIFT_NAME=#{param3,jdbcType=VARCHAR}
+			</if>
+			<if test="param4 != null and param4 !=''">
+				AND EQUIP_CODE=#{param4,jdbcType=VARCHAR}
+			</if>
+			<if test="param5 != null and param5 !=''">
+				AND FZG_USER_NAME LIKE '%'||#{param5,jdbcType=VARCHAR}||'%'
+			</if>
+		</where>		
+    </sql>
+
+	<select id="getTurnOverReportByEquipCode" resultMap="getMap"
+		parameterType="string">
+		WITH TEMP AS(
+		SELECT
+		OPD.ORDER_ITEM_DEC_ID,OPD.PROCESS_ID,OPD.PROCESS_CODE FROM
+		T_WIP_REPORT RE
+		LEFT JOIN T_WIP_REPORT_TASK RT ON(RE.ID=RT.REPORT_ID)
+		LEFT JOIN T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		LEFT JOIN
+		T_PLA_CU_ORDER_ITEM_PRO_DEC OPD
+		ON(OPD.ID=OT.ORDER_ITEM_PRO_DEC_ID)
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC OID
+		ON(OID.ID=OPD.ORDER_ITEM_DEC_ID)
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM OI
+		ON (OI.ID=OID.ORDER_ITEM_ID)
+		LEFT JOIN T_ORD_SALES_ORDER_ITEM SOI ON
+		(OI.SALES_ORDER_ITEM_ID=SOI.ID)
+		WHERE
+		RE.REPORT_TIME>=TO_DATE(#{param2,jdbcType=VARCHAR},'yyyy-mm-dd
+		hh24:mi:ss')
+		AND RE.REPORT_TIME<![CDATA[<]]>TO_DATE(#{param3,jdbcType=VARCHAR},'yyyy-mm-dd
+		hh24:mi:ss')
+		AND RE.EQUIP_CODE=#{param1,jdbcType=VARCHAR}),
+
+		DETAIL AS(
+		SELECT
+		ORDER_ITEM_DEC_ID,SUM(UN_FINISHED_LENGTH+FINISHED_LENGTH) AS
+		WORK_ORDER_LENGTH,MAX(CONTRACT_NO) AS CONTRACT_NO FROM
+		T_PLA_CU_ORDER_ITEM_PRO_DEC
+		WHERE
+		ORDER_ITEM_DEC_ID IN (SELECT DISTINCT
+		ORDER_ITEM_DEC_ID FROM TEMP)
+		AND
+		PROCESS_CODE IN (SELECT DISTINCT
+		PROCESS_CODE FROM TEMP)
+		GROUP BY
+		ORDER_ITEM_DEC_ID),
+
+		MPART AS(
+		SELECT
+		TEMP.ORDER_ITEM_DEC_ID,
+		INO.MAT_CODE,INO.QUANTITY,MAX(MAT.MAT_NAME)
+		AS
+		MAT_NAME,
+		MAX(INO.UNIT)
+		AS UNIT
+		FROM TEMP, T_PRO_PROCESS_IN_OUT INO,
+		T_INV_MAT MAT
+		WHERE
+		TEMP.PROCESS_ID=INO.PRODUCT_PROCESS_ID AND
+		INO.IN_OR_OUT='IN' AND
+		MAT.MAT_CODE=INO.MAT_CODE
+		AND
+		MAT.MAT_TYPE='MATERIALS' GROUP BY
+		TEMP.ORDER_ITEM_DEC_ID,
+		INO.MAT_CODE,INO.QUANTITY)
+
+		SELECT
+		MAX(BH.ID) AS
+		ID,
+		MAX(BH.WORK_ORDER_NO)
+		AS WORK_ORDER_NO,
+		MAX(DETAIL.CONTRACT_NO) AS CONTRACT_NO,
+		MAX(BH.CUST_PRODUCT_TYPE) AS
+		CUST_PRODUCT_TYPE,
+		MAX(BH.CUST_PRODUCT_SPEC) AS CUST_PRODUCT_SPEC ,
+		MAX(DETAIL.WORK_ORDER_LENGTH) AS WORK_ORDER_LENGTH,
+		MAX(BH.REPORT_LENGTH) AS REPORT_LENGTH,
+		LISTAGG(MPART.MAT_CODE,',')
+		WITHIN GROUP(ORDER BY MPART.MAT_CODE) AS MAT_CODE,
+		LISTAGG(MPART.MAT_NAME,',') WITHIN GROUP(ORDER BY MPART.MAT_NAME) AS
+		MAT_NAME,
+		LISTAGG(MPART.QUANTITY*WORK_ORDER_LENGTH,',')
+		WITHIN
+		GROUP(ORDER BY MPART.QUANTITY) AS QUOTA_QUANTITY FROM (
+		SELECT
+		OID.ID,MAX(RE.WORK_ORDER_NO) AS WORK_ORDER_NO,SOI.CUST_PRODUCT_TYPE,
+		SOI.CUST_PRODUCT_SPEC,SUM(RT.REPORT_LENGTH) AS REPORT_LENGTH
+		FROM
+		T_WIP_REPORT RE
+		LEFT JOIN T_WIP_REPORT_TASK RT ON(RE.ID=RT.REPORT_ID)
+		LEFT JOIN T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		LEFT JOIN
+		T_PLA_CU_ORDER_ITEM_PRO_DEC OPD
+		ON(OPD.ID=OT.ORDER_ITEM_PRO_DEC_ID)
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC OID
+		ON(OID.ID=OPD.ORDER_ITEM_DEC_ID)
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM OI
+		ON (OI.ID=OID.ORDER_ITEM_ID)
+		LEFT JOIN T_ORD_SALES_ORDER_ITEM SOI ON
+		(OI.SALES_ORDER_ITEM_ID=SOI.ID)
+		WHERE
+		RE.REPORT_TIME>=TO_DATE(#{param2,jdbcType=VARCHAR},'yyyy-mm-dd
+		hh24:mi:ss')
+		AND RE.REPORT_TIME<![CDATA[<]]>TO_DATE(#{param3,jdbcType=VARCHAR},'yyyy-mm-dd
+		hh24:mi:ss')
+		AND RE.EQUIP_CODE=#{param1,jdbcType=VARCHAR}
+		GROUP BY
+		OID.ID,SOI.CUST_PRODUCT_TYPE,SOI.CUST_PRODUCT_SPEC) BH
+		LEFT JOIN DETAIL
+		ON (DETAIL.ORDER_ITEM_DEC_ID=BH.ID)
+		LEFT JOIN MPART
+		ON(MPART.ORDER_ITEM_DEC_ID=BH.ID)
+		GROUP BY BH.ID
+	</select>
+
+	<select id="countTurnOverReportByEquipCode" resultType="int"
+		parameterType="string">
+		SELECT COUNT(DISTINCT OPD.ORDER_ITEM_DEC_ID) FROM T_WIP_REPORT RE
+		LEFT
+		JOIN T_WIP_REPORT_TASK RT ON(RE.ID=RT.REPORT_ID)
+		LEFT JOIN
+		T_PLA_ORDER_TASK OT ON(RT.ORDER_TASK_ID=OT.ID)
+		LEFT JOIN
+		T_PLA_CU_ORDER_ITEM_PRO_DEC OPD
+		ON(OPD.ID=OT.ORDER_ITEM_PRO_DEC_ID)
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM_DEC OID
+		ON(OID.ID=OPD.ORDER_ITEM_DEC_ID)
+		LEFT JOIN T_PLA_CUSTOMER_ORDER_ITEM OI
+		ON (OI.ID=OID.ORDER_ITEM_ID)
+		LEFT JOIN T_ORD_SALES_ORDER_ITEM SOI ON
+		(OI.SALES_ORDER_ITEM_ID=SOI.ID)
+		WHERE
+		RE.REPORT_TIME>=TO_DATE(#{param2,jdbcType=VARCHAR},'yyyy-mm-dd
+		hh24:mi:ss')
+		AND RE.REPORT_TIME<![CDATA[<]]>TO_DATE(#{param3,jdbcType=VARCHAR},'yyyy-mm-dd
+		hh24:mi:ss')
+		AND RE.EQUIP_CODE=#{param1,jdbcType=VARCHAR}
+	</select>
+
+	<select id="findByParam" resultMap="getMap"
+		parameterType="cc.oit.bsmes.wip.model.TurnOverReport">
+		SELECT * FROM T_WIP_TURNOVER_REPORT WHERE
+		SHIFT_NAME=#{shiftName}
+		AND SHIFT_DATE=#{shiftDate}
+	</select>
+
+
+	<delete id="deleteById" parameterType="String">
+		DELETE FROM
+		T_WIP_TURNOVER_REPORT WHERE ID=#{id,jdbcType=VARCHAR}
+	</delete>
+
+	<select id="getTurnoverReport" parameterType="String" resultMap="getMap">
+		WITH TEMP AS
+		(SELECT MAX(TR.EQUIP_CODE) EQUIP_CODE,
+		MAX(TR.SHIFT_NAME)
+		SHIFT_NAME,
+		MAX(TR.DB_USER_NAME)||'('||MAX(TR.DB_USER_CODE)||')'
+		DB_USER_NAME,
+		(CASE WHEN MAX(TR.FDB_USER_NAME) IS NOT NULL THEN
+		MAX(TR.FDB_USER_NAME)||'('||MAX(TR.FDB_USER_CODE)||')' END)
+		FDB_USER_NAME,
+		(CASE WHEN MAX(TR.FZG_USER_NAME) IS NOT NULL THEN
+		MAX(TR.FZG_USER_NAME)||'('||MAX(TR.FZG_USER_CODE)||')' END)
+		FZG_USER_NAME,
+		MAX(TR.WORK_ORDER_NO) WORK_ORDER_NO,
+		MAX(TR.CONTRACT_NO)
+		CONTRACT_NO,
+		MAX(TR.CUST_PRODUCT_TYPE) CUST_PRODUCT_TYPE,
+		MAX(TR.CUST_PRODUCT_SPEC) CUST_PRODUCT_SPEC,
+		MAX(TR.WORK_ORDER_LENGTH)
+		WORK_ORDER_LENGTH,
+		MAX(TR.REPORT_LENGTH) REPORT_LENGTH,
+		MAX(TR.SHIFT_DATE) SHIFT_DATE,
+		MAX(TR.PROCESS_CODE) PROCESS_CODE,
+		MAX(TR.PROCESS_NAME) PROCESS_NAME,
+		LISTAGG(TD.MAT_CODE,',') WITHIN
+		GROUP(ORDER BY TD.MAT_CODE) AS
+		MAT_CODE,
+		LISTAGG(TD.MAT_NAME,',') WITHIN
+		GROUP(ORDER BY TD.MAT_NAME)
+		AS MAT_NAME,
+		LISTAGG(TD.QUOTA_QUANTITY,',')
+		WITHIN GROUP(ORDER BY
+		TD.QUOTA_QUANTITY) AS QUOTA_QUANTITY,
+		LISTAGG(TD.REAL_QUANTITY,',')
+		WITHIN GROUP(ORDER BY TD.REAL_QUANTITY)
+		AS REAL_QUANTITY
+		FROM
+		T_WIP_TURNOVER_REPORT TR INNER JOIN T_WIP_TURNOVER_MAT_DETAIL TD
+		ON (TR.ID=TD.TURNOVER_RPT_ID)
+		GROUP BY
+		TR.ID)
+		
+		SELECT * FROM TEMP
+		<include refid="dbUserName"/>
+		UNION
+		SELECT * FROM TEMP
+		<include refid="fdbUserName"/>
+		UNION
+		SELECT * FROM TEMP
+		<include refid="fzgUserName"/>
+	</select>
+
+
+	<select id="getCountTurnoverReport" parameterType="String"
+		resultType="int">
+		SELECT COUNT(TR.ID) FROM T_WIP_TURNOVER_REPORT TR
+		<where>
+			<if test="param1 != null and param1 != ''">
+				AND PROCESS_NAME=#{param1,jdbcType=VARCHAR}
+			</if>
+			<if test="param2 != null and param2 !=''">
+				AND
+				TO_CHAR(SHIFT_DATE,'yyyy-mm-dd')=#{param2,jdbcType=VARCHAR}
+			</if>
+			<if test="param3 != null and param3 !=''">
+				AND SHIFT_NAME=#{param3,jdbcType=VARCHAR}
+			</if>
+			<if test="param4 != null and param4 !=''">
+				AND EQUIP_CODE=#{param4,jdbcType=VARCHAR}
+			</if>
+			<if test="param5 != null and param5 !=''">
+				AND TR.DB_USER_NAME LIKE #{param5,jdbcType=VARCHAR}
+				OR
+				TR.FDB_USER_NAME LIKE #{param5,jdbcType=VARCHAR}
+				OR TR.FZG_USER_NAME
+				LIKE #{param5,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<select id="getProcessName" resultMap="getMap">
+		SELECT DISTINCT
+		PROCESS_NAME FROM T_WIP_TURNOVER_REPORT
+	</select>
+
+	<select id="getEquipCode" resultMap="getMap">
+		SELECT DISTINCT EQUIP_CODE
+		FROM T_WIP_TURNOVER_REPORT
+	</select>
+
+	<select id="getUserName" parameterType="String" resultMap="getMap">
+		SELECT DISTINCT DB_USER_NAME||'('||DB_USER_CODE||')' DB_USER_NAME
+		FROM T_WIP_TURNOVER_REPORT
+		WHERE DB_USER_NAME IS NOT NULL
+		AND DB_USER_NAME LIKE '%'||#{param1,jdbcType=VARCHAR}||'%'
+		UNION
+		SELECT
+		DISTINCT FDB_USER_NAME||'('||FDB_USER_CODE||')' 
+		FROM T_WIP_TURNOVER_REPORT
+		WHERE FDB_USER_NAME
+		IS NOT NULL
+		AND FDB_USER_NAME LIKE '%'||#{param1,jdbcType=VARCHAR}||'%'
+		UNION
+		SELECT DISTINCT FZG_USER_NAME||'('||FZG_USER_CODE||')' 
+		FROM T_WIP_TURNOVER_REPORT
+		WHERE FZG_USER_NAME IS NOT NULL
+		AND FZG_USER_NAME LIKE '%'||#{param1,jdbcType=VARCHAR}||'%'
+	</select>
+
+</mapper>

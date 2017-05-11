@@ -1,0 +1,33 @@
+Ext.define('bsmes.model.MesClientEquipInfo', {
+    extend: 'Ext.data.Model',
+    fields: [
+        'equipCode',
+        'equipName',
+        'status',
+        'contracts',
+        'discNo',
+        'planLength',
+        'qualifiedLength',
+        'toDoTaskNum',
+        'currentTask',
+        'remainQLength',
+        'remainQLengthExceptDisc',
+        'currentDiscQLength',
+        'currentDiscLength',
+        'currentReportLength',
+        'productType',
+        'productSpec',
+        'currentProcess',
+        'currentProduct',
+        'sumReportLength',
+        'productColor',
+        'productSpec',
+        'needFirstCheck',
+        'needMiddleCheck',
+        'needInCheck',
+        'needOutCheck',
+        'currentLength',
+        'reportLength',
+        'contractLength'
+    ]
+});

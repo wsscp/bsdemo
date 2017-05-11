@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.CustomerOrderDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.CustomerOrder" id="getMap">
+	</resultMap>
+
+	<sql id="orderColumns">
+		o."ID",
+		o.CUSTOMER_ORDER_NO,
+		o.CUSTOMER_OA_DATE,
+		o.OA_DATE,o.STATUS,
+		o.REMARKS,o.FIXED_OA,
+		o.PLAN_START_DATE,
+		o.PLAN_FINISH_DATE,
+		o.CONFIRM_DATE,
+		o.SALES_ORDER_ID,
+		o.SHCEDULE_ORDER,
+		o.ORG_CODE,
+		o.LAST_OA,
+		o.CREATE_USER_CODE,
+		o.CREATE_TIME,
+		o.MODIFY_USER_CODE,
+		o.MODIFY_TIME
+	</sql>
+
+	<select id="getByIds" parameterType="string" resultMap="getMap">
+		SELECT
+		<include refid="orderColumns"/>
+		FROM T_PLA_CUSTOMER_ORDER o
+		WHERE o.ID IN
+		<foreach collection="ids" item="id"  open="(" separator="," close=")">
+			#{id,jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+	<!-- 级联查询-->
+	<select id="getById" parameterType="string" resultType="cc.oit.bsmes.pla.model.CustomerOrder">
+		SELECT <include refid="orderColumns"/> ,S.CONTRACT_NO
+		FROM T_PLA_CUSTOMER_ORDER o
+		LEFT JOIN T_ORD_SALES_ORDER S ON o.SALES_ORDER_ID = S.ID
+		WHERE o.ID = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getBySalesOrderId" parameterType="string" resultMap="getMap">
+		SELECT <include refid="orderColumns"/> FROM T_PLA_CUSTOMER_ORDER o
+		WHERE o.SALES_ORDER_ID = #{salesOrderId}
+		ORDER BY o.SHCEDULE_ORDER,o.CREATE_TIME DESC
+	</select>
+
+	<delete id="deleteAndMerge" statementType="CALLABLE">
+		CALL DELETE_CUSTOMER_ORDER(#{param1}, #{param2})
+	</delete>
+
+	<insert id="split" statementType="CALLABLE">
+		CALL SPLIT_CUSTOMER_ORDER(#{param1}, #{param2}, #{param3}, #{
+			param4, jdbcType = CURSOR, mode = OUT,
+			resultMap=cc.oit.bsmes.pla.dao.CustomerOrderDAO.getMap,
+			javaType=java.sql.ResultSet
+		})
+	</insert>
+
+	<select id="findByOrderInfo" parameterType="map" resultMap="getMap">
+		SELECT
+		A.ID,
+		A.CUSTOMER_OA_DATE,
+		A.OA_DATE,
+		A.STATUS,
+		A.PLAN_START_DATE,
+		A.PLAN_FINISH_DATE,
+		C.SEQ,
+		B.CONTRACT_NO,
+		B.CUSTOMER_COMPANY,
+		B.OPERATOR,
+		A.FIXED_OA,
+		A.LAST_OA,
+		(SELECT COUNT(*)
+          FROM T_ORD_ATTACH_FILE F
+         WHERE F.SALES_ORDER_ID = B.ID) AS ORDER_FILE_NUM  
+		<include refid="sqlConditions"/>
+	</select>
+
+	<select id="countByOrderInfo" parameterType="map" resultType="int">
+		SELECT
+		COUNT(A.ID)
+		<include refid="sqlConditions"/>
+	</select>
+
+	<sql id="sqlConditions">
+		FROM T_PLA_CUSTOMER_ORDER A
+		LEFT JOIN T_ORD_SALES_ORDER B ON A.SALES_ORDER_ID = B.ID
+		LEFT JOIN T_PLA_HIGH_PRIORITY_ORDER_ITEM C ON A.ID = C.ID
+		WHERE EXISTS (
+		SELECT
+		D.ID
+		FROM T_PLA_CUSTOMER_ORDER_ITEM D,T_ORD_SALES_ORDER_ITEM E
+		WHERE  D.SALES_ORDER_ITEM_ID = E.ID
+		AND D.CUSTOMER_ORDER_ID = A.ID
+		<if test="productSpec !='' and productSpec != null">
+			AND E.PRODUCT_SPEC LIKE #{productSpec}
+		</if>
+		<if test="productType !='' and productType !=null">
+			AND E.PRODUCT_TYPE LIKE #{productType}
+		</if>
+		<if test="section != null">
+			AND E.SECTION = #{section}
+		</if>
+		<if test="wiresStructure!='' and wiresStructure != null ">
+			AND E.WIRES_STRUCTURE LIKE #{wiresStructure}
+		</if>
+		)
+		AND A.STATUS IN
+		<foreach collection="orderStatus" item="status"  open="(" separator="," close=")">
+			#{status,jdbcType=VARCHAR}
+		</foreach>
+		<if test="customerCompany !='' and customerCompany !=null">
+			AND B.CUSTOMER_COMPANY LIKE #{customerCompany}
+		</if>
+		<if test="contractNo !='' and contractNo !=null">
+			AND B.CONTRACT_NO LIKE #{contractNo}
+		</if>
+		<if test="orgCode !='' and orgCode !=null">
+			AND A.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="startDate != null">
+			<![CDATA[AND A.PLAN_START_DATE >= #{startDate} ]]>
+		</if>
+		<if test="endDate != null">
+			<![CDATA[AND A.PLAN_START_DATE <= #{endDate}]]>
+		</if>
+		<if test="operator !='' and operator != null">
+			AND B.OPERATOR LIKE #{operator}
+		</if>
+		<if test="exceedOa == 'NOPASS'">
+			<![CDATA[AND A.PLAN_FINISH_DATE <= A.CUSTOMER_OA_DATE]]>
+		</if>
+		<if test="exceedOa == 'PASS' ">
+			<![CDATA[AND A.PLAN_FINISH_DATE > A.CUSTOMER_OA_DATE]]>
+		</if>
+	</sql>
+
+	<select id="findForSetPriority" parameterType="cc.oit.bsmes.pla.model.CustomerOrder" resultMap="getMap">
+		SELECT
+		A.ID,
+		B.OPERATOR,
+		B.IMPORTANCE,
+		B.CUSTOMER_COMPANY,
+		B.CONTRACT_NO,
+		A.CUSTOMER_OA_DATE,
+		A.FIXED_OA,
+		C.SEQ,
+		C.ID AS highPriorityId
+		<include refid="setPrioritySql"/>
+	</select>
+
+	<select id="countForSetPriority" parameterType="cc.oit.bsmes.pla.model.CustomerOrder" resultType="int">
+		SELECT
+		COUNT(A.ID)
+		<include refid="setPrioritySql"/>
+	</select>
+
+	<sql id="setPrioritySql">
+		FROM T_PLA_CUSTOMER_ORDER A
+		LEFT JOIN T_ORD_SALES_ORDER B ON A.SALES_ORDER_ID = B.ID
+		LEFT JOIN T_PLA_HIGH_PRIORITY_ORDER_ITEM C ON A.ID = C.ID
+		WHERE A.STATUS IN ('TO_CONFIRM','TO_DO')
+		<if test="contractNo != '' and contractNo != null">
+			AND B.CONTRACT_NO LIKE #{contractNo}
+		</if>
+		<if test="orgCode !='' and orgCode !=null">
+			AND A.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+		<if test="operator !='' and operator != null">
+			AND B.OPERATOR LIKE #{operator}
+		</if>
+		<if test="productType != '' and productType != null">
+			AND EXISTS (
+			SELECT
+			D.ID
+			FROM T_ORD_SALES_ORDER_ITEM D
+			WHERE D.SALES_ORDER_ID = B.ID
+			AND D.PRODUCT_TYPE LIKE #{productType}
+			)
+		</if>
+		<if test="seq == null">
+			AND C.SEQ IS NULL
+			ORDER BY  B.IMPORTANCE,B.CREATE_TIME
+		</if>
+		<if test="seq != null">
+			AND C.SEQ IS NOT NULL
+			ORDER BY C.SEQ
+		</if>
+
+	</sql>
+
+	<!-- 手动排程：查找可排序的订单 -->
+	<select id="findForHandSetPriority" parameterType="cc.oit.bsmes.pla.model.CustomerOrder" resultMap="getMap">
+		SELECT
+		A.ID,
+		B.OPERATOR,
+		B.IMPORTANCE,
+		B.CUSTOMER_COMPANY,
+		B.CONTRACT_NO,
+		A.CUSTOMER_OA_DATE,
+		A.FIXED_OA,
+		C.SEQ,
+		C.ID AS HIGH_PRIORITY_ID
+		FROM
+		T_PLA_CUSTOMER_ORDER A
+		LEFT JOIN
+		T_ORD_SALES_ORDER B
+		ON
+		A.SALES_ORDER_ID = B.ID
+		LEFT JOIN
+		T_PLA_HIGH_PRIORITY_ORDER_ITEM C
+		ON
+		A.ID = C.ID
+		WHERE
+		A.STATUS IN ('TO_DO')
+		AND A.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		ORDER BY C.SEQ
+	</select>
+
+	<!-- 手动排程查询：获取未完成的订单 -->
+	<select id="getUncompleteCustomerOrder" parameterType="string" resultMap="getMap">
+		SELECT
+		<include refid="orderColumns"/>
+		FROM T_PLA_CUSTOMER_ORDER o
+		LEFT JOIN
+		T_PLA_HIGH_PRIORITY_ORDER_ITEM C
+		ON
+		o.ID = C.ID
+		WHERE
+		o.STATUS IN ('TO_DO', 'IN_PROGRESS')
+		AND o.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		ORDER BY C.SEQ
+	</select>
+	<select id="getWiresStructure" parameterType="string" resultType="string">
+		 SELECT DECODE(NVL(SUBSTR(IMP.PROP_TARGET_VALUE, 0, 1), 1),
+	               1,
+	               'A',
+	               2,
+	               'B',
+	               5,
+	               'C',
+	               6,
+	               'C',
+	               'A') AS WIRES_STRUCTURE
+	   FROM T_PRO_PRODUCT_CRAFTS  PPC,
+	        T_PRO_PRODUCT_PROCESS PPP,
+	        T_PRO_PROCESS_IN_OUT  PPIO,
+	        T_INV_MAT             IM,
+	        T_INV_TEMPLET         IT,
+	        T_INV_TEMPLET_DETAIL  ITD,
+	        T_INV_MAT_PROP        IMP
+	  WHERE PPC.ID = PPP.PRODUCT_CRAFTS_ID
+	    AND PPP.ID = PPIO.PRODUCT_PROCESS_ID
+	    AND PPIO.MAT_CODE = IM.MAT_CODE
+	    AND IM.TEMPLET_ID = IT.ID
+	    AND IT.ID = ITD.TEMPLET_ID
+	    AND IM.ID = IMP.MAT_ID
+	    AND ITD.ID = IMP.TEMPLET_DETAIL_ID
+	    AND (PPP.PROCESS_CODE = 'Extrusion-Single' OR PPP.PROCESS_CODE = 'wrapping_ymd')
+	    AND ITD.PROP_NAME = '导体类别'
+	    AND (PPC.PRODUCT_CODE = #{productCode,jdbcType=VARCHAR} OR PPC.ID = #{productCode,jdbcType=VARCHAR})
+	    AND ROWNUM = 1
+	</select>
+	
+	<select id="getImportProduct" parameterType="map" resultType="cc.oit.bsmes.pla.model.ImportProduct">
+		SELECT * FROM T_PLM_PRO_IMPORT_LOG	
+		<where>	
+		<if test="seriesName != null and seriesName != ''">
+			SERIES_NAME=#{seriesName, jdbcType=VARCHAR}
+		</if>
+		<if test="createUserCode != null and createUserCode != ''">
+			AND CREATE_USER_CODE=#{createUserCode, jdbcType=VARCHAR}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND TO_CHAR(CREATE_TIME,'yyyy-mm-dd')=#{createTime,jdbcType=VARCHAR}
+		</if>
+		</where>
+	</select>
+	
+	<select id="countImportProduct" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM T_PLM_PRO_IMPORT_LOG	
+		<where>	
+		<if test="seriesName != null and seriesName != ''">
+			SERIES_NAME=#{seriesName, jdbcType=VARCHAR}
+		</if>
+		<if test="createUserCode != null and createUserCode != ''">
+			AND CREATE_USER_CODE=#{createUserCode, jdbcType=VARCHAR}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND TO_CHAR(CREATE_TIME,'yyyy-mm-dd')=#{createTime,jdbcType=VARCHAR}
+		</if>
+		</where>
+	</select>
+	
+</mapper>

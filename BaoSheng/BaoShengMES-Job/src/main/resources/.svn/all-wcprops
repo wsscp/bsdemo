@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/BSMES/!svn/ver/11626/trunk/BaoSheng/BaoShengMES-Job/src/main/resources
+END
+applicationContext-job.xml
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/11626/trunk/BaoSheng/BaoShengMES-Job/src/main/resources/applicationContext-job.xml
+END
+logback.xml
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/BSMES/!svn/ver/7813/trunk/BaoSheng/BaoShengMES-Job/src/main/resources/logback.xml
+END

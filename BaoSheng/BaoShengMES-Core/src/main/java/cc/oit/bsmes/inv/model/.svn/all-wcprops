@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/9933/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model
+END
+AssistOption.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7602/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/AssistOption.java
+END
+InventoryLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/1153/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/InventoryLog.java
+END
+InventoryDetail.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4166/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/InventoryDetail.java
+END
+Mat.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/9117/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/Mat.java
+END
+MatWip.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/9933/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/MatWip.java
+END
+MatProp.java
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/9933/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/MatProp.java
+END
+MatPropWip.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/9339/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/MatPropWip.java
+END
+Warehouse.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/4289/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/Warehouse.java
+END
+Location.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/9149/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/Location.java
+END
+Templet.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/809/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/Templet.java
+END
+Inventory.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7899/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/Inventory.java
+END
+TempletDetail.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/5265/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/inv/model/TempletDetail.java
+END

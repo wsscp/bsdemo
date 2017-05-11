@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.InventoryLogDAO">
+
+	<resultMap type="InventoryLog" id="getMap">
+	</resultMap>
+	
+	<sql id="sqlColumns">
+		   l."ID",
+		   l.INVENTORY_ID,
+		   l.QUANTITY,
+		   l.TYPE,
+		   l.CREATE_TIME,
+		   l.CREATE_USER_CODE,
+		   l.MODIFY_TIME,
+		   l.MODIFY_USER_CODE,
+		   l.ORG_CODE
+	</sql>
+	
+	<select id="getByInventoryId" parameterType="string" resultMap="getMap">
+		SELECT 
+			<include refid="sqlColumns"/>,e.NAME AS userName
+		FROM T_INV_INVENTORY_LOG l,T_BAS_EMPLOYEE e
+		WHERE l.CREATE_USER_CODE = e.USER_CODE
+		AND l.INVENTORY_ID = #{param1}
+		ORDER BY l.CREATE_TIME
+	</select>
+</mapper>

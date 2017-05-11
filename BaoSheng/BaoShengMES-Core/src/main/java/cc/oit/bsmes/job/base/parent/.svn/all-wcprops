@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/11644/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/base/parent
+END
+BaseJob.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6679/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/base/parent/BaseJob.java
+END
+BaseSimpleTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/11644/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/job/base/parent/BaseSimpleTask.java
+END

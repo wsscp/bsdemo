@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.eve.dao.EventInformationDAO">
+ 
+	<resultMap type="cc.oit.bsmes.eve.model.EventInformation" id="getMap"></resultMap>
+	
+    <!-- 紧急程度这个不对    DingXintao
+    ( SELECT MAX(B.PROCESS_SEQ)  FROM T_EVE_EVENT_PROCESS B,T_EVE_TRIGGER_LOG S WHERE B.ID=S.PROCESS_ID AND S.EVENT_ID=R.id ) PROCESS_SEQ, 
+    -->
+	<select id="getInfo" parameterType="cc.oit.bsmes.eve.model.EventInformation" resultMap="getMap">
+      <![CDATA[
+      SELECT DISTINCT R.ID,
+                EVENT_TITLE,
+                EVENT_CONTENT,
+                EVENT_STATUS,
+                EVENT_REASON,
+                EVENT_RESULT,
+                EQUIP_CODE,
+                R.MODIFY_TIME,
+                R.MAINTAIN_PEOPLE,
+                (SELECT NAME FROM T_FAC_EQIP_INFO WHERE CODE = R.EQUIP_CODE) AS EQUIP_MODEL_STANDARD,
+                (SELECT NAME FROM T_BAS_EMPLOYEE WHERE USER_CODE = R.CREATE_USER_CODE) AS USER_NAME,
+                R.CREATE_TIME,
+                (SELECT CREATE_TIME
+                   FROM T_EVE_EVENT_PROCESS_LOG S
+                  WHERE R.ID = S.EVENT_INFO_ID
+                    AND TYPE = 'RESPONDED'
+                    AND ROWNUM <= 1) AS RESPONSE_TIME,
+                (SELECT CREATE_TIME
+                   FROM T_EVE_EVENT_PROCESS_LOG T
+                  WHERE R.ID = T.EVENT_INFO_ID
+                    AND TYPE = 'COMPLETED'
+                    AND ROWNUM <= 1) AS COMPLETE_TIME,
+                (SELECT WMSYS.WM_CONCAT(DISTINCT
+                                        EMP.NAME)
+                   FROM T_EVE_EVENT_OWNER OWN, T_BAS_EMPLOYEE EMP
+                  WHERE OWN.USER_CODE = EMP.USER_CODE
+                    AND OWN.EVENT_ID = R.ID
+                    AND OWN.EVENT_PROCESS_ID <> R.EVENT_PROCESS_ID) AS RESPONSIBLE,
+                NVL((SELECT PROCESS_SEQ - 1
+                      FROM T_EVE_EVENT_PROCESS
+                     WHERE ID = R.EVENT_PROCESS_ID),
+                    (SELECT MAX(PROCESS_SEQ)
+                       FROM T_EVE_EVENT_PROCESS
+                      WHERE EVENT_TYPE_ID = R.EVENT_TYPE_ID)) AS PROCESS_SEQ
+		FROM T_EVE_EVENT_INFO R, T_EVE_EVENT_OWNER S
+ 			WHERE r.ID=s.EVENT_ID]]>	
+	  <include refid="getParameter"/>
+	  ORDER BY DECODE(R.EVENT_STATUS,'UNCOMPLETED',1,'RESPONDED',2,'INCOMPLETED',3,'PENDING',4,'COMPLETED',5),R.CREATE_TIME DESC
+	</select>
+	<select id="totalCount" parameterType="cc.oit.bsmes.eve.model.EventInformation" resultType="int">
+		SELECT COUNT(R.ID) FROM T_EVE_EVENT_INFO R
+   		  WHERE 
+   		  	<if test="eventTitle!=null and eventTitle!=''">
+			INSTR(EVENT_TITLE,#{eventTitle,jdbcType=VARCHAR})>0
+			</if>
+			<if test="eventStatus!=null and eventStatus!=''">
+				AND EVENT_STATUS=#{eventStatus,jdbcType=VARCHAR}
+			</if>
+			<if test="orgCode!=null and orgCode!=''">
+				AND r.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+			</if>
+			<if test="equipCode != null and equipCode != ''">
+				and r.EQUIP_CODE = #{equipCode,jdbcType=VARCHAR}
+			</if>
+	</select>
+	<select id="getEventStatusByEventProcessId" parameterType="string" resultType="int">
+		SELECT COUNT(ID)
+		FROM T_EVE_EVENT_INFO
+		WHERE EVENT_PROCESS_ID=#{eventProcessId,jdbcType=VARCHAR} AND EVENT_STATUS='UNCOMPLETED'
+	</select>
+	<insert id="insert" parameterType="cc.oit.bsmes.eve.model.EventInformation">
+		INSERT INTO T_EVE_EVENT_INFO(ID, EVENT_TITLE, EVENT_CONTENT, EVENT_TYPE_ID, EVENT_STATUS, PROCESS_TRIGGER_TIME, 
+		EVENT_REASON, EVENT_RESULT, PROCESS_ID, EQUIP_CODE, BATCH_NO, CREATE_USER_CODE, CREATE_TIME,ORG_CODE, EVENT_PROCESS_ID,MODIFY_USER_CODE,MODIFY_TIME,
+		PRODUCT_CODE,PENDING_PROCESSING)
+		VALUES(#{id,jdbcType=VARCHAR},#{eventTitle,jdbcType=VARCHAR},#{eventContent,jdbcType=VARCHAR},
+			   (SELECT ID FROM T_EVE_EVENT_TYPE WHERE CODE=#{code,jdbcType=VARCHAR}),'UNCOMPLETED',SYSDATE,#{eventReason,jdbcType=VARCHAR},
+				#{eventResult,jdbcType=VARCHAR},#{processId,jdbcType=VARCHAR},#{equipCode,jdbcType=VARCHAR},#{batchNo,jdbcType=VARCHAR},
+			   #{createUserCode,jdbcType=VARCHAR},SYSDATE,#{orgCode,jdbcType=VARCHAR},
+			   (SELECT ID FROM T_EVE_EVENT_PROCESS WHERE EVENT_TYPE_ID=(SELECT ID FROM T_EVE_EVENT_TYPE WHERE CODE=#{code,jdbcType=VARCHAR}) AND PROCESS_SEQ=1 and STATUS='1' ),
+			   #{modifyUserCode,jdbcType=VARCHAR},SYSDATE,#{productCode,jdbcType=VARCHAR},#{pendingProcessing,jdbcType=VARCHAR})
+	</insert>
+	<select id="getEventStatus" resultMap="getMap">
+		SELECT DISTINCT(EVENT_STATUS) FROM T_EVE_EVENT_INFO
+	</select>
+	<sql id="getParameter">
+	   <if test="id!=null and id!=''">
+			AND r.id=#{id,jdbcType=VARCHAR}
+		</if>
+		<if test="userCode!=null and userCode!=''">
+			AND s.USER_CODE=#{userCode,jdbcType=VARCHAR}
+		</if>
+		<if test="eventTitle!=null and eventTitle!=''">
+			AND INSTR(EVENT_TITLE,#{eventTitle,jdbcType=VARCHAR})>0
+		</if>
+		<if test="eventStatus!=null and eventStatus!=''">
+			AND EVENT_STATUS=#{eventStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="eventStatusFindParam!=null and eventStatusFindParam!=''">
+			AND EVENT_STATUS IN
+			<foreach collection="eventStatusFindParam" item="status" open="(" separator="," close=")">  
+			    #{status,jdbcType=VARCHAR}
+		    </foreach>
+		</if>
+		<if test="batchNo!=null and batchNo!=''">
+			AND INSTR(BATCH_NO,#{batchNo,jdbcType=VARCHAR})>0
+		</if>
+		<if test="equipCode!=null and equipCode!=''">
+			AND INSTR(EQUIP_CODE,#{equipCode,jdbcType=VARCHAR})>0
+		</if>
+		<if test="orgCode!=null and orgCode!=''">
+			AND r.ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 处理设备警报列表 -->
+	<select id="getAlarmInfo" parameterType="cc.oit.bsmes.eve.model.EventInformation" resultMap="getMap">
+		SELECT r.ID,EVENT_TITLE,EVENT_CONTENT,EVENT_STATUS,EVENT_REASON,EVENT_RESULT,EQUIP_CODE,BATCH_NO,s.NAME, r.CREATE_TIME
+		FROM T_EVE_EVENT_INFO r ,T_EVE_EVENT_TYPE s
+		WHERE r.EVENT_TYPE_ID=s.ID
+		<include refid="getAlarmInfoParameter"/>
+		ORDER BY EVENT_TITLE ASC
+	</select>
+
+
+	<!-- 处理设备警报列表记录数 -->
+	<select id="alarmTotalCount" parameterType="cc.oit.bsmes.eve.model.EventInformation" resultType="int">
+		SELECT COUNT(1) 
+		FROM (SELECT r.ID
+		FROM T_EVE_EVENT_INFO r ,T_EVE_EVENT_TYPE s
+		WHERE r.EVENT_TYPE_ID=s.ID
+		<include refid="getAlarmInfoParameter"/>)
+	</select>
+
+	<sql id="getAlarmInfoParameter">
+		<if test="eventStatusFindParam!=null and eventStatusFindParam!=''">
+			AND EVENT_STATUS IN
+			<foreach collection="eventStatusFindParam" item="status" open="(" separator="," close=")">
+				#{status,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+
+		<if test="equipCode!=null and equipCode!=''">
+			AND INSTR(EQUIP_CODE,#{equipCode,jdbcType=VARCHAR})>0
+		</if>
+
+		<if test="equipCode == null or equipCode == ''">
+			AND EXISTS (
+				SELECT
+					1
+				FROM T_BAS_MES_CLIENT A,T_BAS_MES_CLIENT_MAN_EQIP B,T_FAC_EQIP_INFO C
+				WHERE A.ID = B.MES_CLIENT_ID
+				AND B.EQIP_ID = C.ID
+				AND C.CODE = r.EQUIP_CODE
+				AND A.CLIENT_IP = #{ip,jdbcType=VARCHAR}
+				AND A.CLIENT_MAC = #{mac,jdbcType=VARCHAR}
+			)
+		</if>
+	</sql>
+
+
+	<select id="findNeedToProcess"  parameterType="cc.oit.bsmes.eve.model.EventInformation" resultMap="getMap">
+		SELECT * FROM T_EVE_EVENT_INFO where PROCESS_TRIGGER_TIME  <![CDATA[<=]]> SYSDATE
+		<if test="eventStatus!=null and eventStatus!=''">
+			AND EVENT_STATUS=#{eventStatus,jdbcType=VARCHAR}
+		</if>
+		<if test="orgCode!=null and orgCode!=''">
+			AND ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+		</if>
+	</select>	
+
+    <select id="checkProIntercept" parameterType="string" resultType="int">
+        SELECT
+          COUNT(EI.ID)
+        FROM T_EVE_EVENT_INFO EI
+        WHERE EI.PENDING_PROCESSING = '1'
+              AND EVENT_STATUS = 'UNCOMPLETED'
+              AND EXISTS ( SELECT 1
+                           FROM T_PRO_PRODUCT_CRAFTS PC
+                             LEFT JOIN T_PRO_PRODUCT_PROCESS PR ON PC.ID = PR.PRODUCT_CRAFTS_ID
+                           WHERE PR.ID = #{param1}
+                                 AND PR.SEQ = 1
+                                 AND PC.PRODUCT_CODE = EI.PRODUCT_CODE)
+    </select>
+    
+    <!-- 获取时间类型列表 -->
+    <select id="getEventInfoList" parameterType="cc.oit.bsmes.eve.model.EventInformation" resultMap="getMap">
+    SELECT r.ID,
+      r.EVENT_TYPE_ID,
+      EVENT_TITLE,
+      EVENT_CONTENT,
+      EVENT_STATUS,
+      EVENT_REASON,
+      EVENT_RESULT,
+      EQUIP_CODE,
+      BATCH_NO,
+      r.CREATE_TIME,
+      PRODUCT_CODE,
+      PENDING_PROCESSING,
+      (SELECT PROCESS_TYPE FROM T_EVE_EVENT_PROCESS B WHERE r.EVENT_PROCESS_ID=B.ID AND ROWNUM &lt;=1) PROCESS_TYPE,
+      (SELECT CREATE_TIME FROM T_EVE_EVENT_PROCESS_LOG S WHERE r.ID=S.EVENT_INFO_ID AND TYPE='RESPONDED' AND ROWNUM &lt;=1) AS RESPONSE_TIME ,
+      (SELECT CREATE_TIME FROM T_EVE_EVENT_PROCESS_LOG T WHERE r.ID=T.EVENT_INFO_ID AND TYPE='COMPLETED' AND ROWNUM &lt;=1) AS COMPLETE_TIME,
+      (select WMSYS.WM_CONCAT(DISTINCT  emp.NAME||'['||emp.USER_CODE||'] ' ) from T_EVE_EVENT_OWNER own ,T_BAS_EMPLOYEE emp  where own.USER_CODE=emp.USER_CODE and own.EVENT_ID=r.ID and own.EVENT_PROCESS_ID  <![CDATA[<>]]> r.EVENT_PROCESS_ID  ) AS EVENT_PROCESSOR,
+      et.CODE AS CODE,
+      et.NAME AS NAME
+    FROM T_EVE_EVENT_INFO r,T_EVE_EVENT_OWNER s, T_EVE_EVENT_TYPE et
+    WHERE r.ID=s.EVENT_ID   
+        AND r.EVENT_TYPE_ID = et.ID
+        AND  s.EVENT_PROCESS_ID  <![CDATA[<>]]> r.EVENT_PROCESS_ID 
+        <if test="code!=null and code!=''">
+			AND et.CODE=#{code,jdbcType=VARCHAR}
+		</if>
+		<include refid="getParameter"/>
+	</select>
+
+    <select id="getUncompletedOrderLateEvents" parameterType="string" resultType="string">
+        SELECT DISTINCT ot.CONTRACT_NO||oi.PRODUCT_CODE
+        FROM T_EVE_EVENT_INFO i, T_EVE_EVENT_TYPE t,T_PLA_ORDER_TASK ot,T_PLA_CU_ORDER_ITEM_PRO_DEC p,T_PLA_CUSTOMER_ORDER_ITEM_DEC d,T_PLA_CUSTOMER_ORDER_ITEM oi
+        WHERE
+        i.EQUIP_CODE IN
+        <foreach collection="param1" item="code"  open="(" separator="," close=")">
+            #{code,jdbcType=VARCHAR}
+        </foreach>
+        AND
+
+        i.EVENT_TYPE_ID = t.ID AND t.CODE='WT' AND i.ORG_CODE=#{param2,jdbcType=VARCHAR}
+        AND i.EVENT_STATUS<![CDATA[<>]]>'COMPLETED' AND ot.STATUS IN ('IN_PROGRESS','TO_DO') AND i.EQUIP_CODE= ot.EQUIP_CODE
+        AND ot.ORDER_ITEM_PRO_DEC_ID=p.ID
+        AND p.ORDER_ITEM_DEC_ID=d.ID AND d.ORDER_ITEM_ID = oi.ID
+    </select>
+    <select id="countUncompletedByType" resultType="java.lang.Integer">
+        SELECT COUNT(i.ID) FROM T_EVE_EVENT_INFO i, T_EVE_EVENT_TYPE t
+        WHERE i.EQUIP_CODE =#{param2,jdbcType=VARCHAR} AND i.ORG_CODE=#{param3,jdbcType=VARCHAR}
+        AND i.EVENT_TYPE_ID = t.ID AND t.CODE=#{param1,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findForWorkOrderExtensionAlarmTask" parameterType="string" resultType="int">
+        SELECT
+          COUNT(ID)
+        FROM T_EVE_EVENT_INFO
+        WHERE BATCH_NO = #{param1}
+    </select>
+    
+	<select id="getDistinctTileByOrgCode" parameterType="string" resultMap="getMap">
+        SELECT DISTINCT EVENT_TITLE
+        FROM T_EVE_EVENT_INFO
+        WHERE ORG_CODE = #{orgCode} AND EVENT_TITLE <![CDATA[<>]]> '设备异常' AND EVENT_TITLE <![CDATA[<>]]> '设备维护'
+    </select>
+	<select id="getEquipCodes" resultType="string">
+        SELECT DISTINCT EQUIP_CODE FROM T_EVE_EVENT_INFO
+    </select>
+    
+    <select id="getWarnShow" resultMap="getMap">
+    	SELECT INFO.EVENT_TITLE,
+		       INFO.EVENT_CONTENT,
+		       INFO.ID,
+		       INFO.EVENT_STATUS,
+		       INFO.MAINTAIN_PEOPLE
+		  FROM T_EVE_EVENT_INFO INFO, T_EVE_EVENT_TYPE T
+		 WHERE INFO.EVENT_TYPE_ID = T.ID
+		   AND T.CODE = 'EQIP'
+		   AND INFO.Event_Status IN ('UNCOMPLETED','NOTCOMPLETED')
+    </select>
+    
+    <select id="getByEquipCode" parameterType="string" resultMap="getMap">
+   		SELECT *
+		 FROM T_EVE_EVENT_INFO INFO
+		WHERE INFO.EQUIP_CODE = #{param1}
+		  AND INFO.EVENT_STATUS NOT IN ('COMPLETED')
+		  AND INFO.EQIP_EVENT_CODE = #{param2}
+		  AND INFO.EVENT_TYPE_ID = '914e3d9a-022e-41a7-a1bf-3aae0a029a4e'
+    </select>
+    
+    <select id="getRegisterData" parameterType="string" resultMap="getMap">
+    SELECT B.CODE AS EQUIP_CODE,
+	       B.NAME      ,
+	       B.EQUIP_ALIAS,
+	       C.NAME        AS USER_NAME,
+	       A.CREATE_TIME
+	  FROM T_EVE_EVENT_INFO A, T_FAC_EQIP_INFO B, T_BAS_EMPLOYEE C
+	 WHERE A.EQUIP_CODE = B.CODE
+	   AND A.CREATE_USER_CODE = C.USER_CODE
+  	   AND A.ID = #{param1}
+    </select>
+    
+    <select id="getPendingEvent" parameterType="string" resultMap="getMap">
+    	SELECT REPLACE(REPLACE(I.EVENT_CONTENT, '设备：', ''), '[设备异常]：', '') ||
+		      '已维修完成，请确认' AS EVENT_CONTENT,
+		      I.ID
+		 FROM T_EVE_EVENT_INFO I
+		WHERE  I.EVENT_STATUS = 'PENDING'
+		<if test="equipCode!=null and equipCode!=''">
+			AND INSTR(EQUIP_CODE,#{equipCode,jdbcType=VARCHAR})>0
+		</if>
+
+		<if test="equipCode == null or equipCode == ''">
+			AND EXISTS (
+				SELECT
+					1
+				FROM T_BAS_MES_CLIENT A,T_BAS_MES_CLIENT_MAN_EQIP B,T_FAC_EQIP_INFO C
+				WHERE A.ID = B.MES_CLIENT_ID
+				AND B.EQIP_ID = C.ID
+				AND C.CODE = I.EQUIP_CODE
+				AND A.CLIENT_IP = #{ip,jdbcType=VARCHAR}
+				AND A.CLIENT_MAC = #{mac,jdbcType=VARCHAR}
+			)
+		</if>
+    </select>
+    
+    <select id="getEquipEventPending" resultMap="getMap">
+    <![CDATA[
+	    SELECT *
+		  FROM (SELECT DISTINCT A.EQUIP_CODE, B.EQUIP_ALIAS, B.NAME
+		          FROM T_EVE_EVENT_INFO A, T_FAC_EQIP_INFO B
+		         WHERE A.EVENT_STATUS = 'PENDING'
+		           AND A.EQUIP_CODE = B.CODE
+		           AND (TO_DATE(TO_CHAR(SYSDATE, 'yyyy-mm-dd hh24:mi:ss'),
+		                        'yyyy-mm-dd hh24:mi:ss') -
+		               TO_DATE(TO_CHAR(A.MODIFY_TIME, 'yyyy-mm-dd hh24:mi:ss'),
+		                        'yyyy-mm-dd hh24:mi:ss')) * 24 > 24)
+		 WHERE ROWNUM <4]]>
+    </select>
+    
+    <!-- 获取事件条数：判断当前事件是否已经报 -->
+    <select id="hasRecentEvent" parameterType="EventInformation" resultType="int">
+        select count(*) from T_EVE_EVENT_INFO 
+        where EVENT_TITLE = #{eventTitle, jdbcType=VARCHAR} 
+        and EVENT_STATUS <![CDATA[<>]]> 'COMPLETED'
+        and CREATE_TIME > SYSDATE - 1
+    </select>
+    
+</mapper>

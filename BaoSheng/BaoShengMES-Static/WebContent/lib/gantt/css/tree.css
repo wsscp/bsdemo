@@ -1,0 +1,157 @@
+.RED
+{
+    background-color:RED;
+    color: black;
+    
+}
+.BLACK
+{
+    background-color:black;
+     color: red;
+}
+  
+.GREEN
+{
+    background-color:green;
+     color: black;
+}
+   
+.BLUE
+{
+    background-color:blue;
+     color: black;
+}
+.YELLOW
+{
+    background-color:yellow;
+     color: black;
+}
+ 
+.WHITE
+{
+    background-color:white;
+    
+     color: black;
+}
+.GRAY
+{
+     background-color:gray;    
+     color: red;
+}
+.PURPLE
+{
+     background-color:purple;    
+     color: red;
+}
+
+.goSsearch
+{
+    background:url(images/go.png) no-repeat left center;
+    height: 200;
+}
+.collapseAll
+{
+    background:url(images/minus.png) no-repeat left center;
+    height: 200;
+}
+.expandAll
+{
+    background:url(images/plus.png) no-repeat left center;
+    height: 200;
+}
+.zoomIn
+{
+    background:url(images/zoom_in.png) no-repeat left center;
+    height: 200;
+}
+
+.zoomOut
+{   
+    background:url(images/zoom_out.png) no-repeat left center;
+}
+.icon-calendar {
+	
+    background : url(images/calendar.png) no-repeat left center !important;
+}
+ 
+.x-grid-cell-inner-treecolumn {
+    padding: 0px 0px 0px 0px;
+}
+
+ 
+.x-grid-tree-node-expanded .x-tree-icon-parent
+{
+    background-image:none;
+    margin:-10px;
+}
+
+.x-grid-cell-inner-treecolumn
+{
+	height:20px;
+}
+
+.x-tree-icon-parent{
+	background-image:none;
+    margin:-10px;
+}
+
+.sch-event
+{
+   
+    
+    margin-top: 1px;
+     overflow  : visible !important;
+}
+ 
+.x-tree-node-text {
+    font-size: 14px;
+    line-height: 20px;
+    padding-left: 4px;
+    vertical-align: middle;
+}
+.sch-event-inner
+{
+    background :   no-repeat left 0px;
+    padding-left    : 0px;
+    text-align:center;
+    text-shadow     : 0px 0px 0px rgba(125, 125, 125, 0.7);     
+    font-size       : 13px;
+    margin-top: 0px;
+    top:0px;
+    height:25px;
+    line-height:25px;
+    
+}
+
+.x-resizable-handle-east
+{
+    width:4px;
+    border-right: 1px solid #99BCE8;
+}
+ .x-tree-elbow-line{height:20px;background-position:0 -1px ;vertical-align: middle;}.x-tree-icon-leaf{width:14px;background-image:url('images/bullet_blue.png')}.x-tree-icon-parent{width:32px;height:29px;background-image:url('images/folder.gif');background-repeat:no-repeat;background-position: bottom; }.x-grid-tree-node-expanded
+ 
+ .x-tree-icon-parent{background-image:url('images/folder-open.gif')}.x-grid-rowbody{padding:0}.x-grid-cell-treecolumn
+ 
+.group
+{
+    border:3px solid #fff;
+    opacity:0.8;
+    filter:alpha(opacity=80);
+    -moz-border-radius:20px;
+    border-radius:20px;
+    background : lightblue  no-repeat 4px center;
+}
+
+.sch-zone
+{
+	background-color: #E1FFFF;
+    background-position: 3px top;
+    background-repeat: no-repeat;
+    border-color: #B0E0E6;
+    border-style: solid;
+    border-width: 0 1px 1px;
+}
+
+ 
+ 
+ 

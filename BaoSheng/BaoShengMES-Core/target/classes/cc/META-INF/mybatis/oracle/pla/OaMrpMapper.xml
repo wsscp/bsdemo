@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.OaMrpDAO">
+
+	<resultMap type="cc.oit.bsmes.pla.model.OaMrp" id="getMap">
+	</resultMap>
+	
+	<sql id="oaMrpColumns">
+		MO.ID,
+		MO.CONTRACT_NO,
+		MO.ORDER_ITEM_ID,
+		MO.MAT_CODE,
+		MO.QUANTITY,
+		MO.PLAN_DATE,
+		MO.STATUS,
+		MO.PROCESS_CODE,
+		MO.ORG_CODE,
+		MO.UNIT,
+		MO.PRODUCT_CODE,
+		MO.CREATE_USER_CODE,
+		MO.CREATE_TIME,
+		MO.MODIFY_USER_CODE,
+		MO.MODIFY_TIME,
+		MO.EQUIP_CODE
+	</sql>
+	<!-- 主列表方法重写 -->
+	<select id="list" parameterType="map" resultMap="getMap">
+		SELECT R.*
+		FROM (SELECT ROW_.*, ROWNUM ROWNUM_
+				  FROM (SELECT <include refid="oaMrpColumns"/>, 
+						    SOI.CUST_PRODUCT_TYPE,
+						    SOI.PRODUCT_TYPE,
+						    SOI.PRODUCT_SPEC,
+						    SO.OPERATOR,
+						    SO.CUSTOMER_COMPANY,
+						    M.MAT_NAME,
+						    (CASE
+					          WHEN EQUIP.EQUIP_ALIAS IS NOT NULL THEN
+					            (EQUIP.EQUIP_ALIAS || '-')
+					          ELSE
+					              ''
+					         END || EQUIP.NAME || '[' || EQUIP.CODE || ']') AS EQUIP_NAME
+						  FROM T_PLA_MRP_OA                   MO,
+						       T_PLA_CU_ORDER_ITEM_PRO_DEC_OA PDO,
+						       T_PRO_PRODUCT_PROCESS          P,
+						       T_PLA_CUSTOMER_ORDER_ITEM      OI,
+						       T_ORD_SALES_ORDER_ITEM         SOI,
+						       T_ORD_SALES_ORDER              SO,
+						       T_INV_MAT                      M,
+						       (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS
+						               FROM T_FAC_EQIP_INFO    LINE,
+						                    T_FAC_PRODUCT_EQIP PE,
+						                    T_FAC_EQIP_INFO    EQUIP
+						              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+						                AND PE.EQUIP_ID = EQUIP.ID
+						                AND LINE.TYPE = 'PRODUCT_LINE') EQUIP
+						 WHERE MO.MAT_CODE = M.MAT_CODE
+						   AND MO.ORDER_ITEM_PRO_DEC_ID = PDO.ID
+						   AND PDO.PROCESS_ID = P.ID
+						   AND OI.ID = MO.ORDER_ITEM_ID
+						   AND SOI.ID = OI.SALES_ORDER_ITEM_ID
+						   AND SO.ID = SOI.SALES_ORDER_ID
+						   AND MO.EQUIP_CODE = EQUIP.CODE
+						   <include refid="sqlConditions"/>
+						   <if test="sort != null and sort.size() > 0">
+				                ORDER BY 
+				                <foreach collection="sort" item="s" separator=",">  
+				                  ${s.property} ${s.direction}
+				              </foreach>
+				           </if>
+		               ) ROW_
+		     ) R WHERE ROWNUM_ <![CDATA[>]]> #{start, jdbcType=INTEGER} AND ROWNUM_ <![CDATA[<=]]> #{end, jdbcType=INTEGER} 
+	</select>
+	<!-- 主列表方法重写 -->
+	<select id="count" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		  FROM T_PLA_MRP_OA                   MO,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC_OA PDO,
+		       T_PRO_PRODUCT_PROCESS          P,
+		       T_PLA_CUSTOMER_ORDER_ITEM      OI,
+		       T_ORD_SALES_ORDER_ITEM         SOI,
+		       T_ORD_SALES_ORDER              SO,
+		       T_INV_MAT                      M,
+		       (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS
+		               FROM T_FAC_EQIP_INFO    LINE,
+		                    T_FAC_PRODUCT_EQIP PE,
+		                    T_FAC_EQIP_INFO    EQUIP
+		              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+		                AND PE.EQUIP_ID = EQUIP.ID
+		                AND LINE.TYPE = 'PRODUCT_LINE') EQUIP
+		 WHERE MO.MAT_CODE = M.MAT_CODE
+		   AND MO.ORDER_ITEM_PRO_DEC_ID = PDO.ID
+		   AND PDO.PROCESS_ID = P.ID
+		   AND OI.ID = MO.ORDER_ITEM_ID
+		   AND SOI.ID = OI.SALES_ORDER_ITEM_ID
+		   AND SO.ID = SOI.SALES_ORDER_ID
+		   AND MO.EQUIP_CODE = EQUIP.CODE
+		   <include refid="sqlConditions"/>
+	</select>
+	<!-- 查询条件 -->
+	<sql id="sqlConditions">
+		<if test="contractNo!=null and (contractNo instanceof java.util.ArrayList) and contractNo.size() > 0">
+			AND SO.CONTRACT_NO IN
+			<foreach collection="contractNo" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="operator!=null and (operator instanceof java.util.ArrayList) and operator.size() > 0">
+			AND SO.OPERATOR IN
+			<foreach collection="operator" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="customerCompany!=null and (customerCompany instanceof java.util.ArrayList) and customerCompany.size() > 0">
+			AND SO.CUSTOMER_COMPANY IN   
+			<foreach collection="customerCompany" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="custProductType!=null and (custProductType instanceof java.util.ArrayList) and custProductType.size() > 0">
+			AND SOI.CUST_PRODUCT_TYPE IN
+			<foreach collection="custProductType" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="productSpec!=null and (productSpec instanceof java.util.ArrayList) and productSpec.size() > 0">
+			AND SOI.PRODUCT_SPEC IN
+			<foreach collection="productSpec" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="matCode!=null and (matCode instanceof java.util.ArrayList) and matCode.size() > 0">
+			AND M.MAT_NAME IN
+			<foreach collection="matCode" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="equipCode!=null and (equipCode instanceof java.util.ArrayList) and equipCode.size() > 0">
+			AND MO.EQUIP_CODE IN
+			<foreach collection="equipCode" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="queryStatus!=null and (queryStatus instanceof java.util.ArrayList) and queryStatus.size() > 0">
+			AND MO.STATUS IN
+			<foreach collection="queryStatus" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="planDate!=null and !(planDate instanceof java.util.ArrayList) and planDate!=''">
+			AND MO.PLAN_DATE <![CDATA[>=]]> TO_DATE(concat(#{planDate}, ' 00:00:00'),'yyyy-mm-dd hh24:mi:ss') 
+			AND MO.PLAN_DATE <![CDATA[<]]> TO_DATE(concat(#{planDate}, ' 23:59:59') ,'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="orgCode!=null and !(orgCode instanceof java.util.ArrayList) and orgCode!=''">
+            AND MO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<!-- 查询条件->物料信息下拉框：支持模糊查询 -->
+	<select id="matsCombo" parameterType="map" resultMap="getMap">
+		SELECT DISTINCT MO.MAT_CODE, M.MAT_NAME
+		  FROM T_PLA_MRP_OA                   MO,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC_OA PDO,
+		       T_PRO_PRODUCT_PROCESS          P,
+		       T_PLA_CUSTOMER_ORDER_ITEM      OI,
+		       T_ORD_SALES_ORDER_ITEM         SOI,
+		       T_ORD_SALES_ORDER              SO,
+		       T_INV_MAT                      M,
+		       (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS
+		               FROM T_FAC_EQIP_INFO    LINE,
+		                    T_FAC_PRODUCT_EQIP PE,
+		                    T_FAC_EQIP_INFO    EQUIP
+		              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+		                AND PE.EQUIP_ID = EQUIP.ID
+		                AND LINE.TYPE = 'PRODUCT_LINE') EQUIP
+		 WHERE MO.MAT_CODE = M.MAT_CODE
+		   AND MO.ORDER_ITEM_PRO_DEC_ID = PDO.ID
+		   AND PDO.PROCESS_ID = P.ID
+		   AND OI.ID = MO.ORDER_ITEM_ID
+		   AND SOI.ID = OI.SALES_ORDER_ITEM_ID
+		   AND SO.ID = SOI.SALES_ORDER_ID
+		   AND MO.EQUIP_CODE = EQUIP.CODE
+		   <include refid="query2QueryConditions"/>
+	</select>
+	
+	<!-- 查询条件->生产线信息下拉框：支持模糊查询  -->
+	<select id="equipCombo" parameterType="map" resultMap="getMap">
+		SELECT DISTINCT MO.EQUIP_CODE,
+               (CASE
+		          WHEN EQUIP.EQUIP_ALIAS IS NOT NULL THEN
+		            (EQUIP.EQUIP_ALIAS || '-')
+		          ELSE
+		              ''
+		         END || EQUIP.NAME || '[' || EQUIP.CODE || ']') AS EQUIP_NAME
+		  FROM T_PLA_MRP_OA                   MO,
+		       T_PLA_CU_ORDER_ITEM_PRO_DEC_OA PDO,
+		       T_PRO_PRODUCT_PROCESS          P,
+		       T_PLA_CUSTOMER_ORDER_ITEM      OI,
+		       T_ORD_SALES_ORDER_ITEM         SOI,
+		       T_ORD_SALES_ORDER              SO,
+		       T_INV_MAT                      M,
+		       (SELECT LINE.CODE, LINE.NAME, EQUIP.EQUIP_ALIAS
+		               FROM T_FAC_EQIP_INFO    LINE,
+		                    T_FAC_PRODUCT_EQIP PE,
+		                    T_FAC_EQIP_INFO    EQUIP
+		              WHERE LINE.ID = PE.PRODUCT_LINE_ID
+		                AND PE.EQUIP_ID = EQUIP.ID
+		                AND LINE.TYPE = 'PRODUCT_LINE') EQUIP
+		 WHERE MO.MAT_CODE = M.MAT_CODE
+		   AND MO.ORDER_ITEM_PRO_DEC_ID = PDO.ID
+		   AND PDO.PROCESS_ID = P.ID
+		   AND OI.ID = MO.ORDER_ITEM_ID
+		   AND SOI.ID = OI.SALES_ORDER_ITEM_ID
+		   AND SO.ID = SOI.SALES_ORDER_ID
+		   AND MO.EQUIP_CODE = EQUIP.CODE
+		   <include refid="query2QueryConditions"/>
+	</select>
+	<!-- 查询条件的 查询条件 -->
+	<sql id="query2QueryConditions">
+		<if test="contractNo!=null and (contractNo instanceof java.util.ArrayList) and contractNo.size() > 0">
+			AND SO.CONTRACT_NO IN
+			<foreach collection="contractNo" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="operator!=null and (operator instanceof java.util.ArrayList) and operator.size() > 0">
+			AND SO.OPERATOR IN
+			<foreach collection="operator" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="customerCompany!=null and (customerCompany instanceof java.util.ArrayList) and customerCompany.size() > 0">
+			AND SO.CUSTOMER_COMPANY IN   
+			<foreach collection="customerCompany" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="custProductType!=null and (custProductType instanceof java.util.ArrayList) and custProductType.size() > 0">
+			AND SOI.CUST_PRODUCT_TYPE IN
+			<foreach collection="custProductType" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="productSpec!=null and (productSpec instanceof java.util.ArrayList) and productSpec.size() > 0">
+			AND SOI.PRODUCT_SPEC IN
+			<foreach collection="productSpec" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="matCode!=null and (matCode instanceof java.util.ArrayList) and matCode.size() > 0">
+			AND M.MAT_NAME IN
+			<foreach collection="matCode" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="equipCode!=null and (equipCode instanceof java.util.ArrayList) and equipCode.size() > 0">
+			AND MO.EQUIP_CODE IN
+			<foreach collection="equipCode" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="queryStatus!=null and (queryStatus instanceof java.util.ArrayList) and queryStatus.size() > 0">
+			AND MO.STATUS IN
+			<foreach collection="queryStatus" item="item"  open="(" separator="," close=")">
+				#{item,jdbcType=VARCHAR}
+			</foreach>
+		</if>
+		<if test="planDate!=null and !(planDate instanceof java.util.ArrayList) and planDate!=''">
+			AND MO.PLAN_DATE <![CDATA[>=]]> TO_DATE(#{planDate} || ' 00:00:00','yyyy-mm-dd hh24:mi:ss') 
+			AND MO.PLAN_DATE <![CDATA[<]]> TO_DATE(#{planDate} || ' 59:59:59,'yyyy-mm-dd hh24:mi:ss')
+		</if>
+		<if test="orgCode!=null and !(orgCode instanceof java.util.ArrayList) and orgCode!=''">
+            AND MO.ORG_CODE = #{orgCode,jdbcType=VARCHAR}
+		</if>
+		<!-- like查询 -->		
+		<if test="matCode!=null and !(matCode instanceof java.util.ArrayList) and matCode != ''">
+			AND M.MAT_NAME LIKE #{matCode, jdbcType=VARCHAR}
+		</if>
+		<if test="equipCode!=null and !(equipCode instanceof java.util.ArrayList) and equipCode != ''">
+			AND MO.EQUIP_CODE LIKE #{equipCode, jdbcType=VARCHAR}
+		</if>
+	</sql>
+	
+	<delete id="deleteByContractNoOrderItemIdOrgCode" parameterType="string">
+		DELETE FROM T_PLA_MRP_OA T 
+		WHERE T.CONTRACT_NO = #{param1,jdbcType=VARCHAR} 
+		AND T.ORDER_ITEM_ID = #{param2,jdbcType=VARCHAR} 
+		AND T.ORG_CODE = #{param3,jdbcType=VARCHAR} 
+	</delete>
+	
+	
+</mapper>

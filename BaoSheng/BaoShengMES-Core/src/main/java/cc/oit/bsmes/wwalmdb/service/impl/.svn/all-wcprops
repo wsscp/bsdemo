@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/BSMES/!svn/ver/7676/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wwalmdb/service/impl
+END
+AlarmHistoryServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/7676/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wwalmdb/service/impl/AlarmHistoryServiceImpl.java
+END
+SparkHistoryServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/BSMES/!svn/ver/5373/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/wwalmdb/service/impl/SparkHistoryServiceImpl.java
+END

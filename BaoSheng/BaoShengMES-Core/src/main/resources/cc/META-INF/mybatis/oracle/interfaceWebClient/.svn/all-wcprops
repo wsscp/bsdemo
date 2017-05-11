@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/6162/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/interfaceWebClient
+END
+ProQualitySumMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/BSMES/!svn/ver/5981/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/interfaceWebClient/ProQualitySumMapper.xml
+END
+EquipSummaryMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/BSMES/!svn/ver/6162/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/interfaceWebClient/EquipSummaryMapper.xml
+END
+ProOutputMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/BSMES/!svn/ver/5981/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/interfaceWebClient/ProOutputMapper.xml
+END
+FacSummaryMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/BSMES/!svn/ver/5981/trunk/BaoSheng/BaoShengMES-Core/src/main/resources/cc/META-INF/mybatis/oracle/interfaceWebClient/FacSummaryMapper.xml
+END

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.MatDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.Mat" id="getMap">
+	</resultMap>
+	
+	<select id="getMatNames" resultMap="getMap">
+		SELECT 
+		DISTINCT MAT_NAME FROM T_INV_MAT WHERE MAT_TYPE = 'MATERIALS'
+	</select>
+	
+	<select id="getByMatCode" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_INV_MAT WHERE MAT_CODE = #{matCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getAllByMatCode" parameterType="map" resultMap="getMap">
+		SELECT * FROM T_INV_MAT WHERE MAT_CODE IN
+		<foreach collection="matCodes" item="item" open="(" separator=","
+			close=")">
+			#{item, jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+	<!-- 模糊查询 根据name或者code -->
+	<select id="findByCodeOrName" parameterType="map"
+		resultType="cc.oit.bsmes.inv.model.Mat">
+		SELECT * FROM T_INV_MAT M
+		<where>
+			<if test="codeOrName!=null and codeOrName!=''">
+				AND (UPPER(M.MAT_CODE) LIKE
+				UPPER(#{codeOrName,jdbcType=VARCHAR}) OR
+				UPPER(M.MAT_NAME) LIKE
+				UPPER(#{codeOrName,jdbcType=VARCHAR}))
+			</if>
+			<if test="matType != null and matType !=''">
+				AND M.MAT_TYPE = #{matType,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY M.MAT_TYPE, M.MAT_CODE,
+		NLSSORT(M.MAT_NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+
+	<!-- PLM工艺同步后对相关物料信息的颜色修改：前提，先要导入物料（修改火花半成品的颜色，取绝缘挤出的半成品颜色） -->
+	<update id="updateHHColorByJY" parameterType="string">
+		UPDATE T_INV_MAT
+		OIM
+		SET OIM.COLOR =
+		(SELECT IMM.COLOR
+		FROM T_PRO_PROCESS_IN_OUT PPIOO,
+		T_INV_MAT IMM
+		WHERE PPIOO.MAT_CODE = IMM.MAT_CODE
+		AND PPIOO.IN_OR_OUT =
+		'IN'
+		AND ppioo.PRODUCT_PROCESS_ID = #{processId,jdbcType=VARCHAR}
+		AND
+		PPIOO.PRODUCT_PROCESS_ID =
+		(SELECT PPP.ID
+		FROM T_PRO_PRODUCT_PROCESS
+		PPP, T_PRO_PROCESS_IN_OUT PPIO
+		WHERE PPP.ID = PPIO.PRODUCT_PROCESS_ID
+		AND PPIO.IN_OR_OUT = 'OUT'
+		AND PPP.PROCESS_CODE = 'Respool'
+		AND
+		PPIO.MAT_CODE = OIM.MAT_CODE
+		AND ROWNUM = 1)
+		AND ROWNUM = 1)
+		WHERE EXISTS
+		(SELECT 1
+		FROM T_PRO_PRODUCT_PROCESS PPP, T_PRO_PROCESS_IN_OUT PPIO
+		WHERE PPP.ID = PPIO.PRODUCT_PROCESS_ID
+		AND PPIO.MAT_CODE = OIM.MAT_CODE
+		AND PPIO.IN_OR_OUT = 'OUT'
+		AND ppio.PRODUCT_PROCESS_ID =
+		#{processId,jdbcType=VARCHAR}
+		AND PPP.PROCESS_CODE = 'Respool')
+	</update>
+
+	<select id="getMatName" parameterType="string" resultMap="getMap">
+		SELECT
+		MAT_NAME,MAT_CODE FROM T_INV_MAT WHERE MAT_CODE IN (SELECT DISTINCT
+		MAT_CODE FROM
+		T_PLA_MRP WHERE WORK_ORDER_ID IN
+		(SELECT ID FROM
+		T_WIP_WORK_ORDER WHERE WORK_ORDER_NO=#{param1,jdbcType=VARCHAR}))
+		AND
+		MAT_TYPE='MATERIALS'
+	</select>
+
+	<select id="getAssistOp" parameterType="String"
+		resultType="cc.oit.bsmes.inv.model.AssistOption">
+		SELECT DISTINCT
+		ASSIST_OPTION_NAME,ASSIST_OPTION_ENAME FROM
+		T_WIP_ASSIST_OPTION
+		WHERE PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 获取所有物料名称，去重 -->
+	<select id="getAllMatName" resultType="map">
+		SELECT DISTINCT M.MAT_NAME AS MATNAME FROM T_INV_MAT M WHERE
+		M.MAT_TYPE='MATERIALS'
+	</select>
+
+	<!-- 获取该物料名称下的所有描述种类 -->
+	<select id="getDescByMatName" parameterType="map" resultType="map">
+		SELECT TMP.MAT_CODE AS MATCODE,
+		       TMP.MAT_NAME AS MATNAME,
+		       WMSYS.WM_CONCAT(TMP.PROP_NAME || ':' || TMP.PROP_TARGET_VALUE) AS MATDESC
+		  FROM (SELECT DISTINCT M.MAT_CODE,
+		                        M.MAT_NAME,
+		                        D.PROP_NAME,
+		                        P.PROP_TARGET_VALUE
+		          FROM T_INV_MAT M
+		          left Join T_INV_MAT_PROP P
+		            on P.MAT_ID = M.ID
+		          left Join T_INV_TEMPLET_DETAIL D
+		            on P.TEMPLET_DETAIL_ID = D.ID
+		         WHERE (D.PROP_NAME IN ('宽度',
+		                                '厚度',
+		                                '材质',
+		                                '尺寸',
+		                                '规格',
+		                                '单丝直径',
+		                                '单丝标准直径',
+		                                '成品电线最大外径',
+		                                '成品电线最小外径',
+		                                '成品电线标准外径',
+		                                '结构','导体单丝直径') OR D.PROP_NAME LIKE '%颜色%')
+		           AND M.MAT_TYPE = 'MATERIALS'
+		           <if test="matName != null and matName != ''">
+					 AND (M.MAT_NAME LIKE #{matName, jdbcType = VARCHAR} OR M.MAT_CODE LIKE #{matName, jdbcType = VARCHAR})
+				   </if>
+		           
+		         ORDER BY D.PROP_NAME, P.PROP_TARGET_VALUE) TMP
+		 GROUP BY TMP.MAT_CODE, TMP.MAT_NAME
+		 ORDER BY MATDESC
+	</select>
+
+	<select id="getPropValue" parameterType="map" resultType="map">
+		SELECT
+		* FROM T_INV_MAT_PROP WHERE
+		MAT_ID=#{matId}
+		AND
+		TEMPLET_DETAIL_ID=#{templetDetailId}
+	</select>
+
+	<insert id="insertMatPro" parameterType="map">
+		INSERT INTO
+		T_INV_MAT_PROP(ID,MAT_ID,TEMPLET_DETAIL_ID,PROP_TARGET_VALUE,
+		CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,CREATE_TIME)
+		VALUES(sys_guid(),#{matId},#{templetDetailId},
+		#{daoti},'admin',sysdate,'admin',sysdate)
+	</insert>
+
+	<select id="getBZSemiProducts" parameterType="String"
+		resultType="map">
+		SELECT MAT.MAT_CODE,TD.PROP_NAME,
+		PROP.PROP_TARGET_VALUE
+		FROM
+		T_PLA_ORDER_TASK OT,T_PRO_PROCESS_IN_OUT_WIP IO,
+		T_INV_MAT_WIP MAT,T_INV_MAT_PROP_WIP
+		PROP,T_INV_TEMPLET_DETAIL TD
+		WHERE OT.PROCESS_ID=IO.PRODUCT_PROCESS_ID
+		AND IO.IN_OR_OUT='IN'
+		AND IO.MAT_CODE=MAT.MAT_CODE 
+		AND MAT.MAT_TYPE='SEMI_FINISHED_PRODUCT'
+		AND MAT.PROCESS_IN_OUT_WIP_ID=IO.ID
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID
+		AND PROP.MAT_ID=MAT.ID
+		AND PROP.TEMPLET_DETAIL_ID=TD.ID
+		AND OT.ID=#{taskId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getMatsByOrderTask" parameterType="String"
+		resultMap="getMap">
+		SELECT T.NAME TEMPLET_NAME,MAT.*,IO.QUANTITY
+		FROM
+		T_PRO_PROCESS_IN_OUT_WIP IO,
+		T_INV_MAT_WIP MAT,T_INV_TEMPLET T
+		WHERE
+		IO.PRODUCT_PROCESS_ID=
+		(SELECT PROCESS_ID FROM T_PLA_ORDER_TASK
+		WHERE
+		ID=#{taskId,jdbcType=VARCHAR})
+		AND MAT.MAT_CODE=IO.MAT_CODE
+		AND
+		MAT.TEMPLET_ID=T.ID AND MAT.MAT_TYPE='MATERIALS'
+		AND MAT.PROCESS_IN_OUT_WIP_ID=IO.ID
+	</select>
+
+	<select id="getBZMaterialProps" parameterType="String"
+		resultType="map">
+		SELECT MAT.MAT_CODE,TD.PROP_NAME,
+		PROP.PROP_TARGET_VALUE
+		FROM
+		T_INV_MAT MAT,T_INV_MAT_PROP PROP,T_INV_TEMPLET_DETAIL TD,
+		T_INV_TEMPLET T
+		WHERE
+		MAT.MAT_CODE=#{matCode,jdbcType=VARCHAR}
+		AND
+		MAT.TEMPLET_ID=TD.TEMPLET_ID AND PROP.MAT_ID=MAT.ID
+		AND
+		PROP.TEMPLET_DETAIL_ID=TD.ID AND MAT.TEMPLET_ID=T.ID
+	</select>
+
+	<select id="getBZOutSemiProducts" parameterType="String"
+		resultType="map">
+		SELECT MAT.MAT_CODE,TD.PROP_NAME,
+		PROP.PROP_TARGET_VALUE
+		FROM
+		T_PLA_ORDER_TASK OT,T_PRO_PROCESS_IN_OUT_WIP IO,
+		T_INV_MAT_WIP MAT,T_INV_MAT_PROP_WIP
+		PROP,T_INV_TEMPLET_DETAIL TD
+		WHERE OT.PROCESS_ID=IO.PRODUCT_PROCESS_ID
+		AND IO.IN_OR_OUT='OUT'
+		AND IO.MAT_CODE=MAT.MAT_CODE AND
+		MAT.MAT_TYPE='SEMI_FINISHED_PRODUCT'
+		AND MAT.TEMPLET_ID=TD.TEMPLET_ID
+		AND PROP.MAT_ID=MAT.ID
+		AND MAT.PROCESS_IN_OUT_WIP_ID=IO.ID
+		AND PROP.TEMPLET_DETAIL_ID=TD.ID
+		AND OT.ID=#{taskId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="getMatsByCustItemId" parameterType="String"
+		resultMap="getMap">
+		SELECT T.NAME TEMPLET_NAME,MAT.MAT_CODE,MAT.MAT_NAME,MAT.MAT_TYPE,IO.QUANTITY   
+		FROM
+		T_PRO_PROCESS_IN_OUT_WIP IO,
+		T_INV_MAT_WIP MAT,T_INV_TEMPLET T
+		WHERE
+		IO.PRODUCT_PROCESS_ID IN
+		(SELECT ID FROM T_PRO_PRODUCT_PROCESS_WIP
+		WHERE PRODUCT_CRAFTS_ID=
+		(SELECT CRAFTS_ID FROM T_PLA_CUSTOMER_ORDER_ITEM
+		WHERE ID=#{custOrderItemId,jdbcType=VARCHAR})
+		AND PROCESS_CODE='Extrusion-Single')
+		AND MAT.MAT_CODE=IO.MAT_CODE
+		AND MAT.TEMPLET_ID=T.ID AND MAT.MAT_TYPE='MATERIALS'
+		AND MAT.PROCESS_IN_OUT_WIP_ID=IO.ID
+		GROUP BY (T.NAME,MAT.MAT_CODE,MAT.MAT_NAME,MAT.MAT_TYPE,IO.QUANTITY)
+	</select>
+
+	<select id="getSemiOutColors" parameterType="String" resultType="map">
+		SELECT MAT_NAME,LISTAGG(COLOR,',') WITHIN GROUP (ORDER BY COLOR)
+		AS COLORS FROM (SELECT DISTINCT MAT.MAT_NAME,COLOR
+		FROM
+		T_PRO_PROCESS_IN_OUT_WIP IO,
+		T_INV_MAT_WIP MAT,T_INV_TEMPLET T
+		WHERE
+		IO.PRODUCT_PROCESS_ID IN
+		(SELECT ID FROM T_PRO_PRODUCT_PROCESS_WIP
+		WHERE PRODUCT_CRAFTS_ID=
+		(SELECT CRAFTS_ID FROM T_PLA_CUSTOMER_ORDER_ITEM
+		WHERE ID=#{custOrderItemId,jdbcType=VARCHAR})
+		AND PROCESS_CODE='Extrusion-Single')
+		AND MAT.MAT_CODE=IO.MAT_CODE
+		AND MAT.PROCESS_IN_OUT_WIP_ID=IO.ID
+		AND
+		MAT.TEMPLET_ID=T.ID AND MAT.MAT_TYPE='SEMI_FINISHED_PRODUCT'
+		AND
+		IO.IN_OR_OUT='OUT') GROUP BY MAT_NAME
+	</select>
+</mapper>

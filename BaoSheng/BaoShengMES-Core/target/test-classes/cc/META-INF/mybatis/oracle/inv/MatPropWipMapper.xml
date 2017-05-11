@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.MatPropWipDAO">
+
+	<resultMap type="cc.oit.bsmes.inv.model.MatPropWip" id="getMap">
+	</resultMap>
+	
+	<select id="getMatPropWipById" parameterType="string" resultMap="getMap" >
+	    SELECT * FROM T_INV_MAT_PROP_WIP WHERE ID=#{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getByProcessInOutId" parameterType="string" resultMap="getMap" >
+	    SELECT 
+	          A.ID,
+			  B.PROP_CODE,
+			  B.PROP_NAME,
+			  A.PROP_TARGET_VALUE,
+			  A.PROP_MAX_VALUE,
+			  A.PROP_MIN_VALUE,
+			  A.PROP_VALUE_FORMULA
+		FROM T_INV_MAT_PROP_WIP A
+		INNER JOIN T_INV_TEMPLET_DETAIL B ON  A.TEMPLET_DETAIL_ID = B.ID
+		INNER JOIN T_INV_MAT_WIP C ON C.ID = A.MAT_ID
+		WHERE C.PROCESS_IN_OUT_WIP_ID=#{processInOutId}
+	</select>
+	
+	<select id="countByProcessInOutId" parameterType="string" resultType="int" >
+		SELECT COUNT(*)
+		FROM T_INV_MAT_PROP_WIP A
+		INNER JOIN T_INV_TEMPLET_DETAIL B ON  A.TEMPLET_DETAIL_ID = B.ID
+		INNER JOIN T_INV_MAT_WIP C ON C.ID = A.MAT_ID
+		WHERE C.PROCESS_IN_OUT_WIP_ID=#{processInOutId}
+	</select>
+	
+	<insert id="insertAll" parameterType="java.util.List">
+	    INSERT INTO T_INV_MAT_PROP_WIP(ID,MAT_ID,TEMPLET_DETAIL_ID,PROP_TARGET_VALUE,PROP_VALUE_FORMULA,PROP_MAX_VALUE,PROP_MIN_VALUE,
+	    CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE)
+        <foreach collection="matPropWip" item="item" index="index" 
+			  separator="union all">
+			  SELECT
+			  #{item.id,jdbcType=VARCHAR},#{item.matId,jdbcType=VARCHAR},
+			  #{item.templetDetailId,jdbcType=VARCHAR},#{item.propTargetValue,jdbcType=VARCHAR},#{item.propValueFormula,jdbcType=VARCHAR},
+			  #{item.propMaxValue,jdbcType=VARCHAR},#{item.propMinValue,jdbcType=VARCHAR},
+			  sysdate, 'Service', 
+			  sysdate, 'Service'
+			  FROM DUAL
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteDate" parameterType="string">
+       DELETE FROM T_INV_MAT_PROP_WIP MP WHERE EXISTS(
+       SELECT 1 FROM T_INV_MAT_WIP M,T_PRO_PROCESS_IN_OUT_WIP PIO,T_PRO_PRODUCT_PROCESS_WIP PP WHERE
+       PP.PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+       AND PP.ID = PIO.PRODUCT_PROCESS_ID
+       AND PIO.ID = M.PROCESS_IN_OUT_WIP_ID
+       AND M.ID = MP.MAT_ID
+       )
+    </delete>
+    
+    <!-- 根据matCode去物料属性 -->
+	<select id="findByMatCode" parameterType="string" resultMap="getMap">
+		SELECT
+		    P.ID,
+		    D.PROP_NAME,
+		    D.PROP_Code,
+		    P.PROP_TARGET_VALUE
+		FROM
+		    T_INV_MAT_WIP M,
+		    T_INV_MAT_PROP_WIP P,
+		    T_INV_TEMPLET_DETAIL D
+		WHERE
+		    M.ID=P.MAT_ID
+		AND P.TEMPLET_DETAIL_ID=D.ID
+		AND M.PROCESS_IN_OUT_WIP_ID=#{inOutId, jdbcType=VARCHAR}
+	</select>
+    
+</mapper>

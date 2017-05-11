@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.EquipListWipDAO">
+
+	<resultMap type="cc.oit.bsmes.pro.model.EquipListWip" id="getMap">
+		
+	</resultMap>
+	
+	<sql id="equipListColumns">
+		T.ID,
+		T.EQUIP_CODE,
+		T.PROCESS_ID,
+		T.TYPE,
+		T.EQUIP_CAPACITY,
+		T.SET_UP_TIME,
+		T.SHUT_DOWN_TIME,
+		T.CREATE_TIME,
+		T.CREATE_USER_CODE,T.MODIFY_TIME,T.MODIFY_USER_CODE,T.IS_DEFAULT,T.FXPJ,T.SXPJ,T.FXZDZPL,T.SXZDZPL
+	</sql>
+	
+    <!-- 获取工序下面的生产线信息 -->
+	<select id="getByProcessId" resultMap="getMap" parameterType="string">
+		SELECT
+		<include refid="equipListColumns" />
+		,L.NAME EQUIP_NAME, E.EQUIP_ALIAS
+		FROM T_PRO_EQIP_LIST_WIP T
+		  LEFT JOIN T_FAC_EQIP_INFO L
+		    On T.EQUIP_CODE = l.CODE
+		  LEFT JOIN t_fac_product_eqip EL
+		    On el.product_line_id = l.id
+		  LEFT JOIN T_FAC_EQIP_INFO E
+		    ON E.ID = el.equip_id
+		 WHERE l.TYPE = 'PRODUCT_LINE'
+		   and T.PROCESS_ID = #{processId,jdbcType=VARCHAR}
+		 ORDER BY T.EQUIP_CODE, NLSSORT(L.NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	  
+	<insert id="insertAll" parameterType="java.util.List">
+	    INSERT INTO T_PRO_EQIP_LIST_WIP(ID,EQUIP_CODE,PROCESS_ID,TYPE,EQUIP_CAPACITY,CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,
+	    SET_UP_TIME,SHUT_DOWN_TIME,IS_DEFAULT,FXPJ,SXPJ,FXZDZPL,SXZDZPL)
+        <foreach collection="equipListWip" item="item" index="index" 
+			  separator="union all">
+			SELECT
+			#{item.id,jdbcType=VARCHAR},#{item.equipCode,jdbcType=VARCHAR},#{item.processId,jdbcType=VARCHAR},
+			#{item.type,jdbcType=VARCHAR},#{item.equipCapacity,jdbcType=DOUBLE},
+			sysdate, 'Service', 
+			sysdate, 'Service',
+			#{item.setUpTime,jdbcType=VARCHAR},#{item.shutDownTime,jdbcType=VARCHAR},#{item.isDefault,jdbcType=VARCHAR},
+			#{item.fxpj,jdbcType=VARCHAR},#{item.sxpj,jdbcType=VARCHAR},#{item.fxzdzpl,jdbcType=VARCHAR},#{item.sxzdzpl,jdbcType=VARCHAR}
+			FROM DUAL  
+	    </foreach>
+    </insert>
+	
+	<delete id="deleteDate" parameterType="string">
+       DELETE FROM T_PRO_EQIP_LIST_WIP EL WHERE EXISTS(
+       SELECT 1 FROM T_PRO_PRODUCT_PROCESS_WIP PP WHERE PP.PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+       AND PP.ID = EL.PROCESS_ID
+       )
+    </delete>
+	
+</mapper>

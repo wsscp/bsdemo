@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/10539/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao
+END
+ScxObjofDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/6125/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ScxObjofDAO.java
+END
+ProcessDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/10539/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ProcessDAO.java
+END
+ModDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/8658/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ModDAO.java
+END
+JpgfileDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/8658/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/JpgfileDAO.java
+END
+CanShuKuDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/6631/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/CanShuKuDAO.java
+END
+EquipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4632/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/EquipDAO.java
+END
+BzgfDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4838/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/BzgfDAO.java
+END
+MachObjofDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4632/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/MachObjofDAO.java
+END
+PLMProductDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/8733/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/PLMProductDAO.java
+END
+JiantuDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/8658/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/JiantuDAO.java
+END
+PrcvObjofDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/10502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/PrcvObjofDAO.java
+END
+ScxDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/6125/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ScxDAO.java
+END
+ProcessProcessObjofDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/10502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ProcessProcessObjofDAO.java
+END
+ProcessObjofDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/10502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ProcessObjofDAO.java
+END
+MpartInOutDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/10539/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/MpartInOutDAO.java
+END
+MpartObjofDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/10502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/MpartObjofDAO.java
+END
+Desf2DAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/8658/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/Desf2DAO.java
+END
+MachDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/4632/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/MachDAO.java
+END
+ScxkDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/5659/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/ScxkDAO.java
+END
+PrcvDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/10502/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/PrcvDAO.java
+END
+BZProcessDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4632/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfacePLM/dao/BZProcessDAO.java
+END

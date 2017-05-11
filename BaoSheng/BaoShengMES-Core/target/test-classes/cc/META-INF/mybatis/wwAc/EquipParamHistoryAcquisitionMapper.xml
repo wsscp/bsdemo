@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfaceWWAc.dao.EquipParamHistoryAcquisitionDAO">
+
+	<resultMap type="EquipParamHistoryAcquisition" id="getMap">
+	</resultMap>
+	
+		<select id="findParamHistory" parameterType="EquipParamHistoryAcquisition" resultMap="getMap">
+		SELECT DISTINCT DateTime,TagName,Value,vValue 
+		<include refid="sqlFindCondition"/>
+	</select>
+	
+	<sql id="sqlFindCondition">
+		   FROM v_History WHERE TagName= #{tagname}  AND wwRetrievalMode='Cyclic' 
+		    AND wwVersion='Original'  AND wwCycleCount = #{wwcyclecount} 
+		    AND DateTime  <![CDATA[  <=  ]]>   #{endTime,jdbcType=TIMESTAMP}  AND DateTime  <![CDATA[  >=  ]]>  #{startTime,jdbcType=TIMESTAMP} 
+		    AND VALUE IS NOT NULL
+		    ORDER BY DATETIME ASC
+	</sql>
+	
+	<select id="findLengthLiveData" parameterType="EquipParamHistoryAcquisition" resultMap="getMap">
+		SELECT DISTINCT DateTime,TagName,Value,vValue 
+		FROM v_History WHERE TagName= #{tagname}  AND wwRetrievalMode='Cyclic' 
+		    AND wwVersion='Original'  AND wwCycleCount = 2 
+		    AND DateTime  <![CDATA[  <=  ]]>  DateAdd(mi,-1,GetDate())   AND DateTime  <![CDATA[  >=  ]]>  DateAdd(s,-90,GetDate()) 
+		    ORDER BY DateTime asc
+	</select>
+	
+	<select id="findHistoryData" parameterType="EquipParamHistoryAcquisition" resultMap="getMap">
+		SELECT DISTINCT DateTime,TagName,Value,vValue 
+		FROM v_History WHERE TagName= #{tagname}  AND wwRetrievalMode='Cyclic' 
+		    AND wwVersion='Original'  AND wwCycleCount = #{wwcyclecount}  
+		    AND DateTime  <![CDATA[  >=  ]]>  #{startTime,jdbcType=TIMESTAMP} 		  
+		    ORDER BY DateTime asc
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.inv.dao.WarehouseDAO">
+	<resultMap type="cc.oit.bsmes.inv.model.Warehouse" id="getMap">
+	</resultMap>
+	<update id="update" parameterType="cc.oit.bsmes.inv.model.Warehouse">
+		UPDATE T_INV_WAREHOUSE
+		<set>
+			<if test="warehouseName != null and warehouseName !=''">
+				WAREHOUSE_NAME = #{warehouseName,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null and address !=''">
+				ADDRESS= #{address,jdbcType=VARCHAR},
+			</if>
+			MODIFY_TIME = sysdate,
+			MODIFY_USER_CODE = #{modifyUserCode,jdbcType=VARCHAR}
+		</set>
+		WHERE ID = #{id,jdbcType=VARCHAR} 
+	</update>
+	<select id="find" parameterType="cc.oit.bsmes.inv.model.Warehouse" resultMap="getMap">
+		SELECT WAREHOUSE_CODE, ID, WAREHOUSE_NAME, ADDRESS,TYPE
+	    FROM T_INV_WAREHOUSE 
+	    <where>
+	    	<if test="orgCode!=null and orgCode!=''">
+	    		AND ORG_CODE=#{orgCode}
+	    	</if>
+	    	<if test="warehouseCode !=null and warehouseCode!=''">
+	    		AND INSTR(WAREHOUSE_CODE,#{warehouseCode})>0
+	    	</if>
+	    	<if test="warehouseName !=null and warehouseName!=''">
+	    		AND INSTR(WAREHOUSE_NAME,#{warehouseName})>0
+	    	</if>
+	    </where>
+	    ORDER BY WAREHOUSE_CODE ASC
+	</select>
+	<select id="count" parameterType="cc.oit.bsmes.inv.model.Warehouse" resultType="int">
+		SELECT COUNT(1)
+		FROM T_INV_WAREHOUSE
+		 <where>
+	    	<if test="orgCode!=null and orgCode!=''">
+	    		AND ORG_CODE=#{orgCode}
+	    	</if>
+	    	<if test="warehouseCode !=null and warehouseCode!=''">
+	    		AND INSTR(WAREHOUSE_CODE,#{warehouseCode})>0
+	    	</if>
+	    	<if test="warehouseName !=null and warehouseName!=''">
+	    		AND INSTR(WAREHOUSE_NAME,#{warehouseName})>0
+	    	</if>
+	    </where>
+	</select>
+	<select id="checkExtist" parameterType="cc.oit.bsmes.inv.model.Warehouse"  resultMap="getMap">
+		SELECT ID,WAREHOUSE_CODE FROM T_INV_WAREHOUSE WHERE ORG_CODE=#{orgCode} AND WAREHOUSE_CODE=#{warehouseCode}
+	</select>
+    
+    <select id="getByProcess" parameterType="string" resultMap="getMap">
+        SELECT
+          WA.WAREHOUSE_CODE,
+          WA.ID,
+          WA.WAREHOUSE_NAME,
+          WA.ADDRESS
+        FROM T_INV_WAREHOUSE WA
+        WHERE EXISTS (
+            SELECT 1
+            FROM T_INV_LOCATION LO
+            WHERE LO.PROCESS_CODE = #{param1}
+            AND LO.ORG_CODE = #{param2}
+            AND LO.WAREHOUSE_ID = WA.ID
+            AND ((LO.TYPE = 'FIX'
+                AND NOT EXISTS (
+                  SELECT 1 FROM T_INV_INVENTORY INV WHERE INV.LOCATION_ID = LO.ID
+                )
+            ) OR LO.TYPE = 'STORE')
+        )
+        AND WA.TYPE = 'WIP'
+    </select>
+
+	<select id="getByCode" parameterType="string" resultMap="getMap">
+		SELECT
+			*
+		FROM T_INV_WAREHOUSE
+		WHERE WAREHOUSE_CODE = #{wareHouseCode}
+	</select>
+</mapper>

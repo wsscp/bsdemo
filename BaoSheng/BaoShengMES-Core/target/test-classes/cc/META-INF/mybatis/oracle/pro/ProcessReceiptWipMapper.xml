@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessReceiptWipDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessReceiptWip" id="getMap">
+	</resultMap>
+	
+    <insert id="insertAll" parameterType="java.util.List">
+        INSERT INTO T_PRO_PROCESS_RECEIPT_WIP(ID,RECEIPT_CODE,SUB_RECEIPT_CODE,RECEIPT_NAME,SUB_RECEIPT_NAME,RECEIPT_TARGET_VALUE,
+        RECEIPT_MAX_VALUE,RECEIPT_MIN_VALUE,DATA_TYPE,DATA_UNIT,HAS_PIC,MARKS,NEED_DA,NEED_IS,NEED_SHOW,CREATE_TIME,CREATE_USER_CODE,
+        MODIFY_TIME,MODIFY_USER_CODE,NEED_ALARM,VALUE_DOMAIN,EQIP_LIST_ID,EQUIP_CODE,FREQUENCE,AC_EQUIP_CODE,EMPH_SHOW)
+        <foreach collection="processReceiptWip" item="item" index="index" 
+			  separator="union all">
+			SELECT
+			#{item.id,jdbcType=VARCHAR},#{item.receiptCode,jdbcType=VARCHAR},#{item.subReceiptCode,jdbcType=VARCHAR},#{item.receiptName,jdbcType=VARCHAR},
+			#{item.subReceiptName,jdbcType=VARCHAR},#{item.receiptTargetValue,jdbcType=VARCHAR},#{item.receiptMaxValue,jdbcType=VARCHAR},
+			#{item.receiptMinValue,jdbcType=VARCHAR},#{item.dataType,jdbcType=VARCHAR},#{item.dataUnit,jdbcType=VARCHAR},#{item.hasPic,jdbcType=VARCHAR},
+			#{item.marks,jdbcType=VARCHAR},#{item.needDa,jdbcType=VARCHAR},#{item.needIs,jdbcType=VARCHAR},#{item.needShow,jdbcType=VARCHAR},
+			sysdate, 'Service', 
+			sysdate, 'Service', 
+			#{item.needAlarm,jdbcType=VARCHAR},#{item.valueDomain,jdbcType=VARCHAR},#{item.eqipListId,jdbcType=VARCHAR},
+			#{item.equipCode,jdbcType=VARCHAR},#{item.frequence,jdbcType=DOUBLE},#{item.acEquipCode,jdbcType=VARCHAR},
+			#{item.emphShow,jdbcType=VARCHAR}
+			FROM DUAL  
+	    </foreach>
+    </insert>
+    
+    <delete id="deleteDate" parameterType="string">
+       DELETE FROM T_PRO_PROCESS_RECEIPT_WIP PR WHERE EXISTS(
+       SELECT 1 FROM T_PRO_PRODUCT_PROCESS_WIP PP,T_PRO_EQIP_LIST_WIP EL WHERE PP.PRODUCT_CRAFTS_ID = #{oldCraftsId,jdbcType=VARCHAR}
+       AND PP.ID = EL.PROCESS_ID
+       AND EL.ID = EQIP_LIST_ID
+       )
+    </delete>
+    
+</mapper>

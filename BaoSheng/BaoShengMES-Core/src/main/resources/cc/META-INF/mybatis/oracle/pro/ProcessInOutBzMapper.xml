@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.ProcessInOutBzDAO">
+	<resultMap type="cc.oit.bsmes.pro.model.ProcessInOutBz" id="getMap">
+	</resultMap>
+	<sql id="queryColumns">
+		p.QUANTITY_FORMULA,
+		p.MODIFY_USER_CODE,
+		p.UNIT,
+		p.MODIFY_TIME,
+		p.CREATE_TIME,
+		p.PRODUCT_PROCESS_ID,
+		p.ID,
+		p.USE_METHOD,
+		p.MAT_CODE,
+		p.CREATE_USER_CODE,
+		p.QUANTITY,
+		p.IN_OR_OUT
+	</sql>
+	
+	<select id="countByProcessId" parameterType="string" resultType="int" >
+		SELECT COUNT(1)
+		FROM T_PRO_PROCESS_IN_OUT_BZ
+		WHERE PRODUCT_PROCESS_ID = #{processId}
+	</select>
+	
+	<select id="getProcessInOutBzByProcessId" parameterType="string" resultMap="getMap">
+		SELECT * FROM T_PRO_PROCESS_IN_OUT_BZ PIOB WHERE PIOB.PRODUCT_PROCESS_ID=#{processId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="deleteByProcessId" parameterType="string" resultMap="getMap">
+		delete FROM T_PRO_PROCESS_IN_OUT_BZ PIOB WHERE PIOB.PRODUCT_PROCESS_ID=#{processId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getProcessOutByProcessId" parameterType="string" resultType="cc.oit.bsmes.pro.model.ProcessInOutBz" >
+		  SELECT PIO.MAT_CODE,IM.MAT_NAME
+	    FROM T_PRO_PROCESS_IN_OUT_BZ PIO,T_INV_MAT IM
+	     WHERE  PIO.MAT_CODE = IM.MAT_CODE AND PIO.IN_OR_OUT='OUT' AND PRODUCT_PROCESS_ID = #{processId}
+	</select>
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pla.dao.ProductDAO">
+
+	<resultMap type="Product" id="getMap">
+	</resultMap>
+
+	<sql id="productColumns">
+		P.ID,
+		P.PRODUCT_CODE,
+		P.PRODUCT_NAME,
+		P.PRODUCT_TYPE,
+		P.PRODUCT_SPEC,
+		P.STANDARD_LENGTH,
+		P.USED_STOCK,
+		P.CRAFTS_CODE,
+		P.CRAFTS_VERSION,
+		P.ORG_CODE,
+		P.CLASSIFY_ID,
+		P.CREATE_USER_CODE,
+		P.CREATE_TIME,
+		P.MODIFY_USER_CODE,
+		P.MODIFY_TIME
+	</sql>
+
+	<select id="getByProcessId" resultMap="getMap">
+		SELECT
+		<include refid="productColumns" />
+		FROM T_PLA_PRODUCT P,T_PRO_PRODUCT_CRAFTS C, T_PRO_PRODUCT_PROCESS S
+		WHERE P.PRODUCT_CODE = C.PRODUCT_CODE AND C.ID = S.PRODUCT_CRAFTS_ID
+		AND S.ID = #{processId}
+	</select>
+	<select id="getByWorkOrderNO" resultMap="getMap">
+		SELECT
+		<include refid="productColumns" />
+		FROM T_PLA_PRODUCT P,T_PLA_ORDER_TASK T,T_PLA_CU_ORDER_ITEM_PRO_DEC D,T_PRO_PRODUCT_CRAFTS C
+		WHERE T.WORK_ORDER_NO = #{workOrderNo}
+        AND T.ORDER_ITEM_PRO_DEC_ID = D.ID
+        AND D.CRAFTS_ID = C.ID
+		AND P.PRODUCT_CODE = C.PRODUCT_CODE
+	</select>
+	
+	<!--<insert id="insert" parameterType="cc.oit.bsmes.pla.model.Product" >-->
+		<!--INSERT INTO T_PLA_PRODUCT(ID,PRODUCT_CODE,PRODUCT_NAME,CRAFTS_CODE,ORG_CODE ,CREATE_USER_CODE, CREATE_TIME,MODIFY_USER_CODE,MODIFY_TIME)-->
+		<!--VALUES(#{id,jdbcType=VARCHAR},#{productCode,jdbcType=VARCHAR},#{productName,jdbcType=VARCHAR},#{craftsCode,jdbcType=VARCHAR},#{orgCode,jdbcType=VARCHAR},-->
+			   <!--#{createUserCode,jdbcType=VARCHAR},SYSDATE,#{modifyUserCode,jdbcType=VARCHAR},SYSDATE)	-->
+	<!--</insert>-->
+	
+	<!-- 模糊查询 根据name或者code -->
+	<select id="findByCodeOrName" parameterType="map" resultType="cc.oit.bsmes.pla.model.Product">
+		SELECT * FROM T_PLA_PRODUCT P
+		where rownum <![CDATA[<]]>  20
+ 		 	<if test="codeOrName!=null and codeOrName!=''">
+ 		 		AND (UPPER(P.PRODUCT_CODE) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}) OR UPPER(P.PRODUCT_NAME) LIKE UPPER(#{codeOrName,jdbcType=VARCHAR}))
+ 		 	</if>
+ 		ORDER BY P.PRODUCT_TYPE, P.PRODUCT_CODE, NLSSORT(P.PRODUCT_NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="findByType" parameterType="map" resultType="cc.oit.bsmes.pla.model.Product">
+		SELECT * FROM T_PLA_PRODUCT P
+		<where>
+ 		 	<if test="type!=null and type!=''">
+ 		 		AND (UPPER(P.PRODUCT_TYPE) LIKE UPPER(#{type,jdbcType=VARCHAR}))
+ 		 	</if>
+ 		</where>
+ 		ORDER BY P.PRODUCT_TYPE, P.PRODUCT_CODE, NLSSORT(P.PRODUCT_NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+		
+	<select id="getByProductCodeOrName" parameterType="map" resultType="cc.oit.bsmes.pla.model.Product">
+		SELECT * FROM T_PLA_PRODUCT P
+		<if test="query!=null and query!=''">
+ 		 	WHERE INSTR(P.PRODUCT_CODE,UPPER(#{query,jdbcType=VARCHAR}))>0 OR INSTR(P.PRODUCT_NAME,UPPER(#{query,jdbcType=VARCHAR}))>0	
+ 		</if>
+		
+	</select>
+	
+	<select id="getByProductTypeAndSpec" resultMap="getMap">
+		SELECT * FROM (SELECT
+		<include refid="productColumns" />
+		FROM T_PLA_PRODUCT P
+		WHERE P.PRODUCT_TYPE = #{productType} AND P.PRODUCT_SPEC = #{productSpec} ORDER BY P.MODIFY_TIME DESC)
+		WHERE ROWNUM<![CDATA[<=]]>1
+	</select>
+	
+	<select id="getProBySpecific" parameterType="map" resultMap="getMap">
+		SELECT * FROM (SELECT
+		<include refid="productColumns" />
+		FROM T_PLA_PRODUCT P
+		WHERE P.PRODUCT_TYPE=#{productType} AND P.PRODUCT_SPEC= #{productSpec})
+		WHERE ROWNUM<![CDATA[<=]]>1
+	</select>
+	
+	<select id="getProductByPrcvNo" parameterType="String" resultMap="getMap">
+		<![CDATA[
+			SELECT * FROM PRODUCT P
+			INNER JOIN PRCV_OBJOF PO ON(PO.ITEMID1=P.ID AND P.WKAID<>'3' AND PO.WKAID<>'3')
+			INNER JOIN PRCV ON(PRCV.ID=PO.ITEMID2 AND PRCV.WKAID<>'3' 
+			AND PRCV.NO=#{prcvNo,jdbcTyp=VARCHAR})
+		]]>
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,922 @@
+/**
+ * 合并工序编辑列表：工序弹出列表
+ */
+
+Ext.define('bsmes.view.InstanceProcessGrid', {
+	extend : 'Oit.app.view.Grid',
+	itemId : 'instanceProcessGrid',
+	alias : 'widget.instanceProcessGrid',
+	hasPaging : false,
+	store : 'ProcessStore',
+	defaultEditingPlugin : false,
+	spencialParam : {}, // 特殊工艺变更需要提交的参数
+	columns : [{
+				text : Oit.msg.pla.handSchedule.processName,
+				dataIndex : 'processName',
+				flex : 2.6,
+//				minWidth : 130,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					metaData.style = "white-space:normal;padding:5px 5px 5px 5px;";
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return value;
+				}
+			}, {
+				text : Oit.msg.pla.handSchedule.seq,
+				dataIndex : 'seq',
+				flex : 1.5,
+//				minWidth : 75,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					metaData.style = "white-space:normal;padding:5px 5px 5px 5px;";
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return value;
+				}
+			}, {
+				text : Oit.msg.pla.handSchedule.nextProcess,
+				dataIndex : 'nextProcessName',
+				flex : 2.6,
+//				minWidth : 130,
+				sortable : false,
+				menuDisabled : true,
+				renderer : function(value, metaData, record) {
+					metaData.style = "white-space:normal;padding:5px 5px 5px 5px;";
+					metaData.tdAttr = 'data-qtip="' + value + '"';
+					return value;
+				}
+			}, {
+				text : '生产线',
+				dataIndex : 'equipNameArray',
+				flex : 6,
+//				minWidth : 300,
+				hidden : true,
+				renderer : function(value, metaData, record, rowIndex) {
+					var machine = value.split(",");
+					var show = '';
+					for (var i = 0; i < machine.length; i++) {
+						show = show + machine[i] + '<br/>';
+					}
+					metaData.tdAttr = 'data-qtip="' + show + '"';
+
+					var html = '<a style="color:blue;cursor:pointer;" onclick="getProcessEquipArray(\'' + rowIndex
+							+ '\', \'' + record.get('id') + '\', \'' + record.get('equipCodeArray')
+							+ '\', \'handSchedule/getProcessEquipArray\', \'instanceProcessGrid\')">修改</a>&nbsp;&nbsp;';
+					return html + value;
+				},
+				sortable : false,
+				menuDisabled : true
+			}],
+
+	initComponent : function() {
+		var me = this;
+		me.tbar = [{
+					// xtype : 'button',
+					// text : '生产线',
+					// handler : function() {
+					// me.showWin('EQUIP');
+					// }
+					// }, {
+					xtype : 'button',
+					text : '投入产出',
+					handler : function() {
+						me.showWin('INOUT');
+					}
+				}, {
+					xtype : 'button',
+					text : '质检参数',
+					handler : function() {
+						me.showWin('QC');
+					}
+				}, {
+					xtype : 'displayfield',
+					value : me.spencialParam.craftsCode
+				}]
+
+		this.callParent(arguments);
+	},
+
+	showWin : function(type) {
+		var me = this;
+		var grid = type == 'PROP' ? Ext.ComponentQuery.query('#inOutGrid')[0] : me;
+		var selection = grid.getSelectionModel().getSelection();
+		if (selection && selection.length == 1) {
+			var record = selection[0];
+			var win = null;
+			if (type == 'EQUIP')
+				win = me.getEquipListWin(record.get('id'));
+			else if (type == 'INOUT')
+				win = me.getInOutWin(record.get('id'));
+			else if (type == 'QC')
+				win = me.getQcWin(record.get('id'));
+			else if (type == 'PROP')
+				win = me.getMatPropWin(record.get('id')); // processInOut的ID
+			if (win)
+				win.show();
+
+			// 特殊工艺变更要保存变更记录：提交数据
+			if (type == 'PROP') {
+				me.spencialParam.matCode = record.get('matCode');
+				me.spencialParam.matName = record.get('matName');
+				me.spencialParam.inOrOut = record.get('inOrOut');
+			} else
+				me.spencialParam.processId = record.get('id')
+		} else {
+			Ext.Msg.alert(Oit.msg.PROMPT, '请选择一条记录！');
+		}
+	},
+
+	getEquipListWin : function(processId) {
+		var me = this;
+		// 设备清单使用逻辑变了，此处无效
+		return null;
+	},
+
+	getInOutWin : function(processId) {
+		var me = this;
+		var win = Ext.create('Ext.window.Window', {
+			title : '工序投入产出维护',
+			width : document.body.scrollWidth - 200,
+			height : document.body.scrollHeight - 150,
+			modal : true,
+			plain : true,
+			items : [{
+						xtype : 'grid',
+						collapsible : false,
+						animCollapse : false,
+						itemId : 'inOutGrid',
+						height : document.body.scrollHeight - 190,
+						forceFit : true,
+						store : 'ProcessInOutStore',
+						columns : [{
+									text : '物料编码',
+									dataIndex : 'matCode',
+									minWidth : 175,
+									flex : 3.5,
+									renderer : function(value, metaData, record) {
+										metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+										metaData.tdAttr = 'data-qtip="' + value + '"';
+										return value;
+									}
+								}, {
+									text : '物料名称',
+									dataIndex : 'matName',
+									minWidth : 150,
+									flex : 3,
+									renderer : function(value, metaData, record) {
+										metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+										metaData.tdAttr = 'data-qtip="' + value + '"';
+										return value;
+									}
+								}, {
+									text : '投入/产出',
+									dataIndex : 'inOrOut',
+									minWidth : 75,
+									flex : 1.5,
+									renderer : function(value, record) {
+										if (value == 'IN') {
+											return '投入';
+										} else if (value == 'OUT') {
+											return '产出';
+										}
+										return '';
+									}
+								}, {
+									text : '单位投入量',
+									dataIndex : 'quantity',
+									minWidth : 100,
+									flex : 2,
+									renderer : function(value, metaData, record) {
+										return value + ' ' + record.get('unit');
+									}
+								}, {
+									text : '颜色',
+									dataIndex : 'color',
+									minWidth : 50,
+									flex : 1
+								}, {
+									text : '物料描述',
+									dataIndex : 'remark',
+									minWidth : 300,
+									flex : 6,
+									renderer : function(value, metaData, record) {
+										metaData.style = "white-space:normal;word-break:break-all;padding:5px 5px 5px 5px;";
+										metaData.tdAttr = 'data-qtip="' + value + '"';
+										return value;
+									}
+								}, {
+									text : '单位投入用量计算公式',
+									hidden : true,
+									dataIndex : 'quantityFormula',
+									flex : 4
+								}, {
+									text : '用量单位',
+									hidden : true,
+									dataIndex : 'unit',
+									flex : 1.8
+								}, {
+									text : '用法',
+									hidden : true,
+									dataIndex : 'useMethod',
+									flex : 2.4
+								}],
+						tbar : [{
+									text : '添加投入产出',
+									handler : function() {
+										me.showAddWin('INOUT', this, processId);
+									}
+								}, {
+									text : '修改投入产出',
+									handler : function() {
+										me.showEditWin('INOUT', this);
+									}
+								}, {
+									text : '物料属性',
+									handler : function() {
+										me.showWin('PROP');
+									}
+								}, '->', {
+									text : '关  闭',
+									handler : function() {
+										this.up('window').close();
+									}
+								}]
+					}]
+		});
+		win.down('grid').getStore().load({
+					params : {
+						processId : processId
+					}
+				})
+		return win;
+	},
+
+	getQcWin : function(processId) {
+		var me = this;
+		var win = Ext.create('Ext.window.Window', {
+					title : ' 产品检测项维护',
+					width : document.body.scrollWidth - 200,
+					height : document.body.scrollHeight - 150,
+					modal : true,
+					plain : true,
+					items : [{
+								xtype : 'grid',
+								collapsible : false,
+								animCollapse : false,
+								height : document.body.scrollHeight - 190,
+								store : 'ProcessQcStore',
+								columns : [{
+											text : '检测项CODE',
+											dataIndex : 'checkItemCode',
+											minWidth : 100,
+											flex : 2
+										}, {
+											text : '检测项名称',
+											dataIndex : 'checkItemName',
+											minWidth : 200,
+											flex : 3
+										}, {
+											text : '检测频率',
+											dataIndex : 'frequence',
+											minWidth : 100,
+											flex : 1
+										}, {
+											text : '参数目标值',
+											dataIndex : 'itemTargetValue',
+											minWidth : 100,
+											flex : 1
+										}, {
+											text : '参数上限',
+											dataIndex : 'itemMaxValue',
+											minWidth : 100,
+											flex : 1
+										}, {
+											text : '参数下限',
+											dataIndex : 'itemMinValue',
+											minWidth : 100,
+											flex : 1
+										}, {
+											text : '参数数据类型',
+											dataIndex : 'dataType',
+											minWidth : 100,
+											flex : 1,
+											renderer : function(value) {
+												if (value == 'STRING') {
+													return '字符';
+												} else if (value == 'DOUBLE') {
+													return '数字';
+												} else if (value == 'BOOLEAN') {
+													return '布尔';
+												} else {
+													return '';
+												}
+											}
+										}, {
+											text : '参数单位',
+											dataIndex : 'dataUnit',
+											minWidth : 100,
+											flex : 1
+										}],
+								// 查询栏
+								tbar : [{
+											text : '新增质量参数',
+											handler : function() {
+												me.showAddWin('QC', this, processId);
+											}
+										}, {
+											text : '修改质量参数',
+											handler : function() {
+												me.showEditWin('QC', this);
+											}
+										}, {
+											xtype : 'radiogroup',
+											width : 280,
+											items : [{
+														boxLabel : '上车检',
+														name : 'checkType',
+														inputValue : 'needInCheck',
+														checked : true
+													}, {
+														boxLabel : '中检',
+														name : 'checkType',
+														inputValue : 'needMiddleCheck'
+													}, {
+														boxLabel : '下车检',
+														name : 'checkType',
+														inputValue : 'needOutCheck'
+													}, {
+														boxLabel : '全部',
+														name : 'checkType',
+														inputValue : '',
+														hidden : true
+														// checked : true
+												}],
+											listeners : {
+												change : function(obj, newValue, oldValue, eOpts) {
+													var store = this.up('grid').getStore();
+													store.load({
+																params : {
+																	processId : processId,
+																	checkType1 : newValue.checkType
+																}
+															});
+												}
+											}
+										}, '->', {
+											text : '关  闭',
+											handler : function() {
+												this.up('window').close();
+											}
+										}]
+							}]
+				});
+		win.down('grid').getStore().load({
+					params : {
+						processId : processId,
+						checkType1 : 'needInCheck'
+					}
+				})
+		return win;
+	},
+
+	getMatPropWin : function(id) {
+		var me = this;
+		var win = Ext.create('Ext.window.Window', {
+					title : ' 物料属性',
+					width : document.body.scrollWidth - 300,
+					height : document.body.scrollHeight - 200,
+					modal : true,
+					plain : true,
+					items : [{
+								xtype : 'grid',
+								collapsible : false,
+								animCollapse : false,
+								height : document.body.scrollHeight - 240,
+								store : 'ProcessMatPropStore',
+								columns : [{
+											text : '属性名称',
+											dataIndex : 'propName',
+											minWidth : 100,
+											flex : 2
+										}, {
+											text : '属性值',
+											dataIndex : 'propTargetValue',
+											minWidth : 100,
+											flex : 2
+										}],
+								// 查询栏
+								tbar : [{
+											text : '新增属性',
+											hidden : true,
+											handler : function() {
+												me.showAddWin('PROP', this, matCode);
+											}
+										}, {
+											text : '修改属性',
+											handler : function() {
+												me.showEditWin('PROP', this);
+											}
+										}, '->', {
+											text : '关  闭',
+											handler : function() {
+												this.up('window').close();
+											}
+										}]
+							}]
+				});
+		win.down('grid').getStore().load({
+					params : {
+						inOutId : id
+					}
+				})
+		return win;
+	},
+
+	showAddWin : function(type, button, param) {
+		var me = this;
+		var win = null;
+		var grid = button.up('grid');
+		var record = Ext.create(grid.getStore().model);
+		if (type == 'INOUT') {
+			win = me.getInOutFormWin({
+						title : '添加投入产出',
+						grid : grid,
+						type : 'ADD'
+					});
+			record.set('productProcessId', param);
+		} else if (type == 'QC') {
+			win = me.getQcFormWin({
+						title : '添加投入产出',
+						grid : grid,
+						type : 'ADD'
+					});
+			record.set('processId', param);
+		} else if (type == 'PROP') {
+			win = me.getPropFormWin({
+						title : '添加物料属性',
+						grid : grid,
+						type : 'ADD'
+					});
+			record.set('matCode', param);
+		}
+		if (win)
+			win.show();
+		var form = win.down('form');
+		form.loadRecord(record);
+	},
+
+	showEditWin : function(type, button) {
+		var me = this;
+		var win = null;
+		var grid = button.up('grid');
+		var selection = grid.getSelectionModel().getSelection();
+		if (selection && selection.length == 1) {
+			var record = selection[0];
+			if (type == 'INOUT') {
+				win = me.getInOutFormWin({
+							title : '修改投入产出',
+							grid : grid
+						});
+			} else if (type == 'QC') {
+				win = me.getQcFormWin({
+							title : '修改投入产出',
+							grid : grid
+						});
+			} else if (type == 'PROP') {
+				win = me.getPropFormWin({
+							title : '修改物料属性',
+							grid : grid
+						});
+			}
+			if (win)
+				win.show();
+			var form = win.down('form');
+			form.loadRecord(record);
+		} else {
+			Ext.Msg.alert(Oit.msg.PROMPT, '请选择一条记录！');
+		}
+	},
+
+	getInOutFormWin : function(option) {
+		var me = this;
+		return Ext.create('Ext.window.Window', {
+					width : 550,
+					layout : 'fit',
+					title : option.title,
+					iconCls : 'feed-edit',
+					modal : true,
+					plain : true,
+					grid : option.grid,
+					items : [{
+								xtype : 'form',
+								bodyPadding : '12 10 10',
+								defaultType : 'textfield',
+								defaults : {
+									labelAlign : 'right',
+									labelWidth : 150
+								},
+								items : [{
+											name : 'matCode',
+											fieldLabel : '物料编码',
+											emptyText : '请选择原材料',
+											width : 450,
+											xtype : 'combobox',
+											displayField : 'matName',
+											valueField : 'matCode',
+											store : Ext.create('Ext.data.Store', {
+														autoLoad : true,
+														proxy : {
+															type : 'rest',
+															url : '../pro/process/inOut/getMaterialsArray'
+														},
+														fields : ['matCode', 'matName'],
+														sorters : [{
+																	property : 'matCode',
+																	direction : 'ASC'
+																}]
+													}),
+											listeners : {
+												change : function(combox, newValue, oldValue, eOpts) {
+													var me = this;
+													var form = me.up('form').getForm();
+													form.findField('matName')
+															.setValue(combox.displayTplData[0].matName);
+												}
+											}
+										}, {
+											name : 'matName',
+											xtype : 'hiddenfield'
+										}, {
+											fieldLabel : '投入/产出',
+											xtype : 'radiogroup',
+											columns : 2,
+											items : [{
+														boxLabel : '投入',
+														name : 'inOrOut',
+														inputValue : 'IN',
+														checked : true
+													}, {
+														boxLabel : '产出',
+														name : 'inOrOut',
+														inputValue : 'OUT'
+													}]
+										}, {
+											fieldLabel : '用量',
+											width : 450,
+											xtype : 'numberfield',
+											name : 'quantity'
+										}, {
+											fieldLabel : '单位投入用量计算公式',
+											width : 450,
+											name : 'quantityFormula'
+										}, {
+											fieldLabel : '用量单位',
+											xtype : 'radiogroup',
+											columns : 4,
+											items : [{
+														boxLabel : Oit.unitType.ton,
+														name : 'unit',
+														inputValue : 'TON',
+														checked : true
+													}, {
+														boxLabel : Oit.unitType.kg,
+														name : 'unit',
+														inputValue : 'KG'
+													}, {
+														boxLabel : Oit.unitType.km,
+														name : 'unit',
+														inputValue : 'KM'
+													}, {
+														boxLabel : Oit.unitType.m,
+														name : 'unit',
+														inputValue : 'M'
+													}]
+										}, {
+											fieldLabel : '用法',
+											width : 450,
+											name : 'useMethod'
+										}]
+							}],
+					buttons : [{
+								text : Oit.btn.ok,
+								handler : function() {
+									me.updateForm(this.up('window'), option.type);
+								}
+							}, {
+								text : Oit.btn.cancel,
+								handler : function() {
+									this.up('window').close();
+								}
+							}]
+				});
+
+	},
+
+	getQcFormWin : function(option) {
+		var me = this;
+		return Ext.create('Ext.window.Window', {
+					width : 642,
+					layout : 'fit',
+					title : option.title,
+					iconCls : 'feed-edit',
+					modal : true,
+					plain : true,
+					grid : option.grid,
+					items : [{
+								xtype : 'form',
+								bodyPadding : '12 10 10',
+								defaults : {
+									labelAlign : 'right',
+									width : 642
+								},
+								items : [{
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '检测项CODE',
+														name : 'checkItemCode'
+													}, {
+														fieldLabel : '检测项名称',
+														margin : '0 0 0 10',
+														name : 'checkItemName'
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '检测频率',
+														name : 'frequence'
+													}, {
+														fieldLabel : '参数目标值',
+														margin : '0 0 0 10',
+														name : 'itemTargetValue'
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '参数上限',
+														name : 'itemMaxValue'
+													}, {
+														fieldLabel : '参数下限',
+														margin : '0 0 0 10',
+														name : 'itemMinValue'
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '参数数据类型',
+														xtype : 'radiogroup',
+														columns : 4,
+														items : [{
+																	boxLabel : '字符',
+																	name : 'dataType',
+																	inputValue : 'STRING'
+																}, {
+																	boxLabel : '数字',
+																	name : 'dataType',
+																	inputValue : 'DOUBLE'
+																}, {
+																	boxLabel : '布尔',
+																	name : 'dataType',
+																	inputValue : 'BOOLEAN'
+																}]
+													}, {
+														fieldLabel : '参数单位',
+														margin : '0 0 0 10',
+														name : 'dataUnit'
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '是否有附件',
+														xtype : 'radiogroup',
+														columns : 4,
+														items : [{
+																	boxLabel : '是',
+																	name : 'hasPic',
+																	inputValue : '1'
+																}, {
+																	boxLabel : '否',
+																	name : 'hasPic',
+																	inputValue : '0'
+																}]
+													}, {
+														fieldLabel : '是否在终端显示',
+														xtype : 'radiogroup',
+														margin : '0 0 0 10',
+														columns : 4,
+														items : [{
+																	boxLabel : '是',
+																	name : 'needShow',
+																	inputValue : '1'
+																}, {
+																	boxLabel : '否',
+																	name : 'needShow',
+																	inputValue : '0'
+																}]
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '是否重点显示',
+														xtype : 'radiogroup',
+														columns : 4,
+														items : [{
+																	boxLabel : '是',
+																	name : 'emphShow',
+																	inputValue : '1'
+																}, {
+																	boxLabel : '否',
+																	name : 'emphShow',
+																	inputValue : '0'
+																}]
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '是否需要数采',
+														xtype : 'radiogroup',
+														columns : 4,
+														items : [{
+																	boxLabel : '是',
+																	name : 'needDa',
+																	inputValue : 'true'
+																}, {
+																	boxLabel : '否',
+																	name : 'needDa',
+																	inputValue : 'false',
+																	checked : true
+																}]
+													}, {
+														fieldLabel : '是否需要下发',
+														xtype : 'radiogroup',
+														margin : '0 0 0 10',
+														columns : 4,
+														items : [{
+																	boxLabel : '是',
+																	name : 'needIs',
+																	inputValue : 'true'
+																}, {
+																	boxLabel : '否',
+																	name : 'needIs',
+																	inputValue : 'false',
+																	checked : true
+																}]
+													}]
+										}, {
+											xtype : 'container',
+											layout : 'hbox',
+											defaultType : 'textfield',
+											defaults : {
+												labelWidth : 100,
+												width : 300
+											},
+											margin : '0 0 10 0',
+											items : [{
+														fieldLabel : '超差是否报警',
+														xtype : 'radiogroup',
+														columns : 4,
+														items : [{
+																	boxLabel : '是',
+																	name : 'needAlarm',
+																	inputValue : '1'
+																}, {
+																	boxLabel : '否',
+																	name : 'needAlarm',
+																	inputValue : '0'
+																}]
+													}, {
+														fieldLabel : '值域',
+														margin : '0 0 0 10',
+														name : 'valueDomain'
+													}]
+										}]
+							}],
+					buttons : [{
+								text : Oit.btn.ok,
+								handler : function() {
+									me.updateForm(this.up('window'), option.type);
+								}
+							}, {
+								text : Oit.btn.cancel,
+								handler : function() {
+									this.up('window').close();
+								}
+							}]
+
+				});
+	},
+
+	getPropFormWin : function(option) {
+		var me = this;
+		return Ext.create('Ext.window.Window', {
+					width : 550,
+					layout : 'fit',
+					title : option.title,
+					iconCls : 'feed-edit',
+					modal : true,
+					plain : true,
+					grid : option.grid,
+					items : [{
+								xtype : 'form',
+								bodyPadding : '12 10 10',
+								defaultType : 'textfield',
+								defaults : {
+									labelAlign : 'right',
+									labelWidth : 150
+								},
+								items : [{
+											fieldLabel : '属性名称',
+											width : 450,
+											name : 'propName'
+										}, {
+											fieldLabel : '属性值',
+											width : 450,
+											name : 'propTargetValue'
+										}]
+							}],
+					buttons : [{
+								text : Oit.btn.ok,
+								handler : function() {
+									me.updateForm(this.up('window'), option.type);
+								}
+							}, {
+								text : Oit.btn.cancel,
+								handler : function() {
+									this.up('window').close();
+								}
+							}]
+				});
+
+	},
+
+	updateForm : function(win, type) {
+		var me = this;
+		var store = win.grid.getStore();
+		var form = win.down('form');
+		form.updateRecord();
+		var record = form.getRecord();
+		record.set('salesOrderItemId', me.spencialParam.salesOrderItemId);
+		record.set('processId', me.spencialParam.processId);
+		if (me.spencialParam.matCode)
+			record.set('matCode', me.spencialParam.matCode);
+		if (me.spencialParam.matName)
+			record.set('matName', me.spencialParam.matName);
+		if (me.spencialParam.inOrOut)
+			record.set('inOrOut', me.spencialParam.inOrOut);
+
+		if (type == 'ADD')
+			store.insert(0, record);
+		store.sync();
+		win.close();
+	}
+
+});

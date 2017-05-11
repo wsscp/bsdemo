@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/7899/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/inventory/store
+END
+InventoryStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7899/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/inventory/store/InventoryStore.js
+END
+MaterialNameStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/7899/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/inventory/store/MaterialNameStore.js
+END
+WarehouseStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/7899/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/inventory/store/WarehouseStore.js
+END

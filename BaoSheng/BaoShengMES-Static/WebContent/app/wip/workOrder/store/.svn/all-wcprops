@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/BSMES/!svn/ver/5358/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store
+END
+WorkOrderToolsReqStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/810/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderToolsReqStore.js
+END
+WorkOrderMatReqStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/810/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderMatReqStore.js
+END
+WorkOrderSubStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/BSMES/!svn/ver/757/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderSubStore.js
+END
+WorkOrderAdjustStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/864/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderAdjustStore.js
+END
+LeftStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/2711/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/LeftStore.js
+END
+WorkOrderReportStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/5358/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderReportStore.js
+END
+RightStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/2732/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/RightStore.js
+END
+WorkOrderEquipListStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/2787/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderEquipListStore.js
+END
+WorkOrderStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/4449/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderStore.js
+END
+WorkOrderProductStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/1629/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderProductStore.js
+END
+WorkOrderEquipStore.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/686/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/wip/workOrder/store/WorkOrderEquipStore.js
+END

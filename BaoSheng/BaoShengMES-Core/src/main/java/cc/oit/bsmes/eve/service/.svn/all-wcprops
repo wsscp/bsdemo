@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service
+END
+EventProcessService.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4979/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/EventProcessService.java
+END
+EventProcessLogService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/3340/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/EventProcessLogService.java
+END
+EventTypeService.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/8964/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/EventTypeService.java
+END
+MaintainCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/4993/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/MaintainCache.java
+END
+LastExecuteTimeRecordService.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/BSMES/!svn/ver/6432/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/LastExecuteTimeRecordService.java
+END
+EventInformationService.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/9889/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/EventInformationService.java
+END
+EventProcesserService.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/4350/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/EventProcesserService.java
+END
+EventTriggerLogService.java
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/BSMES/!svn/ver/4998/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/eve/service/EventTriggerLogService.java
+END

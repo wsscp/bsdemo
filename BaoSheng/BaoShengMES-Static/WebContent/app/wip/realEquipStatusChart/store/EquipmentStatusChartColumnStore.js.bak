@@ -1,0 +1,4 @@
+Ext.define('bsmes.store.EquipmentStatusChartColumnStore', {
+	extend : 'Ext.data.Store',
+    model: 'bsmes.model.EquipmentStatusChartLine'
+});

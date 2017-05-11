@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/dao
+END
+ProQualitySumDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/dao/ProQualitySumDAO.java
+END
+EquipSummaryDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/dao/EquipSummaryDAO.java
+END
+ProOutputDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/dao/ProOutputDAO.java
+END
+FacSummaryDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/BSMES/!svn/ver/5980/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/interfaceWebClient/dao/FacSummaryDAO.java
+END

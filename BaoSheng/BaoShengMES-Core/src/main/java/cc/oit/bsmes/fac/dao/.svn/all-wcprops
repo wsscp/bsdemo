@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/BSMES/!svn/ver/12107/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao
+END
+MaintainTemplateDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/3797/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/MaintainTemplateDAO.java
+END
+MaintainRecordItemDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4011/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/MaintainRecordItemDAO.java
+END
+EquipInfoDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/12107/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/EquipInfoDAO.java
+END
+MaintainItemDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4014/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/MaintainItemDAO.java
+END
+MaintainRecordDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/11080/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/MaintainRecordDAO.java
+END
+SparePartDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/BSMES/!svn/ver/9000/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/SparePartDAO.java
+END
+ProductEquipDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/BSMES/!svn/ver/4373/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/ProductEquipDAO.java
+END
+EquipMaintainStateDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4508/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/EquipMaintainStateDAO.java
+END
+EquipRepairRecordDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/9302/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/EquipRepairRecordDAO.java
+END
+StatusHistoryDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/BSMES/!svn/ver/11187/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/StatusHistoryDAO.java
+END
+WorkTaskDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/BSMES/!svn/ver/7337/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/WorkTaskDAO.java
+END
+EquipImageDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/BSMES/!svn/ver/7753/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/EquipImageDAO.java
+END
+EquipMaintenanceDAO.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/BSMES/!svn/ver/8445/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/fac/dao/EquipMaintenanceDAO.java
+END

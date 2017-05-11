@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/BSMES/!svn/ver/6203/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/redis
+END
+RedisService.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/BSMES/!svn/ver/6203/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/redis/RedisService.java
+END
+RedisServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/BSMES/!svn/ver/6203/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/redis/RedisServiceImpl.java
+END
+RedisCache.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/BSMES/!svn/ver/6203/trunk/BaoSheng/BaoShengMES-Core/src/main/java/cc/oit/bsmes/redis/RedisCache.java
+END

@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/10530/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view
+END
+CustomerOrderItemList.js
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/BSMES/!svn/ver/10490/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/CustomerOrderItemList.js
+END
+PriorityWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/1334/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/PriorityWindow.js
+END
+CraftDetailWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/2634/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/CraftDetailWindow.js
+END
+SetSubOaDateWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2359/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/SetSubOaDateWindow.js
+END
+PriorityRightList.js
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/3024/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/PriorityRightList.js
+END
+SplitOrderWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4132/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/SplitOrderWindow.js
+END
+PriorityCenter.js
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/BSMES/!svn/ver/4120/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/PriorityCenter.js
+END
+SplitVolume.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/2634/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/SplitVolume.js
+END
+ProcessReceiptList.js
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2634/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/ProcessReceiptList.js
+END
+LookUpAttachFileWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/BSMES/!svn/ver/10490/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/LookUpAttachFileWindow.js
+END
+SplitOrderInfoForm.js
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/2634/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/SplitOrderInfoForm.js
+END
+SubPriorityList.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/1891/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/SubPriorityList.js
+END
+PriorityLeftList.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/2926/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/PriorityLeftList.js
+END
+ProcessInOutList.js
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/BSMES/!svn/ver/4135/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/ProcessInOutList.js
+END
+CustomerOrderList.js
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/BSMES/!svn/ver/10530/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/CustomerOrderList.js
+END
+ProcessQcList.js
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/BSMES/!svn/ver/2634/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/ProcessQcList.js
+END
+ImportOrderWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/BSMES/!svn/ver/5541/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/ImportOrderWindow.js
+END
+SetDelivery.js
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/BSMES/!svn/ver/2359/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/SetDelivery.js
+END
+ItemSplitWindow.js
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/BSMES/!svn/ver/2926/trunk/BaoSheng/BaoShengMES-Static/WebContent/app/pla/customerOrderItem/view/ItemSplitWindow.js
+END

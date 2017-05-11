@@ -1,0 +1,197 @@
+.RED
+{
+    background-color:RED;
+    border-color:RED;
+    color: black;
+    
+}
+.BLACK
+{
+    background-color:black;
+     border-color:black;
+     color: red;
+}
+  
+.GREEN
+{
+    background-color:green;
+     color: black;
+      border-color:green;
+}
+   
+.BLUE
+{
+    background-color:blue;
+     border-color:blue;
+     color: black;
+}
+.YELLOW
+{
+    background-color:yellow;
+     border-color:yellow;
+     color: black;
+}
+ 
+.WHITE
+{
+    background-color:white;
+     border-color:gray;
+     color: black;
+}
+.GRAY
+{
+     background-color:gray;  
+      border-color:gray;  
+     color: red;
+}
+.PURPLE
+{
+     background-color:purple;  
+     border-color:purple;  
+     color: red;
+}
+
+.goSsearch
+{
+    background:url(images/go.png) no-repeat left center;
+    height: 200;
+}
+.collapseAll
+{
+    background:url(images/minus.png) no-repeat left center;
+    height: 200;
+}
+.expandAll
+{
+    background:url(images/plus.png) no-repeat left center;
+    height: 200;
+}
+.zoomIn
+{
+    background:url(images/zoom_in.png) no-repeat left center;
+    height: 200;
+}
+
+.zoomOut
+{   
+    background:url(images/zoom_out.png) no-repeat left center;
+}
+.icon-calendar {
+	
+    background : url(images/calendar.png) no-repeat left center !important;
+}
+ 
+.x-grid-cell-inner-treecolumn {
+    padding: 0px 0px 0px 0px;
+}
+
+ 
+.x-grid-tree-node-expanded .x-tree-icon-parent
+{
+    background-image:none;
+    margin:-10px;
+}
+
+.x-grid-cell-inner-treecolumn
+{
+	height:20px;
+}
+
+.x-tree-icon-parent{
+	background-image:none;
+    margin:-10px;
+}
+
+
+ 
+.x-tree-node-text {
+    font-size: 14px;
+    line-height: 20px;
+    padding-left: 4px;
+    vertical-align: middle;
+}
+ 
+
+.x-resizable-handle-east
+{
+    width:4px;
+    border-right: 1px solid #99BCE8;
+}
+ .x-tree-elbow-line{height:20px;background-position:0 -1px ;vertical-align: middle;}.x-tree-icon-leaf{width:14px;background-image:url('images/bullet_blue.png')}.x-tree-icon-parent{width:32px;height:29px;background-image:url('images/folder.gif');background-repeat:no-repeat;background-position: bottom; }.x-grid-tree-node-expanded
+ 
+ .x-tree-icon-parent{background-image:url('images/folder-open.gif')}.x-grid-rowbody{padding:0}.x-grid-cell-treecolumn
+ 
+.group
+{
+    border:3px solid #fff;
+    opacity:0.8;
+    filter:alpha(opacity=80);
+    -moz-border-radius:20px;
+    border-radius:20px;
+    background : lightblue  no-repeat 4px center;
+}
+
+.sch-zone
+{
+	background-color: #E1FFFF;
+    background-position: 3px top;
+    background-repeat: no-repeat;
+    border-color: #B0E0E6;
+    border-style: solid;
+    border-width: 0 1px 1px;
+}
+
+ 
+.sch-percent-allocated-bar
+{
+   
+    bottom:0;
+    left:0;
+    background-color:green !important;
+    position:absolute;
+    overflow:hidden;
+    width1:100%;
+    z-index:-1;
+}
+
+.sch-percent-allocated-text
+{
+    display:block; 
+    font-size:13px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    color:black;
+     position:absolute; 
+     right    : -30px !important;
+    z-index:1;
+    text-align:center;
+    vertical-align:middle;
+    
+}
+.sch-event-inner1
+{
+    display:block;
+     font-size:12px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    color:black;     
+     position:absolute; 
+     right    : -30px !important;
+     z-index:1;      
+     bottom:0;   
+    vertical-align:middle; 
+}
+ 
+.sch-event
+{
+   
+    background-color!:BLUE !important;
+    
+    border-radius1:10px;
+    border-color1:none;
+    margin-top: 1px;
+    height1:25px !important;
+    overflow           : visible !important;
+}
+
+ 
+ 
+ 

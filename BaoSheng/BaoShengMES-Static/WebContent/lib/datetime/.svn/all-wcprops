@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/BSMES/!svn/ver/604/trunk/BaoSheng/BaoShengMES-Static/WebContent/lib/datetime
+END
+UX_DateTimePicker.js
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/BSMES/!svn/ver/604/trunk/BaoSheng/BaoShengMES-Static/WebContent/lib/datetime/UX_DateTimePicker.js
+END
+UX_DateTimeField.js
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/BSMES/!svn/ver/604/trunk/BaoSheng/BaoShengMES-Static/WebContent/lib/datetime/UX_DateTimeField.js
+END
+UX_TimePickerField.js
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/BSMES/!svn/ver/604/trunk/BaoSheng/BaoShengMES-Static/WebContent/lib/datetime/UX_TimePickerField.js
+END
+UX_DateTimeMenu.js
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/BSMES/!svn/ver/604/trunk/BaoSheng/BaoShengMES-Static/WebContent/lib/datetime/UX_DateTimeMenu.js
+END

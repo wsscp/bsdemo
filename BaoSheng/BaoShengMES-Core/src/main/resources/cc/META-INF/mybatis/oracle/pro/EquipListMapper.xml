@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.pro.dao.EquipListDAO">
+
+	<resultMap type="cc.oit.bsmes.pro.model.EquipList" id="getMap">
+		<id column="ID" property="id" />
+		<collection property="processReceiptList" column="ID"
+			javaType="java.util.ArrayList" ofType="cc.oit.bsmes.pro.model.ProcessReceipt"
+			select="cc.oit.bsmes.pro.dao.ProcessReceiptDAO.getByEqipListId">
+		</collection>
+	</resultMap>
+	<resultMap type="cc.oit.bsmes.pro.model.EquipList" id="getSimpleMap">
+
+	</resultMap>
+
+	<sql id="equipListColumns">
+		T.ID,
+		T.EQUIP_CODE,
+		T.PROCESS_ID,
+		T.TYPE,
+		T.EQUIP_CAPACITY,
+		T.SET_UP_TIME,
+		T.SHUT_DOWN_TIME,
+		T.CREATE_TIME,
+		T.CREATE_USER_CODE,T.MODIFY_TIME,T.MODIFY_USER_CODE,T.IS_DEFAULT,T.FXPJ,T.SXPJ,T.FXZDZPL,T.SXZDZPL
+	</sql>
+
+    <!-- 获取工序下面的生产线信息 -->
+	<select id="getByProcessId" resultMap="getMap" parameterType="cc.oit.bsmes.pro.model.EquipList">
+		SELECT
+		<include refid="equipListColumns" />
+		,L.NAME EQUIP_NAME, E.EQUIP_ALIAS
+		FROM T_PRO_EQIP_LIST T
+		  LEFT JOIN T_FAC_EQIP_INFO L
+		    On T.EQUIP_CODE = l.CODE
+		  LEFT JOIN t_fac_product_eqip EL
+		    On el.product_line_id = l.id
+		  LEFT JOIN T_FAC_EQIP_INFO E
+		    ON E.ID = el.equip_id
+		 WHERE l.TYPE = 'PRODUCT_LINE'
+		   and T.PROCESS_ID = #{processId,jdbcType=VARCHAR}
+		 ORDER BY T.EQUIP_CODE, NLSSORT(L.NAME,'NLS_SORT=SCHINESE_PINYIN_M')
+	</select>
+	
+	<select id="getAllByProcessId" resultMap="getSimpleMap" parameterType="map">
+	    SELECT * FROM T_PRO_EQIP_LIST WHERE PROCESS_ID IN
+	    <foreach collection="processIds" item="item"  open="(" separator="," close=")">
+               #{item, jdbcType=VARCHAR}
+        </foreach>
+	</select>
+	
+	<select id="getAllByProcessCode" resultMap="getSimpleMap" parameterType="string">
+		select linelist.id as id , equipinfo.code as
+		EQUIP_CODE
+		from T_PRO_PRODUCT_PROCESS pro,T_PRO_EQIP_LIST linelist,T_FAC_EQIP_INFO
+		lineinfo , T_FAC_PRODUCT_EQIP productequip,T_FAC_EQIP_INFO equipinfo
+		where pro.PROCESS_CODE=#{processCode,jdbcType=VARCHAR}
+		and linelist.PROCESS_ID =pro.id
+		and lineinfo.code=linelist.EQUIP_CODE
+		and lineinfo.id=productequip.PRODUCT_LINE_ID
+		and productequip.EQUIP_ID =equipinfo.id
+	</select>
+
+	<!-- 通过设备代码查询设备工序关联信息 -->
+	<select id="getByEquipCodeReal" resultMap="getSimpleMap"
+		parameterType="string">
+		SELECT
+		LINELIST.ID AS ID,
+		EQUIPINFO.CODE AS EQUIP_CODE
+		FROM T_PRO_EQIP_LIST LINELIST,
+		T_FAC_EQIP_INFO LINEINFO,
+		T_FAC_PRODUCT_EQIP PRODUCTEQUIP,
+		T_FAC_EQIP_INFO EQUIPINFO
+		WHERE
+		LINEINFO.CODE = LINELIST.EQUIP_CODE
+		AND LINEINFO.ID = PRODUCTEQUIP.PRODUCT_LINE_ID
+		AND PRODUCTEQUIP.EQUIP_ID = EQUIPINFO.ID
+		AND LINELIST.EQUIP_CODE=#{equipCode, jdbcType=VARCHAR}
+	</select>
+
+	<select id="getByEquipCode" resultMap="getMap" parameterType="string">
+		SELECT
+		<include refid="equipListColumns" />
+		FROM T_PRO_EQIP_LIST T
+		WHERE T.EQUIP_CODE=#{eqipCode,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertScxFromPlm" parameterType="String">
+		INSERT INTO T_PRO_EQIP_LIST(ID,EQUIP_CODE,PROCESS_ID,"TYPE",EQUIP_CAPACITY,
+		CREATE_TIME,CREATE_USER_CODE,MODIFY_TIME,MODIFY_USER_CODE,SET_UP_TIME,
+		SHUT_DOWN_TIME,IS_DEFAULT)
+		WITH MES AS
+		(SELECT PPP.ID, PPP.PROCESS_CODE, PPP.SEQ, PEL.EQUIP_CODE
+		FROM T_PRO_PRODUCT_CRAFTS PPC, T_PRO_PRODUCT_PROCESS PPP
+		LEFT JOIN T_PRO_EQIP_LIST PEL
+		ON PPP.ID = PEL.PROCESS_ID
+		WHERE PPC.ID = PPP.PRODUCT_CRAFTS_ID
+		AND PPC.PRODUCT_CODE = #{productCode,jdbcType=VARCHAR}),
+		PLM AS
+		(SELECT PRO.ENAME, PRO.GNO, SCX.NO
+		FROM PRODUCT P,
+		PRCV_OBJOF POB,
+		PROCESS_OBJOF PRCOB,
+		SCX_OBJOF SOB,
+		PROCESS PRO,
+		SCX SCX
+		WHERE P.ID = POB.ITEMID1
+		AND POB.ITEMID2 = PRCOB.ITEMID1
+		AND PRCOB.ITEMID2 = SOB.ITEMID1
+		AND SOB.ITEMID1 = PRO.ID
+		AND SOB.ITEMID2 = SCX.ID
+		AND P.NO = #{productCode,jdbcType=VARCHAR}
+		AND NOT EXISTS (SELECT 1
+		FROM MES TT
+		WHERE TT.PROCESS_CODE = PRO.ENAME
+		AND TT.SEQ = PRO.GNO
+		AND TT.EQUIP_CODE = SCX.NO))
+		SELECT
+		get_uuid(),P.NO,M.ID,'PRODUCT_LINE','1',SYSDATE,'PLM',SYSDATE,'admin','0','0','1'
+		FROM PLM P, MES M
+		WHERE P.GNO = M.SEQ
+	</insert>
+	
+	<insert id="insertBatch" parameterType="ArrayList">
+	    
+		  insert into T_PRO_EQIP_LIST ( ID, EQUIP_CODE, PROCESS_ID, 
+			  TYPE, EQUIP_CAPACITY, CREATE_TIME, CREATE_USER_CODE, 
+			  MODIFY_TIME, MODIFY_USER_CODE,SET_UP_TIME,SHUT_DOWN_TIME,IS_DEFAULT,FXPJ,SXPJ,FXZDZPL,SXZDZPL)   
+		<foreach collection="list" item="item" index="index" 
+			separator="union all"> 
+			  select 
+			   #{item.id,jdbcType=VARCHAR},  #{item.equipCode,jdbcType=VARCHAR}, 
+			  #{item.processId,jdbcType=VARCHAR}, #{item.type,jdbcType=VARCHAR},  #{item.equipCapacity,jdbcType=DECIMAL}, 
+			  sysdate, 'PLM', 
+			  sysdate, 'PLM', 
+			  #{item.setUpTime,jdbcType=DECIMAL}, #{item.shutDownTime,jdbcType=DECIMAL}, #{item.isDefault,jdbcType=CHAR}, 
+			  #{item.fxpj,jdbcType=DECIMAL},#{item.sxpj,jdbcType=DECIMAL},#{item.fxzdzpl,jdbcType=DECIMAL},#{item.sxzdzpl,jdbcType=DECIMAL} from dual
+		</foreach>
+			  
+			  
+			
+	</insert>
+	
+</mapper>

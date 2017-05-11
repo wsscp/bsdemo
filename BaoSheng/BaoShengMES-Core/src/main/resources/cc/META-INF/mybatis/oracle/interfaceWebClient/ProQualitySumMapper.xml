@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.oit.bsmes.interfaceWebClient.dao.ProQualitySumDAO">
+	<resultMap type="cc.oit.bsmes.interfaceWebClient.model.ProQualitySum" id="getMap">
+	</resultMap>
+	
+	<select id="getProQualitySum" parameterType="cc.oit.bsmes.interfaceWebClient.model.ProQualitySum" resultMap="getMap">
+	
+	      select sum(TIMES) as TIMES, PROCESS_CODE,PROCESS_NAME from T_RPT_PRO_QUALITY_SUM   
+    		where  REPORT_DATE>=#{startTime,jdbcType=TIMESTAMP}    	  
+    		AND REPORT_DATE <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP}  
+	
+	       <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>  
+    	  group by PROCESS_CODE,PROCESS_NAME 
+    	  
+	</select>
+ 
+	
+	<select id="getTopProProQuality" parameterType="cc.oit.bsmes.interfaceWebClient.model.ProQualitySum" resultMap="getMap">
+	
+    select * from (select sum(TIMES) as TIMES,TYPE,TYPE_NAME from T_RPT_PRO_QUALITY_SUM 	
+	   where  REPORT_DATE>=#{startTime,jdbcType=TIMESTAMP}    	  
+    		AND REPORT_DATE <![CDATA[<]]>#{endTime,jdbcType=TIMESTAMP}  	
+	       <if test="orgCode!=null and orgCode!=''">
+    		  AND  ORG_CODE=#{orgCode,jdbcType=VARCHAR}
+    	  </if>  
+	      group by TYPE_NAME,TYPE
+              order by TIMES DESC
+           ) 
+            
+           where ROWNUM <![CDATA[<]]>6 
+	</select>
+	
+ 
+</mapper>
